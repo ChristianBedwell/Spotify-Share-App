@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Spotify Authentication</string>
+    <string name="connect_to_spotify">Connect to Spotify</string>
+    <string name="disconnect">Disconnect</string>
+</resources>

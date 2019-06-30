@@ -1,0 +1,64 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            url 'https://maven.google.com/'
+            name 'Google'
+        }
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.2.1'
+    }
+}
+
+allprojects {
+
+    if (rootProject.name.equalsIgnoreCase('spotify-sdk') && project.projectDir.name.endsWith('-sample')) {
+        Properties props = new Properties()
+        File propsFile = new File("${project.projectDir}/gradle.properties")
+
+        ['androidCompileSdk',
+         'androidBuildTools',
+         'androidMinSdk',
+         'androidTargetSdk',
+         getVersionName(project.projectDir.name),
+         getVersionCode(project.projectDir.name),
+         'supportLibVersion'].each
+                { propName ->
+                    project.ext."${propName}" = rootProject."${propName}"
+                    props.setProperty(propName, project."${propName}".toString())
+                }
+
+        props.store(propsFile.newWriter(), "Automatically generated")
+    }
+
+    repositories {
+        jcenter()
+        maven {
+            url 'https://maven.google.com/'
+            name 'Google'
+        }
+    }
+}
+
+static def getVersionName(sampleName) {
+    if (sampleName.equalsIgnoreCase('app-remote-sample')) {
+        return 'appRemoteSampleVersionName'
+    } else if (sampleName.equalsIgnoreCase('auth-sample')) {
+        return 'authSampleVersionName'
+    }
+    return ''
+}
+
+static def getVersionCode(sampleName) {
+    if (sampleName.equalsIgnoreCase('app-remote-sample')) {
+        return 'appRemoteSampleVersionCode'
+    } else if (sampleName.equalsIgnoreCase('auth-sample')) {
+        return 'authSampleVersionCode'
+    }
+    return ''
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
