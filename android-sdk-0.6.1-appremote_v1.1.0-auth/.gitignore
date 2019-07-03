@@ -1,7 +1,0 @@
-.DS_Store
-.idea/
-.gradle/
-*.iml
-local.properties
-build/
-*-sample/gradle.properties

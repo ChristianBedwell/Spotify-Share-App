@@ -1,5 +1,0 @@
-rootProject.name = 'spotify-sdk'
-include ':app-remote-lib'
-include ':app-remote-sample'
-include ':auth-lib'
-include ':auth-sample'
