@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">Spotify Authentication</string>
-    <string name="warning_need_token">You need to request an access token first</string>
-    <string name="code">Code: %1$s</string>
+    <string name="warning_need_agreement">You need to agree to the authentication statement.</string>
     <string name="token">Access Token: %1$s</string>
+    <string name="authentication_prompt">To access the analytics features provided with this app, you are required to authenticate with the Spotify API. By authenticating, you acknowledge that we do not share your data with third party sources, and only store data that is relevant to the scope of analytical results provided. </string>
+    <string name="authenticate_button_text">Authenticate</string>
+    <string name="checkbox_text">I Agree</string>
+    <string name="warning_need_token">You need to request an access token first.</string>
+    <string name="authentication_prompt_title">Privacy Statement:</string>
 </resources>
