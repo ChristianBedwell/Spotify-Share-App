@@ -7,4 +7,5 @@
     <string name="checkbox_text">I Agree</string>
     <string name="warning_need_token">You need to request an access token first.</string>
     <string name="authentication_prompt_title">Privacy Statement:</string>
+    <string name="progress_message">Requesting access token...</string>
 </resources>
