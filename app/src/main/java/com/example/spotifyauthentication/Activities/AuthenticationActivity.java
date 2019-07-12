@@ -1,4 +1,4 @@
-package com.example.spotifyauthentication;
+package com.example.spotifyauthentication.Activities;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -13,15 +13,16 @@ import android.widget.CompoundButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.spotifyauthentication.R;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
 
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class AuthenticationActivity extends AppCompatActivity {
 
-    // constants
+    // declare constants
     public static final String CLIENT_ID = "clientid";
     public static final int AUTH_TOKEN_REQUEST_CODE = 0x10;
     public static final String EXTRA_MESSAGE = "com.example.spotifyauthentication.extra.MESSAGE";

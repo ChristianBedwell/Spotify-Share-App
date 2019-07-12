@@ -5,7 +5,7 @@
     android:id="@+id/activity_most_popular"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MostPopularActivity">
+    tools:context=".Activities.MostPopularActivity">
 
     <LinearLayout
         android:layout_width="match_parent"

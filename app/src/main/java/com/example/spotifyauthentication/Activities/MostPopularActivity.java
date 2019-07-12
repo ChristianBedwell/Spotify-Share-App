@@ -1,10 +1,13 @@
-package com.example.spotifyauthentication;
+package com.example.spotifyauthentication.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
+
+import com.example.spotifyauthentication.Activities.MainActivity;
+import com.example.spotifyauthentication.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
