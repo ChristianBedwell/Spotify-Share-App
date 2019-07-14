@@ -20,7 +20,7 @@
             android:layout_height="45dp"
             android:layout_gravity="center_horizontal|bottom"
             android:layout_marginTop="8dp"
-            android:src="@drawable/ic_spotify_logo_authentication"/>
+            android:src="@drawable/ic_spotify_logo"/>
 
         <View
             android:id="@+id/line"

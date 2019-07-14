@@ -1,8 +1,11 @@
 package com.example.spotifyauthentication.Activities;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -25,19 +28,22 @@ public class AuthenticationActivity extends AppCompatActivity {
     // declare constants
     public static final String CLIENT_ID = "clientid";
     public static final int AUTH_TOKEN_REQUEST_CODE = 0x10;
-    public static final String EXTRA_MESSAGE = "com.example.spotifyauthentication.extra.MESSAGE";
 
     private String mAccessToken;
 
+    // declare UI widgets
     CheckBox checkbox;
     Button buttonAuthenticate;
     ProgressBar progressBar;
     TextView progressMessage;
 
+    // key for access token
+    private final String TOKEN_KEY = "token";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_authentication);
         getSupportActionBar().setTitle(String.format(
                 Locale.US, "Spotify Analytics", com.spotify.sdk.android.authentication.BuildConfig.VERSION_NAME));
 
@@ -83,6 +89,12 @@ public class AuthenticationActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onPause(){
+        super.onPause();
+
+    }
+
     public void requestToken() {
         final AuthenticationRequest request = getAuthenticationRequest(AuthenticationResponse.Type.TOKEN);
         AuthenticationClient.openLoginActivity(this, AUTH_TOKEN_REQUEST_CODE, request);
@@ -113,10 +125,17 @@ public class AuthenticationActivity extends AppCompatActivity {
             mAccessToken = response.getAccessToken();
         }
 
-        // store access token in intent extra and pass it to MostPopularActivity
+        // store access token in shared preferences and navigate to MostPopularActivity
+        setDefaults(TOKEN_KEY, mAccessToken, this);
         Intent intent = new Intent(getApplicationContext(), MostPopularActivity.class);
-        intent.putExtra(EXTRA_MESSAGE, mAccessToken);
         startActivity(intent);
+    }
+
+    public static void setDefaults(String key, String value, Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(key, value);
+        editor.apply();
     }
 
     private Uri getRedirectUri() {
