@@ -27,6 +27,7 @@ import java.io.IOException;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -122,8 +123,16 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
     }
 
     public void buildRequest(String type, String time_range, String limit, String offset) {
-        String url = "https://api.spotify.com/v1/me/top/" + type + time_range + limit + offset;
-        Log.d(TAG, url);
+        HttpUrl endpoint = new HttpUrl.Builder()
+                .scheme("https")
+                .host("api.spotify.com")
+                .addPathSegments("v1")
+                .addPathSegment("me")
+                .addPathSegment("top")
+                .addPathSegment(type)
+                .build();
+
+       String url = endpoint.toString() + time_range + limit + offset;
         // build the request object using the http get url and the access token
         final Request request = new Request.Builder()
                 .url(url)

@@ -16,7 +16,7 @@
     <string name="limit">Limit</string>
 
     <!-- prompts for type and time range spinners -->
-    <string name="type_prompt">Type</string>
+    <string name="type_prompt">Type*</string>
     <string name="time_range_prompt">Time Range</string>
 
     <string name="submit_button_text">Submit</string>

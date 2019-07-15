@@ -103,7 +103,7 @@ public class AuthenticationActivity extends AppCompatActivity {
     private AuthenticationRequest getAuthenticationRequest(AuthenticationResponse.Type type) {
         return new AuthenticationRequest.Builder(CLIENT_ID, type, getRedirectUri().toString())
                 .setShowDialog(false)
-                .setScopes(new String[]{"user-read-email"})
+                .setScopes(new String[]{"user-read-email", "user-top-read"})
                 .setCampaign("your-campaign-token")
                 .build();
     }
