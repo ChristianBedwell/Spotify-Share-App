@@ -11,31 +11,18 @@
     <string name="progress_message">Requesting access token...</string>
 
 
-    <string name="type">Type</string>
+    <string name="type">Type*</string>
     <string name="timeRange">Time Range</string>
     <string name="limit">Limit</string>
 
     <!-- prompts for type and time range spinners -->
-    <string name="type_prompt">Type*</string>
+    <string name="type_prompt">Type</string>
     <string name="time_range_prompt">Time Range</string>
 
     <string name="submit_button_text">Submit</string>
     <string name="action_refresh">Refresh</string>
     <string name="offset">Offset</string>
-    <string name="enter_a_limit">Enter a limit</string>
-    <string name="enter_an_offset">Enter an offset</string>
-
-    <!-- define the list of items that will appear in type spinner -->
-    <string-array name="type_array">
-        <item>Artists</item>
-        <item>Tracks</item>
-    </string-array>
-
-    <!-- define the list of items that will appear in time range spinner -->
-    <string-array name="time_range_array">
-        <item>Short Term</item>
-        <item>Medium Term</item>
-        <item>Long Term</item>
-    </string-array>
+    <string name="enter_a_limit">0 - 50</string>
+    <string name="enter_an_offset">0</string>
 
 </resources>

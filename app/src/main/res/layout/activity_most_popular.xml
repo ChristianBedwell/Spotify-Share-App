@@ -34,9 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:orientation="vertical"
-            android:layout_marginTop="5dp"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingRight="@dimen/activity_horizontal_margin">
+            android:layout_marginTop="5dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -60,14 +58,21 @@
                         android:textColor="#1E1E1E"/>
 
                     <!-- selects type (album or track) to filter the query results -->
-                    <Spinner
+                    <com.example.spotifyauthentication.CustomSpinner
                         android:id="@+id/typeSpinner"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@android:drawable/btn_dropdown"
-                        android:spinnerMode="dropdown"
-                        android:entries="@array/type_array"
-                        android:prompt="@string/type_prompt"/>
+                        style="@style/Widget.AppCompat.Spinner"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_width="100dp"
+                        android:dropDownWidth="200dp"
+                        android:layout_height="35dp"
+                        android:dropDownVerticalOffset="10dp"
+                        android:background="@drawable/spinner_bg"
+                        android:popupBackground="@android:color/white"
+                        android:paddingRight="14dp"
+                        android:stateListAnimator="@animator/spinner_sla"
+                        android:popupElevation="3dp"/>
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -86,24 +91,22 @@
                         android:textColor="#1E1E1E"/>
 
                     <!-- selects time range from which to query results -->
-                    <Spinner
+                    <com.example.spotifyauthentication.CustomSpinner
                         android:id="@+id/timeRangeSpinner"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@android:drawable/btn_dropdown"
-                        android:spinnerMode="dropdown"
-                        android:entries="@array/time_range_array"
-                        android:prompt="@string/time_range_prompt"/>
+                        style="@style/Widget.AppCompat.Spinner"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_width="150dp"
+                        android:dropDownWidth="200dp"
+                        android:layout_height="35dp"
+                        android:dropDownVerticalOffset="10dp"
+                        android:background="@drawable/spinner_bg"
+                        android:popupBackground="@android:color/white"
+                        android:paddingRight="14dp"
+                        android:stateListAnimator="@animator/spinner_sla"
+                        android:popupElevation="3dp"/>
 
                 </LinearLayout>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:orientation="horizontal">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -123,8 +126,13 @@
                     <!-- limits the query results by a user defined quantity -->
                     <EditText
                         android:id="@+id/limitEditText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_width="50dp"
+                        android:dropDownWidth="200dp"
+                        android:layout_height="35dp"
+                        android:dropDownVerticalOffset="10dp"
+                        android:background="@drawable/edittext_bg"
                         android:hint="@string/enter_a_limit"
                         android:inputType="number"/>
                 </LinearLayout>
@@ -147,8 +155,13 @@
                     <!-- index of the first entity to return from the query -->
                     <EditText
                         android:id="@+id/offsetEditText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_width="50dp"
+                        android:dropDownWidth="200dp"
+                        android:layout_height="35dp"
+                        android:dropDownVerticalOffset="10dp"
+                        android:background="@drawable/edittext_bg"
                         android:hint="@string/enter_an_offset"
                         android:inputType="number"/>
                 </LinearLayout>
@@ -176,38 +189,18 @@
 
         </RelativeLayout>
 -->
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:layout_weight="1">
-
-            <TextView
-                android:id="@+id/response_text_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="12sp"
-                tools:text="Line 1\nLine 2\nLine 3" />
-
-        </ScrollView>
-
         <Button
             android:id="@+id/submit_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
             android:layout_marginTop="30dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
             android:textColor="#FFFFFF"
             android:layout_gravity="center_horizontal"
             android:background="@drawable/rounded_button"
             android:text="@string/submit_button_text"/>
-
-        <TextView
-            android:id="@+id/accessToken"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:text="access token"/>
 
     </LinearLayout>
 

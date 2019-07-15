@@ -7,16 +7,18 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatSpinner;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 
+import com.example.spotifyauthentication.CustomSpinner;
 import com.example.spotifyauthentication.R;
 
 import org.json.JSONArray;
@@ -38,7 +40,6 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
     private String mAccessToken;
     private Call mCall;
 
-    private TextView accessToken;
     private Spinner typeSpinner, timeRangeSpinner;
     private EditText limitEditText, offsetEditText;
     private Button submitButton;
@@ -49,6 +50,10 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
     // key for access token
     private final String TOKEN_KEY = "token";
 
+    // define the list of items that will appear in the type and time range spinner
+    String[] typeItems = {"Artists", "Tracks"};
+    String[] timeRangeItems = {"Medium Term", "Short Term", "Long Term"};
+
     // tag for debugging logcat entries
     private String TAG = MostPopularActivity.class.getSimpleName();
 
@@ -57,12 +62,38 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_most_popular);
 
+        // create array adapter to set items for type spinner
+        ArrayAdapter typeItemsAdapter = new ArrayAdapter<>(MostPopularActivity.this, R.layout.spinner_item_selected, typeItems);
+        typeItemsAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+
         // instantiate type spinner and set item selected listener
-        typeSpinner = (Spinner) findViewById(R.id.typeSpinner);
+        final CustomSpinner typeSpinner = (CustomSpinner) findViewById(R.id.typeSpinner);
+        typeSpinner.setAdapter(typeItemsAdapter);
+        typeSpinner.setSpinnerEventsListener(new CustomSpinner.OnSpinnerEventsListener() {
+            public void onSpinnerOpened(AppCompatSpinner typeSpinner) {
+                typeSpinner.setSelected(true);
+            }
+            public void onSpinnerClosed(AppCompatSpinner typeSpinner) {
+                typeSpinner.setSelected(false);
+            }
+        });
         typeSpinner.setOnItemSelectedListener(this);
 
+        // create array adapter to set items for time range spinner
+        ArrayAdapter timeRangeItemsAdapter = new ArrayAdapter<>(MostPopularActivity.this, R.layout.spinner_item_selected, timeRangeItems);
+        timeRangeItemsAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+
         // instantiate time range spinner and set item selected listener
-        timeRangeSpinner = (Spinner) findViewById(R.id.timeRangeSpinner);
+        final CustomSpinner timeRangeSpinner = (CustomSpinner) findViewById(R.id.timeRangeSpinner);
+        timeRangeSpinner.setAdapter(timeRangeItemsAdapter);
+        timeRangeSpinner.setSpinnerEventsListener(new CustomSpinner.OnSpinnerEventsListener() {
+            public void onSpinnerOpened(AppCompatSpinner timeRangeSpinner) {
+                timeRangeSpinner.setSelected(true);
+            }
+            public void onSpinnerClosed(AppCompatSpinner timeRangeSpinner) {
+                timeRangeSpinner.setSelected(false);
+            }
+        });
         timeRangeSpinner.setOnItemSelectedListener(this);
 
         // instantiate edit text for limit
@@ -72,33 +103,34 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
         // instantiate button for query submission
         submitButton = (Button) findViewById(R.id.submit_button);
 
-        accessToken = findViewById(R.id.accessToken);
-
         // retrieve access token from shared preferences and store it
         mAccessToken = getDefaults(TOKEN_KEY, this);
-        accessToken.setText(mAccessToken);
 
+        // create on click listener for submit button
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String limitParam = limitEditText.getText().toString();
                 String offsetParam = offsetEditText.getText().toString();
+
                 // if limit edit text is not empty, retrieve limit value
                 if(!limitParam.equals("")) {
                     limit = "&limit=" + limitParam;
                 }
-                // if limit edit text is empty, set limit to empty string
+                // else if limit edit text is empty, set limit to empty string
                 else {
                     limit = "";
                 }
+
                 // if offset edit text is not empty, retrieve offset value
                 if(!offsetParam.equals("")) {
                     offset = "&offset=" + offsetParam;
                 }
-                // if offset edit text is empty, set offset to empty string
+                // else if offset edit text is empty, set offset to empty string
                 else {
                     offset = "";
                 }
+
                 // use parameters to build JSON request
                 buildRequest(type, timeRange, limit, offset);
             }
@@ -149,32 +181,19 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 // failed to fetch data, throw exception
-                //Log.e(TAG, "Failed to fetch data: " + e.getMessage());
-                setResponse("Failed to fetch data: " + e);
+                Log.e(TAG, "Failed to fetch data: " + e.getMessage());
             }
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 try {
                     // successful JSON reponse, create JSON response body and parse details
                     final JSONObject jsonResponse = new JSONObject(response.body().string());
-                    //parseJSON(jsonObject.toString(3));
-                    setResponse(jsonResponse.toString(3));
+                    parseJSON(jsonResponse.toString(3));
                 }
                 catch (JSONException e) {
                     // failed to parse data, throw exception
-                    //Log.e(TAG, "Failed to parse data: " + e.getMessage());
-                    setResponse("Failed to parse data: " + e);
+                    Log.e(TAG, "Failed to parse data: " + e.getMessage());
                 }
-            }
-        });
-    }
-
-    private void setResponse(final String text) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                final TextView responseView = findViewById(R.id.response_text_view);
-                responseView.setText(text);
             }
         });
     }
