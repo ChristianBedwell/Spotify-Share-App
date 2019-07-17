@@ -1,11 +1,10 @@
-package com.example.spotifyauthentication.Models.Artists;
+package com.example.spotifyauthentication.Models.Tracks;
 
 import java.util.List;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class ArtistDetails {
+public class Track {
 
     @SerializedName("items")
     @Expose

@@ -2,6 +2,7 @@ package com.example.spotifyauthentication.Activities;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -16,36 +17,32 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
 
+import com.example.spotifyauthentication.Models.Artists.Artist;
+import com.example.spotifyauthentication.Models.Tracks.Track;
+import com.example.spotifyauthentication.Retrofit.GetDataService;
+import com.example.spotifyauthentication.Retrofit.RetrofitInstance;
 import com.example.spotifyauthentication.CustomSpinner;
 import com.example.spotifyauthentication.R;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.lang.ref.WeakReference;
+import java.util.Locale;
 
-import java.io.IOException;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 public class MostPopularActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
-    private final OkHttpClient mOkHttpClient = new OkHttpClient();
     private String mAccessToken;
-    private Call mCall;
 
-    private Spinner typeSpinner, timeRangeSpinner;
     private EditText limitEditText, offsetEditText;
     private Button submitButton;
 
     // string and integer to hold query parameters
-    public String type, timeRange, limit, offset = "";
+    public String type, timeRange;
+    public int limit, offset;
 
     // key for access token
     private final String TOKEN_KEY = "token";
@@ -61,6 +58,10 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_most_popular);
+
+        // set title of action bar from default
+        getSupportActionBar().setTitle(String.format(
+                Locale.US, "Spotify Analytics", com.spotify.sdk.android.authentication.BuildConfig.VERSION_NAME));
 
         // create array adapter to set items for type spinner
         ArrayAdapter typeItemsAdapter = new ArrayAdapter<>(MostPopularActivity.this, R.layout.spinner_item_selected, typeItems);
@@ -110,37 +111,24 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // get parameter strings from edit text fields
                 String limitParam = limitEditText.getText().toString();
                 String offsetParam = offsetEditText.getText().toString();
 
                 // if limit edit text is not empty, retrieve limit value
                 if(!limitParam.equals("")) {
-                    limit = "&limit=" + limitParam;
-                }
-                // else if limit edit text is empty, set limit to empty string
-                else {
-                    limit = "";
+                    limit = Integer.parseInt(limitParam);
                 }
 
                 // if offset edit text is not empty, retrieve offset value
                 if(!offsetParam.equals("")) {
-                    offset = "&offset=" + offsetParam;
-                }
-                // else if offset edit text is empty, set offset to empty string
-                else {
-                    offset = "";
+                    offset = Integer.parseInt(offsetParam);
                 }
 
                 // use parameters to build JSON request
-                buildRequest(type, timeRange, limit, offset);
+                getData data = new getData(timeRange, type, limit, offset, mAccessToken);
             }
         });
-    }
-
-    @Override
-    protected void onDestroy() {
-        cancelCall();
-        super.onDestroy();
     }
 
     @Override
@@ -148,64 +136,95 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
         // Do nothing
     }
 
-    private void cancelCall() {
-        if (mCall != null) {
-            mCall.cancel();
+    private static class getData extends AsyncTask<Void, Void, Void> {
+
+        // weak references for query parameters
+        private WeakReference<String> weakTimeRange;
+        private WeakReference<String> weakType;
+        private WeakReference<Integer> weakLimit;
+        private WeakReference<Integer> weakOffset;
+        private WeakReference<String> weakAccessToken;
+
+        // tag for debugging logcat entries
+        private String TAG = MostPopularActivity.class.getSimpleName();
+
+        getData(String timeRange, String type, int limit, int offset, String mAccessToken) {
+            weakTimeRange = new WeakReference<>(timeRange);
+            weakType = new WeakReference<>(type);
+            weakLimit = new WeakReference<>(limit);
+            weakOffset = new WeakReference<>(offset);
+            weakAccessToken = new WeakReference<>(mAccessToken);
         }
-    }
 
-    public void buildRequest(String type, String time_range, String limit, String offset) {
-        HttpUrl endpoint = new HttpUrl.Builder()
-                .scheme("https")
-                .host("api.spotify.com")
-                .addPathSegments("v1")
-                .addPathSegment("me")
-                .addPathSegment("top")
-                .addPathSegment(type)
-                .build();
-
-       String url = endpoint.toString() + time_range + limit + offset;
-        // build the request object using the http get url and the access token
-        final Request request = new Request.Builder()
-                .url(url)
-                .addHeader("Authorization","Bearer " + mAccessToken)
-                .build();
-
-        Log.d(TAG, request.toString());
-
-        // if there is an existing call, cancel it and create a new one
-        cancelCall();
-        mCall = mOkHttpClient.newCall(request);
-
-        mCall.enqueue(new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                // failed to fetch data, throw exception
-                Log.e(TAG, "Failed to fetch data: " + e.getMessage());
+        @Override
+        protected Void doInBackground(Void... voids) {
+            if(weakType.get().equals("artists")) {
+                requestTopArtists(weakTimeRange.get(), weakLimit.get(), weakOffset.get());
             }
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                try {
-                    // successful JSON reponse, create JSON response body and parse details
-                    final JSONObject jsonResponse = new JSONObject(response.body().string());
-                    parseJSON(jsonResponse.toString(3));
-                }
-                catch (JSONException e) {
-                    // failed to parse data, throw exception
-                    Log.e(TAG, "Failed to parse data: " + e.getMessage());
-                }
+            else if(weakType.get().equals("tracks")) {
+                requestTopTracks(weakTimeRange.get(), weakLimit.get(), weakOffset.get());
             }
-        });
-    }
-
-    // parse JSON string and obtains useful information
-    private void parseJSON(String jsonString) {
-        try {
-            JSONObject reader = new JSONObject(jsonString);
-            JSONArray items = reader.getJSONArray("items");
+            return null;
         }
-        catch (JSONException e) {
-            e.printStackTrace();
+
+        private void requestTopArtists(String timeRange, int limit, int offset) {
+
+            // instantiate retrofit instance with base url
+            Retrofit retrofit = RetrofitInstance.getRetrofit();
+            GetDataService api = retrofit.create(GetDataService.class);
+
+            Call<Artist> call = api.getTopArtists(weakAccessToken.get(), timeRange, limit, offset);
+            Log.d(TAG, call.toString());
+
+            call.enqueue(new Callback<Artist>() {
+                @Override
+                public void onResponse(@NonNull Call <Artist> call, @NonNull Response <Artist> response) {
+                    if (response.isSuccessful()) {
+                        // successful JSON response, create JSON response body and parse details
+                        Artist artist = response.body();
+                        Log.d(TAG, response.body().toString());
+                    }
+                    else {
+                        // failed to parse data, throw exception
+                        Log.e(TAG, "Failed to parse data!");
+                    }
+                }
+                @Override
+                public void onFailure(@NonNull Call <Artist> call, @NonNull Throwable e) {
+                    // failed to fetch data, throw exception
+                    Log.e(TAG, "Failed to fetch data: " + e.getMessage());
+                }
+            });
+        }
+
+        private void requestTopTracks(String timeRange, int limit, int offset) {
+
+            // instantiate retrofit instance with base url
+            Retrofit retrofit = RetrofitInstance.getRetrofit();
+            GetDataService api = retrofit.create(GetDataService.class);
+
+            Call<Track> call = api.getTopTracks(weakAccessToken.get(), timeRange, limit, offset);
+            Log.d(TAG, call.toString());
+
+            call.enqueue(new Callback<Track>() {
+                @Override
+                public void onResponse(@NonNull Call <Track> call, @NonNull Response <Track> response) {
+                    if (response.isSuccessful()) {
+                        // successful JSON response, create JSON response body and parse details
+                        Track track = response.body();
+                        Log.d(TAG, response.body().toString());
+                    }
+                    else {
+                        // failed to parse data, throw exception
+                        Log.e(TAG, "Failed to parse data!");
+                    }
+                }
+                @Override
+                public void onFailure(@NonNull Call <Track> call, @NonNull Throwable e) {
+                    // failed to fetch data, throw exception
+                    Log.e(TAG, "Failed to fetch data: " + e.getMessage());
+                }
+            });
         }
     }
 
@@ -217,7 +236,7 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
 
     // refresh current results displayed to user
     public void refreshResults() {
-
+        // TODO Auto-generated method stub
     }
 
     // inflates the app bar menu and adds items to the action bar
@@ -258,17 +277,17 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
                 break;
             case R.id.timeRangeSpinner:
                 if(parent.getItemAtPosition(position).toString().equals("Short Term")) {
-                    timeRange = "?time_range=short_term";
+                    timeRange = "short_term";
                     Log.d(TAG, timeRange + " selected");
                     break;
                 }
                 else if(parent.getItemAtPosition(position).toString().equals("Medium Term")) {
-                    timeRange = "?time_range=medium_term";
+                    timeRange = "medium_term";
                     Log.d(TAG, timeRange + " selected");
                     break;
                 }
                 else if(parent.getItemAtPosition(position).toString().equals("Long Term")) {
-                    timeRange = "?time_range=long_term";
+                    timeRange = "long_term";
                     Log.d(TAG, timeRange + " selected");
                     break;
                 }
