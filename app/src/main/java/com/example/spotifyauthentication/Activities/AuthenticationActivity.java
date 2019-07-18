@@ -131,6 +131,7 @@ public class AuthenticationActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    // set default shared preferences for app
     public static void setDefaults(String key, String value, Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = preferences.edit();
@@ -138,6 +139,7 @@ public class AuthenticationActivity extends AppCompatActivity {
         editor.apply();
     }
 
+    // get redirect uri using redirect scheme and host
     private Uri getRedirectUri() {
         return new Uri.Builder()
                 .scheme(getString(R.string.com_spotify_sdk_redirect_scheme))

@@ -42,7 +42,6 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
 
     // string and integer to hold query parameters
     public String type, timeRange;
-    public int limit, offset;
 
     // key for access token
     private final String TOKEN_KEY = "token";
@@ -158,13 +157,13 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
                         // offset parameter is empty
                         if(weakOffset.get().equals("")) {
                             // all query parameters are empty
-                            requestTopArtists(weakAccessToken.get(), null,
+                            requestTopArtists("Bearer " + weakAccessToken.get(), null,
                                     null, null);
                         }
                         // offset is not empty
 		                else {
                             // all query parameters are empty except offset
-                            requestTopArtists(weakAccessToken.get(), null,
+                            requestTopArtists("Bearer " + weakAccessToken.get(), null,
                                     null, Integer.parseInt(weakOffset.get()));
                         }
                     }
@@ -173,13 +172,13 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
                         // offset parameter is empty
                         if(weakOffset.get().equals("")) {
                             // all parameters are empty except limit
-                            requestTopArtists(weakAccessToken.get(), null,
+                            requestTopArtists("Bearer " + weakAccessToken.get(), null,
                                     Integer.parseInt(weakLimit.get()), null);
                         }
                         // offset parameter is not empty
 		                else {
                             // all parameters are empty except limit and offset
-                            requestTopArtists(weakAccessToken.get(), null,
+                            requestTopArtists("Bearer " + weakAccessToken.get(), null,
                                     Integer.parseInt(weakLimit.get()), Integer.parseInt(weakOffset.get()));
                         }
                     }
@@ -191,13 +190,13 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
                         // offset parameter is empty
                         if(weakOffset.get().equals("")) {
                             // all parameters are empty except time range
-                            requestTopArtists(weakAccessToken.get(), weakTimeRange.get(),
+                            requestTopArtists("Bearer " + weakAccessToken.get(), weakTimeRange.get(),
                                     null, null);
                         }
                         // offset parameter is not empty
 		                else {
                             // all parameters are empty except time range and offset
-                            requestTopArtists(weakAccessToken.get(), weakTimeRange.get(),
+                            requestTopArtists("Bearer " + weakAccessToken.get(), weakTimeRange.get(),
                                     null, Integer.parseInt(weakOffset.get()));
                         }
                     }
@@ -206,13 +205,13 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
                         // offset parameter is empty
                         if(weakOffset.get().equals("")) {
                             // all fields are empty except time range and limit
-                            requestTopArtists(weakAccessToken.get(), weakTimeRange.get(),
+                            requestTopArtists("Bearer " + weakAccessToken.get(), weakTimeRange.get(),
                                     Integer.parseInt(weakLimit.get()), null);
                         }
                         // offset parameter is not empty
 		                else {
                             // all parameters are full
-                            requestTopArtists(weakAccessToken.get(), weakTimeRange.get(),
+                            requestTopArtists("Bearer " + weakAccessToken.get(), weakTimeRange.get(),
                                     Integer.parseInt(weakLimit.get()), Integer.parseInt(weakOffset.get()));
                         }
                     }
@@ -227,13 +226,13 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
                         // offset parameter is empty
                         if(weakOffset.get().equals("")) {
                             // all query parameters are empty
-                            requestTopTracks(weakAccessToken.get(), null,
+                            requestTopTracks("Bearer " + weakAccessToken.get(), null,
                                     null, null);
                         }
                         // offset is not empty
                         else {
                             // all query parameters are empty except offset
-                            requestTopTracks(weakAccessToken.get(), null,
+                            requestTopTracks("Bearer " + weakAccessToken.get(), null,
                                     null, Integer.parseInt(weakOffset.get()));
                         }
                     }
@@ -242,13 +241,13 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
                         // offset parameter is empty
                         if(weakOffset.get().equals("")) {
                             // all parameters are empty except limit
-                            requestTopTracks(weakAccessToken.get(), null,
+                            requestTopTracks("Bearer " + weakAccessToken.get(), null,
                                     Integer.parseInt(weakLimit.get()), null);
                         }
                         // offset parameter is not empty
                         else {
                             // all parameters are empty except limit and offset
-                            requestTopTracks(weakAccessToken.get(), null,
+                            requestTopTracks("Bearer " + weakAccessToken.get(), null,
                                     Integer.parseInt(weakLimit.get()), Integer.parseInt(weakOffset.get()));
                         }
                     }
@@ -260,13 +259,13 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
                         // offset parameter is empty
                         if(weakOffset.get().equals("")) {
                             // all parameters are empty except time range
-                            requestTopTracks(weakAccessToken.get(), weakTimeRange.get(),
+                            requestTopTracks("Bearer " + weakAccessToken.get(), weakTimeRange.get(),
                                     null, null);
                         }
                         // offset parameter is not empty
                         else {
                             // all parameters are empty except time range and offset
-                            requestTopTracks(weakAccessToken.get(), weakTimeRange.get(),
+                            requestTopTracks("Bearer " + weakAccessToken.get(), weakTimeRange.get(),
                                     null, Integer.parseInt(weakOffset.get()));
                         }
                     }
@@ -275,13 +274,13 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
                         // offset parameter is empty
                         if(weakOffset.get().equals("")) {
                             // all fields are empty except time range and limit
-                            requestTopTracks(weakAccessToken.get(), weakTimeRange.get(),
+                            requestTopTracks("Bearer " + weakAccessToken.get(), weakTimeRange.get(),
                                     Integer.parseInt(weakLimit.get()), null);
                         }
                         // offset parameter is not empty
                         else {
                             // all parameters are full
-                            requestTopTracks(weakAccessToken.get(), weakTimeRange.get(),
+                            requestTopTracks("Bearer " + weakAccessToken.get(), weakTimeRange.get(),
                                     Integer.parseInt(weakLimit.get()), Integer.parseInt(weakOffset.get()));
                         }
                     }
