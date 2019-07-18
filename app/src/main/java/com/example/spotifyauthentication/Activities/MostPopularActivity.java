@@ -112,21 +112,11 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
             @Override
             public void onClick(View v) {
                 // get parameter strings from edit text fields
-                String limitParam = limitEditText.getText().toString();
-                String offsetParam = offsetEditText.getText().toString();
-
-                // if limit edit text is not empty, retrieve limit value
-                if(!limitParam.equals("")) {
-                    limit = Integer.parseInt(limitParam);
-                }
-
-                // if offset edit text is not empty, retrieve offset value
-                if(!offsetParam.equals("")) {
-                    offset = Integer.parseInt(offsetParam);
-                }
+                String strLimit = limitEditText.getText().toString();
+                String strOffset = offsetEditText.getText().toString();
 
                 // use parameters to build JSON request
-                getData data = new getData(timeRange, type, limit, offset, mAccessToken);
+                new getData(mAccessToken, type, timeRange, strLimit, strOffset).execute();
             }
         });
     }
@@ -139,41 +129,174 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
     private static class getData extends AsyncTask<Void, Void, Void> {
 
         // weak references for query parameters
-        private WeakReference<String> weakTimeRange;
-        private WeakReference<String> weakType;
-        private WeakReference<Integer> weakLimit;
-        private WeakReference<Integer> weakOffset;
         private WeakReference<String> weakAccessToken;
+        private WeakReference<String> weakType;
+        private WeakReference<String> weakTimeRange;
+        private WeakReference<String> weakLimit;
+        private WeakReference<String> weakOffset;
 
         // tag for debugging logcat entries
         private String TAG = MostPopularActivity.class.getSimpleName();
 
-        getData(String timeRange, String type, int limit, int offset, String mAccessToken) {
-            weakTimeRange = new WeakReference<>(timeRange);
-            weakType = new WeakReference<>(type);
-            weakLimit = new WeakReference<>(limit);
-            weakOffset = new WeakReference<>(offset);
+        // getData() constructor
+        getData(String mAccessToken, String type, String timeRange, String strLimit, String strOffset) {
             weakAccessToken = new WeakReference<>(mAccessToken);
+            weakType = new WeakReference<>(type);
+            weakTimeRange = new WeakReference<>(timeRange);
+            weakLimit = new WeakReference<>(strLimit);
+            weakOffset = new WeakReference<>(strOffset);
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
+            // top artists has been selected
             if(weakType.get().equals("artists")) {
-                requestTopArtists(weakTimeRange.get(), weakLimit.get(), weakOffset.get());
+                // time range parameter is empty
+                if(weakTimeRange.get().equals("")) {
+                    // limit parameter is empty
+                    if(weakLimit.get().equals("")) {
+                        // offset parameter is empty
+                        if(weakOffset.get().equals("")) {
+                            // all query parameters are empty
+                            requestTopArtists(weakAccessToken.get(), null,
+                                    null, null);
+                        }
+                        // offset is not empty
+		                else {
+                            // all query parameters are empty except offset
+                            requestTopArtists(weakAccessToken.get(), null,
+                                    null, Integer.parseInt(weakOffset.get()));
+                        }
+                    }
+                    // limit parameter is not empty
+	                else {
+                        // offset parameter is empty
+                        if(weakOffset.get().equals("")) {
+                            // all parameters are empty except limit
+                            requestTopArtists(weakAccessToken.get(), null,
+                                    Integer.parseInt(weakLimit.get()), null);
+                        }
+                        // offset parameter is not empty
+		                else {
+                            // all parameters are empty except limit and offset
+                            requestTopArtists(weakAccessToken.get(), null,
+                                    Integer.parseInt(weakLimit.get()), Integer.parseInt(weakOffset.get()));
+                        }
+                    }
+                }
+                // time range parameter is not empty
+                else {
+                    // limit parameter is empty
+                    if(weakLimit.get().equals("")) {
+                        // offset parameter is empty
+                        if(weakOffset.get().equals("")) {
+                            // all parameters are empty except time range
+                            requestTopArtists(weakAccessToken.get(), weakTimeRange.get(),
+                                    null, null);
+                        }
+                        // offset parameter is not empty
+		                else {
+                            // all parameters are empty except time range and offset
+                            requestTopArtists(weakAccessToken.get(), weakTimeRange.get(),
+                                    null, Integer.parseInt(weakOffset.get()));
+                        }
+                    }
+                    // limit parameter is not empty
+	                else {
+                        // offset parameter is empty
+                        if(weakOffset.get().equals("")) {
+                            // all fields are empty except time range and limit
+                            requestTopArtists(weakAccessToken.get(), weakTimeRange.get(),
+                                    Integer.parseInt(weakLimit.get()), null);
+                        }
+                        // offset parameter is not empty
+		                else {
+                            // all parameters are full
+                            requestTopArtists(weakAccessToken.get(), weakTimeRange.get(),
+                                    Integer.parseInt(weakLimit.get()), Integer.parseInt(weakOffset.get()));
+                        }
+                    }
+                }
             }
+            // top tracks has been selected
             else if(weakType.get().equals("tracks")) {
-                requestTopTracks(weakTimeRange.get(), weakLimit.get(), weakOffset.get());
+                // time range parameter is empty
+                if(weakTimeRange.get().equals("")) {
+                    // limit parameter is empty
+                    if(weakLimit.get().equals("")) {
+                        // offset parameter is empty
+                        if(weakOffset.get().equals("")) {
+                            // all query parameters are empty
+                            requestTopTracks(weakAccessToken.get(), null,
+                                    null, null);
+                        }
+                        // offset is not empty
+                        else {
+                            // all query parameters are empty except offset
+                            requestTopTracks(weakAccessToken.get(), null,
+                                    null, Integer.parseInt(weakOffset.get()));
+                        }
+                    }
+                    // limit parameter is not empty
+                    else {
+                        // offset parameter is empty
+                        if(weakOffset.get().equals("")) {
+                            // all parameters are empty except limit
+                            requestTopTracks(weakAccessToken.get(), null,
+                                    Integer.parseInt(weakLimit.get()), null);
+                        }
+                        // offset parameter is not empty
+                        else {
+                            // all parameters are empty except limit and offset
+                            requestTopTracks(weakAccessToken.get(), null,
+                                    Integer.parseInt(weakLimit.get()), Integer.parseInt(weakOffset.get()));
+                        }
+                    }
+                }
+                // time range parameter is not empty
+                else {
+                    // limit parameter is empty
+                    if(weakLimit.get().equals("")) {
+                        // offset parameter is empty
+                        if(weakOffset.get().equals("")) {
+                            // all parameters are empty except time range
+                            requestTopTracks(weakAccessToken.get(), weakTimeRange.get(),
+                                    null, null);
+                        }
+                        // offset parameter is not empty
+                        else {
+                            // all parameters are empty except time range and offset
+                            requestTopTracks(weakAccessToken.get(), weakTimeRange.get(),
+                                    null, Integer.parseInt(weakOffset.get()));
+                        }
+                    }
+                    // limit parameter is not empty
+                    else {
+                        // offset parameter is empty
+                        if(weakOffset.get().equals("")) {
+                            // all fields are empty except time range and limit
+                            requestTopTracks(weakAccessToken.get(), weakTimeRange.get(),
+                                    Integer.parseInt(weakLimit.get()), null);
+                        }
+                        // offset parameter is not empty
+                        else {
+                            // all parameters are full
+                            requestTopTracks(weakAccessToken.get(), weakTimeRange.get(),
+                                    Integer.parseInt(weakLimit.get()), Integer.parseInt(weakOffset.get()));
+                        }
+                    }
+                }
             }
             return null;
         }
 
-        private void requestTopArtists(String timeRange, int limit, int offset) {
+        private void requestTopArtists(String mAccessToken, String timeRange, Integer limit, Integer offset) {
 
             // instantiate retrofit instance with base url
             Retrofit retrofit = RetrofitInstance.getRetrofit();
             GetDataService api = retrofit.create(GetDataService.class);
 
-            Call<Artist> call = api.getTopArtists(weakAccessToken.get(), timeRange, limit, offset);
+            Call<Artist> call = api.getTopArtists(mAccessToken, timeRange, limit, offset);
             Log.d(TAG, call.toString());
 
             call.enqueue(new Callback<Artist>() {
@@ -182,7 +305,7 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
                     if (response.isSuccessful()) {
                         // successful JSON response, create JSON response body and parse details
                         Artist artist = response.body();
-                        Log.d(TAG, response.body().toString());
+                        Log.d(TAG, artist.toString());
                     }
                     else {
                         // failed to parse data, throw exception
@@ -197,13 +320,13 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
             });
         }
 
-        private void requestTopTracks(String timeRange, int limit, int offset) {
+        private void requestTopTracks(String mAccessToken, String timeRange, Integer limit, Integer offset) {
 
             // instantiate retrofit instance with base url
             Retrofit retrofit = RetrofitInstance.getRetrofit();
             GetDataService api = retrofit.create(GetDataService.class);
 
-            Call<Track> call = api.getTopTracks(weakAccessToken.get(), timeRange, limit, offset);
+            Call<Track> call = api.getTopTracks(mAccessToken, timeRange, limit, offset);
             Log.d(TAG, call.toString());
 
             call.enqueue(new Callback<Track>() {
@@ -212,7 +335,7 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
                     if (response.isSuccessful()) {
                         // successful JSON response, create JSON response body and parse details
                         Track track = response.body();
-                        Log.d(TAG, response.body().toString());
+                        Log.d(TAG, track.toString());
                     }
                     else {
                         // failed to parse data, throw exception

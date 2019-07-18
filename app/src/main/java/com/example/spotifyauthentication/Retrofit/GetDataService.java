@@ -14,15 +14,15 @@ public interface GetDataService {
     Call<Artist> getTopArtists(
             @Header("Authorization") String accessToken,
             @Query("time_range") String timeRange,
-            @Query("limit") int limit,
-            @Query("offset") int offset
+            @Query("limit") Integer limit,
+            @Query("offset") Integer offset
     );
 
     @GET("tracks")
     Call<Track> getTopTracks(
             @Header("Authorization") String accessToken,
             @Query("time_range") String timeRange,
-            @Query("limit") int limit,
-            @Query("offset") int offset
+            @Query("limit") Integer limit,
+            @Query("offset") Integer offset
     );
 }
