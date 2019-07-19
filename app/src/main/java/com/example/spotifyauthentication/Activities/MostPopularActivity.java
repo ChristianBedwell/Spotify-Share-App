@@ -9,6 +9,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,14 +20,18 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.example.spotifyauthentication.Adapters.ArtistAdapter;
+import com.example.spotifyauthentication.Adapters.TrackAdapter;
 import com.example.spotifyauthentication.Models.Artists.Artist;
 import com.example.spotifyauthentication.Models.Tracks.Track;
+import com.example.spotifyauthentication.Models.Artists.Item;
 import com.example.spotifyauthentication.Retrofit.GetDataService;
 import com.example.spotifyauthentication.Retrofit.RetrofitInstance;
 import com.example.spotifyauthentication.CustomSpinner;
 import com.example.spotifyauthentication.R;
 
 import java.lang.ref.WeakReference;
+import java.util.List;
 import java.util.Locale;
 
 import retrofit2.Call;
@@ -33,12 +39,17 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-public class MostPopularActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class MostPopularActivity extends AppCompatActivity
+        implements AdapterView.OnItemSelectedListener {
 
     private String mAccessToken;
 
     private EditText limitEditText, offsetEditText;
     private Button submitButton;
+
+    private TrackAdapter trackAdapter;
+    private ArtistAdapter artistAdapter;
+    private RecyclerView recyclerView;
 
     // string and integer to hold query parameters
     public String type, timeRange;
@@ -60,10 +71,14 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
 
         // set title of action bar from default
         getSupportActionBar().setTitle(String.format(
-                Locale.US, "Spotify Analytics", com.spotify.sdk.android.authentication.BuildConfig.VERSION_NAME));
+                Locale.US, "Top Artists and Tracks",
+                com.spotify.sdk.android.authentication.BuildConfig.VERSION_NAME));
+
+        recyclerView = findViewById(R.id.card_recycler_view);
 
         // create array adapter to set items for type spinner
-        ArrayAdapter typeItemsAdapter = new ArrayAdapter<>(MostPopularActivity.this, R.layout.spinner_item_selected, typeItems);
+        ArrayAdapter typeItemsAdapter = new ArrayAdapter<>(MostPopularActivity.this,
+                R.layout.spinner_item_selected, typeItems);
         typeItemsAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
 
         // instantiate type spinner and set item selected listener
@@ -80,7 +95,8 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
         typeSpinner.setOnItemSelectedListener(this);
 
         // create array adapter to set items for time range spinner
-        ArrayAdapter timeRangeItemsAdapter = new ArrayAdapter<>(MostPopularActivity.this, R.layout.spinner_item_selected, timeRangeItems);
+        ArrayAdapter timeRangeItemsAdapter = new ArrayAdapter<>(MostPopularActivity.this,
+                R.layout.spinner_item_selected, timeRangeItems);
         timeRangeItemsAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
 
         // instantiate time range spinner and set item selected listener
@@ -125,7 +141,7 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
         // Do nothing
     }
 
-    private static class getData extends AsyncTask<Void, Void, Void> {
+    private class getData extends AsyncTask<Void, Void, Void> {
 
         // weak references for query parameters
         private WeakReference<String> weakAccessToken;
@@ -138,7 +154,9 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
         private String TAG = MostPopularActivity.class.getSimpleName();
 
         // getData() constructor
-        getData(String mAccessToken, String type, String timeRange, String strLimit, String strOffset) {
+        getData(String mAccessToken, String type, String timeRange,
+                String strLimit, String strOffset) {
+
             weakAccessToken = new WeakReference<>(mAccessToken);
             weakType = new WeakReference<>(type);
             weakTimeRange = new WeakReference<>(timeRange);
@@ -157,14 +175,14 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
                         // offset parameter is empty
                         if(weakOffset.get().equals("")) {
                             // all query parameters are empty
-                            requestTopArtists("Bearer " + weakAccessToken.get(), null,
-                                    null, null);
+                            requestTopArtists("Bearer " + weakAccessToken.get(),
+                                    null, null, null);
                         }
                         // offset is not empty
 		                else {
                             // all query parameters are empty except offset
-                            requestTopArtists("Bearer " + weakAccessToken.get(), null,
-                                    null, Integer.parseInt(weakOffset.get()));
+                            requestTopArtists("Bearer " + weakAccessToken.get(),
+                                    null, null, Integer.parseInt(weakOffset.get()));
                         }
                     }
                     // limit parameter is not empty
@@ -172,14 +190,16 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
                         // offset parameter is empty
                         if(weakOffset.get().equals("")) {
                             // all parameters are empty except limit
-                            requestTopArtists("Bearer " + weakAccessToken.get(), null,
-                                    Integer.parseInt(weakLimit.get()), null);
+                            requestTopArtists("Bearer " + weakAccessToken.get(),
+                                    null, Integer.parseInt(weakLimit.get()),
+                                    null);
                         }
                         // offset parameter is not empty
 		                else {
                             // all parameters are empty except limit and offset
-                            requestTopArtists("Bearer " + weakAccessToken.get(), null,
-                                    Integer.parseInt(weakLimit.get()), Integer.parseInt(weakOffset.get()));
+                            requestTopArtists("Bearer " + weakAccessToken.get(),
+                                    null, Integer.parseInt(weakLimit.get()),
+                                    Integer.parseInt(weakOffset.get()));
                         }
                     }
                 }
@@ -190,14 +210,15 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
                         // offset parameter is empty
                         if(weakOffset.get().equals("")) {
                             // all parameters are empty except time range
-                            requestTopArtists("Bearer " + weakAccessToken.get(), weakTimeRange.get(),
-                                    null, null);
+                            requestTopArtists("Bearer " + weakAccessToken.get(),
+                                    weakTimeRange.get(), null, null);
                         }
                         // offset parameter is not empty
 		                else {
                             // all parameters are empty except time range and offset
-                            requestTopArtists("Bearer " + weakAccessToken.get(), weakTimeRange.get(),
-                                    null, Integer.parseInt(weakOffset.get()));
+                            requestTopArtists("Bearer " + weakAccessToken.get(),
+                                    weakTimeRange.get(), null,
+                                    Integer.parseInt(weakOffset.get()));
                         }
                     }
                     // limit parameter is not empty
@@ -205,14 +226,16 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
                         // offset parameter is empty
                         if(weakOffset.get().equals("")) {
                             // all fields are empty except time range and limit
-                            requestTopArtists("Bearer " + weakAccessToken.get(), weakTimeRange.get(),
-                                    Integer.parseInt(weakLimit.get()), null);
+                            requestTopArtists("Bearer " + weakAccessToken.get(),
+                                    weakTimeRange.get(), Integer.parseInt(weakLimit.get()),
+                                    null);
                         }
                         // offset parameter is not empty
 		                else {
                             // all parameters are full
-                            requestTopArtists("Bearer " + weakAccessToken.get(), weakTimeRange.get(),
-                                    Integer.parseInt(weakLimit.get()), Integer.parseInt(weakOffset.get()));
+                            requestTopArtists("Bearer " + weakAccessToken.get(),
+                                    weakTimeRange.get(), Integer.parseInt(weakLimit.get()),
+                                    Integer.parseInt(weakOffset.get()));
                         }
                     }
                 }
@@ -226,14 +249,14 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
                         // offset parameter is empty
                         if(weakOffset.get().equals("")) {
                             // all query parameters are empty
-                            requestTopTracks("Bearer " + weakAccessToken.get(), null,
-                                    null, null);
+                            requestTopTracks("Bearer " + weakAccessToken.get(),
+                                    null, null, null);
                         }
                         // offset is not empty
                         else {
                             // all query parameters are empty except offset
-                            requestTopTracks("Bearer " + weakAccessToken.get(), null,
-                                    null, Integer.parseInt(weakOffset.get()));
+                            requestTopTracks("Bearer " + weakAccessToken.get(),
+                                    null, null, Integer.parseInt(weakOffset.get()));
                         }
                     }
                     // limit parameter is not empty
@@ -241,14 +264,16 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
                         // offset parameter is empty
                         if(weakOffset.get().equals("")) {
                             // all parameters are empty except limit
-                            requestTopTracks("Bearer " + weakAccessToken.get(), null,
-                                    Integer.parseInt(weakLimit.get()), null);
+                            requestTopTracks("Bearer " + weakAccessToken.get(),
+                                    null, Integer.parseInt(weakLimit.get()),
+                                    null);
                         }
                         // offset parameter is not empty
                         else {
                             // all parameters are empty except limit and offset
-                            requestTopTracks("Bearer " + weakAccessToken.get(), null,
-                                    Integer.parseInt(weakLimit.get()), Integer.parseInt(weakOffset.get()));
+                            requestTopTracks("Bearer " + weakAccessToken.get(),
+                                    null, Integer.parseInt(weakLimit.get()),
+                                    Integer.parseInt(weakOffset.get()));
                         }
                     }
                 }
@@ -259,14 +284,15 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
                         // offset parameter is empty
                         if(weakOffset.get().equals("")) {
                             // all parameters are empty except time range
-                            requestTopTracks("Bearer " + weakAccessToken.get(), weakTimeRange.get(),
-                                    null, null);
+                            requestTopTracks("Bearer " + weakAccessToken.get(),
+                                    weakTimeRange.get(), null, null);
                         }
                         // offset parameter is not empty
                         else {
                             // all parameters are empty except time range and offset
-                            requestTopTracks("Bearer " + weakAccessToken.get(), weakTimeRange.get(),
-                                    null, Integer.parseInt(weakOffset.get()));
+                            requestTopTracks("Bearer " + weakAccessToken.get(),
+                                    weakTimeRange.get(), null,
+                                    Integer.parseInt(weakOffset.get()));
                         }
                     }
                     // limit parameter is not empty
@@ -274,14 +300,16 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
                         // offset parameter is empty
                         if(weakOffset.get().equals("")) {
                             // all fields are empty except time range and limit
-                            requestTopTracks("Bearer " + weakAccessToken.get(), weakTimeRange.get(),
-                                    Integer.parseInt(weakLimit.get()), null);
+                            requestTopTracks("Bearer " + weakAccessToken.get(),
+                                    weakTimeRange.get(), Integer.parseInt(weakLimit.get()),
+                                    null);
                         }
                         // offset parameter is not empty
                         else {
                             // all parameters are full
-                            requestTopTracks("Bearer " + weakAccessToken.get(), weakTimeRange.get(),
-                                    Integer.parseInt(weakLimit.get()), Integer.parseInt(weakOffset.get()));
+                            requestTopTracks("Bearer " + weakAccessToken.get(),
+                                    weakTimeRange.get(), Integer.parseInt(weakLimit.get()),
+                                    Integer.parseInt(weakOffset.get()));
                         }
                     }
                 }
@@ -289,7 +317,8 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
             return null;
         }
 
-        private void requestTopArtists(String mAccessToken, String timeRange, Integer limit, Integer offset) {
+        private void requestTopArtists(String mAccessToken, String timeRange,
+                                       final Integer limit, Integer offset) {
 
             // instantiate retrofit instance with base url
             Retrofit retrofit = RetrofitInstance.getRetrofit();
@@ -303,8 +332,10 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
                 public void onResponse(@NonNull Call <Artist> call, @NonNull Response <Artist> response) {
                     if (response.isSuccessful()) {
                         // successful JSON response, create JSON response body and parse details
-                        Artist artist = response.body();
-                        Log.d(TAG, artist.toString());
+                        if(response.body() != null) {
+                            List<com.example.spotifyauthentication.Models.Artists.Item> artistItems = response.body().getItems();
+                            setUpArtistRecycler(artistItems);
+                        }
                     }
                     else {
                         // failed to parse data, throw exception
@@ -333,8 +364,10 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
                 public void onResponse(@NonNull Call <Track> call, @NonNull Response <Track> response) {
                     if (response.isSuccessful()) {
                         // successful JSON response, create JSON response body and parse details
-                        Track track = response.body();
-                        Log.d(TAG, track.toString());
+                        if(response.body() != null) {
+                            List<com.example.spotifyauthentication.Models.Tracks.Item> trackItems = response.body().getItems();
+                            setUpTrackRecycler(trackItems);
+                        }
                     }
                     else {
                         // failed to parse data, throw exception
@@ -348,6 +381,18 @@ public class MostPopularActivity extends AppCompatActivity implements AdapterVie
                 }
             });
         }
+    }
+
+    private void setUpArtistRecycler(List<com.example.spotifyauthentication.Models.Artists.Item> items) {
+        artistAdapter = new ArtistAdapter(MostPopularActivity.this, items);
+        recyclerView.setAdapter(artistAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
+    }
+
+    private void setUpTrackRecycler(List<com.example.spotifyauthentication.Models.Tracks.Item> items) {
+        trackAdapter = new TrackAdapter(MostPopularActivity.this, items);
+        recyclerView.setLayoutManager(new LinearLayoutManager(MostPopularActivity.this, LinearLayoutManager.VERTICAL, false));
+        recyclerView.setAdapter(trackAdapter);
     }
 
     // retrieve access token from shared preferences
