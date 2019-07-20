@@ -383,12 +383,14 @@ public class MostPopularActivity extends AppCompatActivity
         }
     }
 
+    // set up artist recycler view using list of items
     private void setUpArtistRecycler(List<com.example.spotifyauthentication.Models.Artists.Item> items) {
         artistAdapter = new ArtistAdapter(MostPopularActivity.this, items);
-        recyclerView.setAdapter(artistAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
+        recyclerView.setAdapter(artistAdapter);
     }
 
+    // set up artist recycler view using list of items
     private void setUpTrackRecycler(List<com.example.spotifyauthentication.Models.Tracks.Item> items) {
         trackAdapter = new TrackAdapter(MostPopularActivity.this, items);
         recyclerView.setLayoutManager(new LinearLayoutManager(MostPopularActivity.this, LinearLayoutManager.VERTICAL, false));
@@ -403,7 +405,11 @@ public class MostPopularActivity extends AppCompatActivity
 
     // refresh current results displayed to user
     public void refreshResults() {
-        // TODO Auto-generated method stub
+        String strLimit = limitEditText.getText().toString();
+        String strOffset = offsetEditText.getText().toString();
+
+        // use parameters to build JSON request
+        new getData(mAccessToken, type, timeRange, strLimit, strOffset).execute();
     }
 
     // inflates the app bar menu and adds items to the action bar

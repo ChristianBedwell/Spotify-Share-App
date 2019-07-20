@@ -1,6 +1,65 @@
-<?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<android.support.v7.widget.CardView
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    card_view:cardBackgroundColor="#FAFAFA"
+    card_view:cardCornerRadius="0dp"
+    card_view:cardElevation="1dp"
+    card_view:cardUseCompatPadding="true"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-</android.support.constraint.ConstraintLayout>
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/artist_picture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_alignParentTop="true"/>
+
+        <TextView
+            android:id="@+id/artist_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/artist_name_placeholder"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_below="@+id/artist_picture"
+            android:layout_marginLeft="5dp"/>
+
+        <TextView
+            android:id="@+id/artist_followers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="5dp"
+            android:text="@string/artist_followers_placeholder"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:layout_below="@+id/artist_name"
+            android:layout_marginLeft="5dp"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_alignRight="@+id/artist_name"
+            android:layout_alignTop="@+id/artist_followers"
+            android:layout_alignBottom="@+id/artist_followers"
+            android:layout_alignParentEnd="true">
+
+            <RatingBar
+                android:id="@+id/artist_popularity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                style="?android:attr/ratingBarStyleSmall"
+                android:textColor="#FFFFFF"/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</android.support.v7.widget.CardView>
+

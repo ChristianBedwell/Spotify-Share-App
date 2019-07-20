@@ -32,12 +32,13 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'
     implementation 'com.squareup.okhttp3:okhttp:3.11.0'
 
+    // Picasso for loading images
     implementation 'com.squareup.picasso:picasso:2.71828'
 
     // Spotify authentication library
     implementation 'com.spotify.android:auth:1.1.0'
 
-    // logging network calls
+    // interceptor for logging network calls
     implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
 
     testImplementation 'junit:junit:4.12'

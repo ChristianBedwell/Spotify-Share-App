@@ -22,6 +22,12 @@
             </intent-filter>
         </activity>
         <activity android:name=".Activities.MostPopularActivity" />
+        <activity android:name=".Activities.TrackDetailActivity"
+            android:parentActivityName=".Activities.MostPopularActivity">
+            <meta-data android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Activities.MostPopularActivity"/>
+        </activity>
+
     </application>
 
 </manifest>

@@ -188,7 +188,7 @@
             android:layout_marginRight="8dp"
             android:textColor="#FFFFFF"
             android:layout_gravity="center_horizontal"
-            android:background="@drawable/rounded_button"
+            android:background="@drawable/green_rounded_button"
             android:text="@string/submit_button_text"/>
 
     </LinearLayout>
