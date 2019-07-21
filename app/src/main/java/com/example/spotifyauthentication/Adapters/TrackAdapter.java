@@ -7,7 +7,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -52,7 +51,6 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
 
         ImageView trackImage;
         TextView trackName, trackArtist;
-        Button playButton, shareButton;
 
         public TrackViewHolder(View itemView) {
             super(itemView);
@@ -61,8 +59,6 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
             trackImage = (ImageView) itemView.findViewById(R.id.track_picture);
             trackName = (TextView) itemView.findViewById(R.id.track_name);
             trackArtist = (TextView) itemView.findViewById(R.id.track_artist);
-            playButton = (Button) itemView.findViewById(R.id.play_button);
-            shareButton = (Button) itemView.findViewById(R.id.share_button);
 
             itemView.setOnClickListener(this);
         }

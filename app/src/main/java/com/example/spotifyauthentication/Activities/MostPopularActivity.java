@@ -24,7 +24,6 @@ import com.example.spotifyauthentication.Adapters.ArtistAdapter;
 import com.example.spotifyauthentication.Adapters.TrackAdapter;
 import com.example.spotifyauthentication.Models.Artists.Artist;
 import com.example.spotifyauthentication.Models.Tracks.Track;
-import com.example.spotifyauthentication.Models.Artists.Item;
 import com.example.spotifyauthentication.Retrofit.GetDataService;
 import com.example.spotifyauthentication.Retrofit.RetrofitInstance;
 import com.example.spotifyauthentication.CustomSpinner;
@@ -49,7 +48,9 @@ public class MostPopularActivity extends AppCompatActivity
 
     private TrackAdapter trackAdapter;
     private ArtistAdapter artistAdapter;
+
     private RecyclerView recyclerView;
+    private RecyclerView.LayoutManager layoutManager;
 
     // string and integer to hold query parameters
     public String type, timeRange;
@@ -386,14 +387,16 @@ public class MostPopularActivity extends AppCompatActivity
     // set up artist recycler view using list of items
     private void setUpArtistRecycler(List<com.example.spotifyauthentication.Models.Artists.Item> items) {
         artistAdapter = new ArtistAdapter(MostPopularActivity.this, items);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
+        layoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(artistAdapter);
     }
 
     // set up artist recycler view using list of items
     private void setUpTrackRecycler(List<com.example.spotifyauthentication.Models.Tracks.Item> items) {
         trackAdapter = new TrackAdapter(MostPopularActivity.this, items);
-        recyclerView.setLayoutManager(new LinearLayoutManager(MostPopularActivity.this, LinearLayoutManager.VERTICAL, false));
+        layoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(trackAdapter);
     }
 

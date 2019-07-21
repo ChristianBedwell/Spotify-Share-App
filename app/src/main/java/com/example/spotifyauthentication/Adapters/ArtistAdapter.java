@@ -14,7 +14,6 @@ import com.example.spotifyauthentication.Models.Artists.Item;
 import com.example.spotifyauthentication.R;
 import com.squareup.picasso.Picasso;
 
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
 
@@ -40,11 +39,11 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.ArtistView
        Picasso.get().load(artistItems.get(position).getImages().get(0).getUrl()).into(artistViewHolder.artistImage);
        artistViewHolder.artistName.setText(artistItems.get(position).getName());
 
-       NumberFormat myFormat = NumberFormat.getInstance();
-       myFormat.setGroupingUsed(true);
+       NumberFormat numberFormat = NumberFormat.getInstance();
+       numberFormat.setGroupingUsed(true);
 
        int number = artistItems.get(position).getFollowers().getTotal();
-       String formatFollowerCount = myFormat.format(number);
+       String formatFollowerCount = numberFormat.format(number);
 
        artistViewHolder.artistFollowers.setText(new StringBuilder().append(mContext.getString(R.string.follower_count)).append(": ").append(formatFollowerCount));
        artistViewHolder.artistPopularity.setRating((float) (artistItems.get(position).getPopularity()) / 20);
