@@ -71,6 +71,7 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
             detailIntent.putExtra("track_artist", trackItem.getArtists().get(0).getName());
             detailIntent.putExtra("track_uri", trackItem.getUri());
             detailIntent.putExtra("image_resource", trackItem.getAlbum().getImages().get(0).getUrl());
+            detailIntent.putExtra("share_link", trackItem.getExternalUrls().getSpotify());
             mContext.startActivity(detailIntent);
         }
     }

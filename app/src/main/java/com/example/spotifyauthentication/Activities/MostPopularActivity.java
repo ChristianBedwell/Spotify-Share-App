@@ -415,26 +415,6 @@ public class MostPopularActivity extends AppCompatActivity
         new getData(mAccessToken, type, timeRange, strLimit, strOffset).execute();
     }
 
-    // inflates the app bar menu and adds items to the action bar
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_most_popular, menu);
-        return true;
-    }
-
-    // if refresh app bar icon is clicked, refresh query results
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_refresh:
-                refreshResults();
-                return true;
-            default:
-                // Do nothing
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     // checks for spinner items selected for each spinner
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
