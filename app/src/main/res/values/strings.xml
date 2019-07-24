@@ -31,5 +31,6 @@
     <string name="artist_name_placeholder">Artist Name</string>
     <string name="artist_followers_placeholder">Artist Followers</string>
     <string name="follower_count"> Followers</string>
+    <string name="track_ranking">#</string>
 
 </resources>

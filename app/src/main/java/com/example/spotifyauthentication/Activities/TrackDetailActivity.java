@@ -23,7 +23,7 @@ import java.util.Locale;
 public class TrackDetailActivity extends AppCompatActivity {
 
     // declare constants
-    public static final String CLIENT_ID = "cd58168e38d84c43b7433d471d1c5942";
+    public static final String CLIENT_ID = "clientid";
     private static SpotifyAppRemote mSpotifyAppRemote;
     private static final String TAG = TrackDetailActivity.class.getSimpleName();
 
@@ -51,11 +51,11 @@ public class TrackDetailActivity extends AppCompatActivity {
 
         trackUri = getIntent().getStringExtra("track_uri");
         Log.d(TAG, getIntent().getStringExtra("track_uri"));
-        shareLink = getIntent().getStringExtra("share_link");
-        Log.d(TAG, getIntent().getStringExtra("share_link"));
+        shareLink = getIntent().getStringExtra("track_share_link");
+        Log.d(TAG, getIntent().getStringExtra("track_share_link"));
         trackName.setText(getIntent().getStringExtra("track_name"));
         trackArtist.setText(getIntent().getStringExtra("track_artist"));
-        Picasso.get().load(getIntent().getStringExtra("image_resource")).into(trackImage);
+        Picasso.get().load(getIntent().getStringExtra("track_image_resource")).into(trackImage);
 
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override

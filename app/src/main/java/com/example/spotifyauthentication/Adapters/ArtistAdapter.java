@@ -1,6 +1,7 @@
 package com.example.spotifyauthentication.Adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.example.spotifyauthentication.Activities.ArtistDetailActivity;
 import com.example.spotifyauthentication.Models.Artists.Item;
 import com.example.spotifyauthentication.R;
 import com.squareup.picasso.Picasso;
@@ -54,7 +56,7 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.ArtistView
         return artistItems.size();
     }
 
-    public static class ArtistViewHolder extends RecyclerView.ViewHolder {
+    public class ArtistViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         ImageView artistImage;
         TextView artistName, artistFollowers;
@@ -68,6 +70,29 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.ArtistView
             artistName = (TextView) itemView.findViewById(R.id.artist_name);
             artistFollowers = (TextView) itemView.findViewById(R.id.artist_followers);
             artistPopularity = (RatingBar) itemView.findViewById(R.id.artist_popularity);
+
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            NumberFormat numberFormat = NumberFormat.getInstance();
+            numberFormat.setGroupingUsed(true);
+
+            int number = artistItems.get(getAdapterPosition()).getFollowers().getTotal();
+            String formatFollowerCount = numberFormat.format(number);
+            String formatFollowerString = (new StringBuilder().
+                    append(mContext.getString(R.string.follower_count)).
+                    append(": ").append(formatFollowerCount)).toString();
+
+            Item artistItem = artistItems.get(getAdapterPosition());
+            Intent detailIntent = new Intent(mContext, ArtistDetailActivity.class);
+
+            detailIntent.putExtra("artist_name", artistItem.getName());
+            detailIntent.putExtra("artist_followers", formatFollowerString);
+            detailIntent.putExtra("artist_image_resource", artistItem.getImages().get(0).getUrl());
+            detailIntent.putExtra("artist_share_link", artistItem.getExternalUrls().getSpotify());
+            mContext.startActivity(detailIntent);
         }
     }
 }

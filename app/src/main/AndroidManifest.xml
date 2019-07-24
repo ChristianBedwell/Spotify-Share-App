@@ -23,6 +23,7 @@
         </activity>
         <activity android:name=".Activities.MostPopularActivity" />
         <activity android:name=".Activities.TrackDetailActivity" />
+        <activity android:name=".Activities.ArtistDetailActivity" />
     </application>
 
 </manifest>

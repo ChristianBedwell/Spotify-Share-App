@@ -7,13 +7,12 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -51,6 +50,7 @@ public class MostPopularActivity extends AppCompatActivity
 
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
+    private SwipeRefreshLayout swipeContainer;
 
     // string and integer to hold query parameters
     public String type, timeRange;
@@ -60,7 +60,7 @@ public class MostPopularActivity extends AppCompatActivity
 
     // define the list of items that will appear in the type and time range spinner
     String[] typeItems = {"Artists", "Tracks"};
-    String[] timeRangeItems = {"Medium Term", "Short Term", "Long Term"};
+    String[] timeRangeItems = {"None", "Short Term", "Medium Term", "Long Term"};
 
     // tag for debugging logcat entries
     private String TAG = MostPopularActivity.class.getSimpleName();
@@ -76,6 +76,19 @@ public class MostPopularActivity extends AppCompatActivity
                 com.spotify.sdk.android.authentication.BuildConfig.VERSION_NAME));
 
         recyclerView = findViewById(R.id.card_recycler_view);
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // get parameter strings from edit text fields
+                String strLimit = limitEditText.getText().toString();
+                String strOffset = offsetEditText.getText().toString();
+
+                // use parameters to build JSON request
+                new getData(mAccessToken, type, timeRange, strLimit, strOffset).execute();
+                swipeContainer.setRefreshing(false);
+            }
+        });
 
         // create array adapter to set items for type spinner
         ArrayAdapter typeItemsAdapter = new ArrayAdapter<>(MostPopularActivity.this,
@@ -133,6 +146,8 @@ public class MostPopularActivity extends AppCompatActivity
 
                 // use parameters to build JSON request
                 new getData(mAccessToken, type, timeRange, strLimit, strOffset).execute();
+                submitButton.setVisibility(View.INVISIBLE);
+                swipeContainer.setRefreshing(false);
             }
         });
     }
@@ -363,8 +378,8 @@ public class MostPopularActivity extends AppCompatActivity
             call.enqueue(new Callback<Track>() {
                 @Override
                 public void onResponse(@NonNull Call <Track> call, @NonNull Response <Track> response) {
+                    // successful JSON response, create JSON response body and parse details
                     if (response.isSuccessful()) {
-                        // successful JSON response, create JSON response body and parse details
                         if(response.body() != null) {
                             List<com.example.spotifyauthentication.Models.Tracks.Item> trackItems = response.body().getItems();
                             setUpTrackRecycler(trackItems);
@@ -432,7 +447,12 @@ public class MostPopularActivity extends AppCompatActivity
                 }
                 break;
             case R.id.timeRangeSpinner:
-                if(parent.getItemAtPosition(position).toString().equals("Short Term")) {
+                if(parent.getItemAtPosition(position).toString().equals("None")) {
+                    timeRange = "";
+                    Log.d(TAG, "spinner item not selected");
+                    break;
+                }
+                else if(parent.getItemAtPosition(position).toString().equals("Short Term")) {
                     timeRange = "short_term";
                     Log.d(TAG, timeRange + " selected");
                     break;

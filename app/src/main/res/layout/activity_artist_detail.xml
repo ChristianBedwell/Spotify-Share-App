@@ -12,7 +12,7 @@
         tools:context="com.example.spotifyauthentication.Activities.TrackDetailActivity">
 
         <ImageView
-            android:id="@+id/track_detail_image"
+            android:id="@+id/artist_detail_image"
             android:layout_width="225dp"
             android:layout_height="225dp"
             android:layout_alignParentTop="true"
@@ -22,24 +22,24 @@
             android:adjustViewBounds="true" />
 
         <TextView
-            android:id="@+id/track_detail_name"
+            android:id="@+id/artist_detail_name"
             style="@style/TextAppearance.AppCompat.Headline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/track_detail_image"
+            android:layout_below="@+id/artist_detail_image"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="5dp"
-            android:text="@string/track_name_placeholder"
+            android:text="@string/artist_name_placeholder"
             android:theme="@style/ThemeOverlay.AppCompat.Light" />
 
         <TextView
-            android:id="@+id/track_detail_artist"
+            android:id="@+id/artist_detail_followers"
             style="@style/TextAppearance.AppCompat.Subhead"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/track_detail_name"
+            android:layout_below="@+id/artist_detail_name"
             android:layout_centerHorizontal="true"
-            android:text="@string/track_artist_placeholder"
+            android:text="@string/artist_followers_placeholder"
             android:textColor="?android:textColorSecondary" />
 
         <View
@@ -47,7 +47,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="10dp"
-            android:layout_below="@+id/track_detail_artist"
+            android:layout_below="@+id/artist_detail_followers"
             android:background="#D3D3D3"/>
 
         <RelativeLayout
@@ -55,29 +55,18 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_centerHorizontal="true"
-            android:layout_alignStart="@+id/track_detail_image"
-            android:layout_alignEnd="@+id/track_detail_image"
+            android:layout_alignStart="@+id/artist_detail_image"
+            android:layout_alignEnd="@+id/artist_detail_image"
             android:layout_marginTop="10dp"
             android:layout_below="@+id/line">
-
-            <Button
-                android:id="@+id/play_button"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="20dp"
-                android:layout_alignParentStart="true"
-                android:background="@drawable/green_rounded_button"
-                android:textColor="#FFFFFF"
-                android:text="@string/play_button"/>
 
             <Button
                 android:id="@+id/share_button"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@+id/play_button"
-                android:layout_alignParentEnd="true"
+                android:layout_centerHorizontal="true"
                 android:background="@drawable/black_rounded_button"
-                android:textColor="#000000"
+                android:textColor="@android:color/black"
                 android:text="@string/share_button" />
 
         </RelativeLayout>

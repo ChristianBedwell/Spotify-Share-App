@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.example.spotifyauthentication.Activities.TrackDetailActivity;
@@ -39,6 +40,7 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
         Picasso.get().load(trackItems.get(position).getAlbum().getImages().get(0).getUrl()).into(trackViewHolder.trackImage);
         trackViewHolder.trackArtist.setText(trackItems.get(position).getArtists().get(0).getName());
         trackViewHolder.trackName.setText(trackItems.get(position).getName());
+        trackViewHolder.trackPopularity.setRating((float) (trackItems.get(position).getPopularity()) / 20);
     }
 
     @Override
@@ -51,6 +53,7 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
 
         ImageView trackImage;
         TextView trackName, trackArtist;
+        RatingBar trackPopularity;
 
         public TrackViewHolder(View itemView) {
             super(itemView);
@@ -59,6 +62,7 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
             trackImage = (ImageView) itemView.findViewById(R.id.track_picture);
             trackName = (TextView) itemView.findViewById(R.id.track_name);
             trackArtist = (TextView) itemView.findViewById(R.id.track_artist);
+            trackPopularity = (RatingBar) itemView.findViewById(R.id.track_popularity);
 
             itemView.setOnClickListener(this);
         }
@@ -70,8 +74,8 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
             detailIntent.putExtra("track_name", trackItem.getName());
             detailIntent.putExtra("track_artist", trackItem.getArtists().get(0).getName());
             detailIntent.putExtra("track_uri", trackItem.getUri());
-            detailIntent.putExtra("image_resource", trackItem.getAlbum().getImages().get(0).getUrl());
-            detailIntent.putExtra("share_link", trackItem.getExternalUrls().getSpotify());
+            detailIntent.putExtra("track_image_resource", trackItem.getAlbum().getImages().get(0).getUrl());
+            detailIntent.putExtra("track_share_link", trackItem.getExternalUrls().getSpotify());
             mContext.startActivity(detailIntent);
         }
     }
