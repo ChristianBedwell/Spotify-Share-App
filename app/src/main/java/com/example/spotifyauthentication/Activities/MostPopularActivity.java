@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -31,6 +32,7 @@ import com.example.spotifyauthentication.R;
 import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -51,12 +53,14 @@ public class MostPopularActivity extends AppCompatActivity
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private SwipeRefreshLayout swipeContainer;
+    Bundle bundle;
 
     // string and integer to hold query parameters
     public String type, timeRange;
 
     // key for access token
     private final String TOKEN_KEY = "token";
+    private final String RECYCLER_STATE_KEY = "recycler_state";
 
     // define the list of items that will appear in the type and time range spinner
     String[] typeItems = {"Artists", "Tracks"};
@@ -75,7 +79,7 @@ public class MostPopularActivity extends AppCompatActivity
                 Locale.US, "Top Artists and Tracks",
                 com.spotify.sdk.android.authentication.BuildConfig.VERSION_NAME));
 
-        recyclerView = findViewById(R.id.card_recycler_view);
+        recyclerView = (RecyclerView) findViewById(R.id.card_recycler_view);
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -333,6 +337,7 @@ public class MostPopularActivity extends AppCompatActivity
             return null;
         }
 
+        // send API request for top artists
         private void requestTopArtists(String mAccessToken, String timeRange,
                                        final Integer limit, Integer offset) {
 
@@ -366,6 +371,7 @@ public class MostPopularActivity extends AppCompatActivity
             });
         }
 
+        // send API request for top tracks
         private void requestTopTracks(String mAccessToken, String timeRange, Integer limit, Integer offset) {
 
             // instantiate retrofit instance with base url
@@ -415,19 +421,31 @@ public class MostPopularActivity extends AppCompatActivity
         recyclerView.setAdapter(trackAdapter);
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // save RecyclerView state
+        bundle = new Bundle();
+        Parcelable listState = Objects.requireNonNull(recyclerView.getLayoutManager()).onSaveInstanceState();
+        bundle.putParcelable(RECYCLER_STATE_KEY, listState);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // restore RecyclerView state
+        if (bundle != null) {
+            Parcelable listState = bundle.getParcelable(RECYCLER_STATE_KEY);
+            Objects.requireNonNull(recyclerView.getLayoutManager()).onRestoreInstanceState(listState);
+        }
+    }
+
     // retrieve access token from shared preferences
     public static String getDefaults(String key, Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         return preferences.getString(key, null);
-    }
-
-    // refresh current results displayed to user
-    public void refreshResults() {
-        String strLimit = limitEditText.getText().toString();
-        String strOffset = offsetEditText.getText().toString();
-
-        // use parameters to build JSON request
-        new getData(mAccessToken, type, timeRange, strLimit, strOffset).execute();
     }
 
     // checks for spinner items selected for each spinner

@@ -32,5 +32,6 @@
     <string name="artist_followers_placeholder">Artist Followers</string>
     <string name="follower_count"> Followers</string>
     <string name="track_ranking">#</string>
+    <string name="track_year_placeholder">Track Year</string>
 
 </resources>

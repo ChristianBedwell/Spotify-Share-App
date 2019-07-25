@@ -32,22 +32,51 @@
             android:text="@string/track_name_placeholder"
             android:theme="@style/ThemeOverlay.AppCompat.Light" />
 
-        <TextView
-            android:id="@+id/track_detail_artist"
-            style="@style/TextAppearance.AppCompat.Subhead"
+        <RelativeLayout
+            android:id="@+id/secondary_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/track_detail_name"
-            android:layout_centerHorizontal="true"
-            android:text="@string/track_artist_placeholder"
-            android:textColor="?android:textColorSecondary" />
+            android:layout_centerHorizontal="true">
+
+            <TextView
+                android:id="@+id/track_detail_artist"
+                style="@style/TextAppearance.AppCompat.Subhead"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:text="@string/track_artist_placeholder"
+                android:textColor="?android:textColorSecondary"/>
+
+            <TextView
+                android:id="@+id/separator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:layout_alignTop="@+id/track_detail_artist"
+                android:layout_alignBottom="@+id/track_detail_artist"
+                android:layout_toEndOf="@+id/track_detail_artist"
+                android:text="|"/>
+
+            <TextView
+                android:id="@+id/track_detail_year"
+                style="@style/TextAppearance.AppCompat.Subhead"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/separator"
+                android:layout_alignBottom="@+id/separator"
+                android:layout_toEndOf="@+id/separator"
+                android:text="@string/track_year_placeholder"
+                android:textColor="?android:textColorSecondary" />
+
+        </RelativeLayout>
 
         <View
             android:id="@+id/line"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="10dp"
-            android:layout_below="@+id/track_detail_artist"
+            android:layout_below="@+id/secondary_text"
             android:background="#D3D3D3"/>
 
         <RelativeLayout
@@ -77,7 +106,7 @@
                 android:layout_toRightOf="@+id/play_button"
                 android:layout_alignParentEnd="true"
                 android:background="@drawable/black_rounded_button"
-                android:textColor="#000000"
+                android:textColor="#656565"
                 android:text="@string/share_button" />
 
         </RelativeLayout>

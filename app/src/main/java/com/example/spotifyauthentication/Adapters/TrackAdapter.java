@@ -40,6 +40,7 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
         Picasso.get().load(trackItems.get(position).getAlbum().getImages().get(0).getUrl()).into(trackViewHolder.trackImage);
         trackViewHolder.trackArtist.setText(trackItems.get(position).getArtists().get(0).getName());
         trackViewHolder.trackName.setText(trackItems.get(position).getName());
+        trackViewHolder.trackYear.setText(trackItems.get(position).getAlbum().getReleaseDate().substring(0,4));
         trackViewHolder.trackPopularity.setRating((float) (trackItems.get(position).getPopularity()) / 20);
     }
 
@@ -52,7 +53,7 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
             implements View.OnClickListener{
 
         ImageView trackImage;
-        TextView trackName, trackArtist;
+        TextView trackName, trackYear, trackArtist;
         RatingBar trackPopularity;
 
         public TrackViewHolder(View itemView) {
@@ -61,6 +62,7 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
             // initialize the views
             trackImage = (ImageView) itemView.findViewById(R.id.track_picture);
             trackName = (TextView) itemView.findViewById(R.id.track_name);
+            trackYear = (TextView) itemView.findViewById(R.id.track_year);
             trackArtist = (TextView) itemView.findViewById(R.id.track_artist);
             trackPopularity = (RatingBar) itemView.findViewById(R.id.track_popularity);
 
@@ -72,6 +74,7 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
             Item trackItem = trackItems.get(getAdapterPosition());
             Intent detailIntent = new Intent(mContext, TrackDetailActivity.class);
             detailIntent.putExtra("track_name", trackItem.getName());
+            detailIntent.putExtra("track_year", trackItem.getAlbum().getReleaseDate().substring(0,4));
             detailIntent.putExtra("track_artist", trackItem.getArtists().get(0).getName());
             detailIntent.putExtra("track_uri", trackItem.getUri());
             detailIntent.putExtra("track_image_resource", trackItem.getAlbum().getImages().get(0).getUrl());

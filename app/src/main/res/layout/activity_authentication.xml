@@ -39,7 +39,8 @@
             android:layout_marginRight="8dp"
             android:text="@string/authentication_prompt_title"
             android:textStyle="bold"
-            android:textColor="#1E1E1E"
+            android:textColor="@android:color/black"
+            android:alpha=".87"
             android:textSize="14sp"/>
 
         <ScrollView
@@ -54,7 +55,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/authentication_prompt"
-                android:textColor="#1E1E1E"
+                android:textColor="@android:color/black"
+                android:alpha=".87"
                 android:textSize="14sp"/>
 
         </ScrollView>
@@ -66,7 +68,8 @@
             android:layout_marginTop="10dp"
             android:layout_marginLeft="1dp"
             android:text="@string/checkbox_text"
-            android:textColor="#1E1E1E"/>
+            android:textColor="@android:color/black"
+            android:alpha=".87"/>
 
         <Button
             android:id="@+id/authentication_button"

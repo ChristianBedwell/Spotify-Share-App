@@ -15,15 +15,24 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
 
-        <activity android:name=".Activities.AuthenticationActivity">
+        <activity
+            android:name=".Activities.AuthenticationActivity"
+            android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activities.MostPopularActivity" />
-        <activity android:name=".Activities.TrackDetailActivity" />
-        <activity android:name=".Activities.ArtistDetailActivity" />
+        <activity
+            android:name=".Activities.MostPopularActivity"
+            android:configChanges="orientation|screenSize">
+        </activity>
+        <activity
+            android:name=".Activities.TrackDetailActivity">
+        </activity>
+        <activity
+            android:name=".Activities.ArtistDetailActivity">
+        </activity>
     </application>
 
 </manifest>

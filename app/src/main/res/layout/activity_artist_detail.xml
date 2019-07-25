@@ -66,8 +66,8 @@
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:background="@drawable/black_rounded_button"
-                android:textColor="@android:color/black"
-                android:text="@string/share_button" />
+                android:textColor="#656565"
+                android:text="@string/share_button"/>
 
         </RelativeLayout>
 

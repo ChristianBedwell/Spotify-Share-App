@@ -28,7 +28,7 @@ public class TrackDetailActivity extends AppCompatActivity {
     private static final String TAG = TrackDetailActivity.class.getSimpleName();
 
     private String trackUri, shareLink;
-    private TextView trackName, trackArtist;
+    private TextView trackName, trackYear, trackArtist;
     private ImageView trackImage;
     private Button playButton, shareButton;
 
@@ -39,11 +39,12 @@ public class TrackDetailActivity extends AppCompatActivity {
 
         // set title of action bar from default
         getSupportActionBar().setTitle(String.format(
-                Locale.US, "Share Track",
+                Locale.US, "View Track",
                 com.spotify.sdk.android.authentication.BuildConfig.VERSION_NAME));
 
         // initialize the views
         trackName = (TextView) findViewById(R.id.track_detail_name);
+        trackYear = (TextView) findViewById(R.id.track_detail_year);
         trackArtist = (TextView) findViewById(R.id.track_detail_artist);
         trackImage = (ImageView) findViewById(R.id.track_detail_image);
         playButton = (Button) findViewById(R.id.play_button);
@@ -54,6 +55,7 @@ public class TrackDetailActivity extends AppCompatActivity {
         shareLink = getIntent().getStringExtra("track_share_link");
         Log.d(TAG, getIntent().getStringExtra("track_share_link"));
         trackName.setText(getIntent().getStringExtra("track_name"));
+        trackYear.setText(getIntent().getStringExtra("track_year"));
         trackArtist.setText(getIntent().getStringExtra("track_artist"));
         Picasso.get().load(getIntent().getStringExtra("track_image_resource")).into(trackImage);
 

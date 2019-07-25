@@ -139,6 +139,12 @@ public class AuthenticationActivity extends AppCompatActivity {
         editor.apply();
     }
 
+    // retrieve access token from shared preferences
+    public static String getDefaults(String key, Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return preferences.getString(key, null);
+    }
+
     // get redirect uri using redirect scheme and host
     private Uri getRedirectUri() {
         return new Uri.Builder()

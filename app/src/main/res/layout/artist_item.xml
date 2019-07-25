@@ -17,49 +17,62 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_centerVertical="true"
-            android:layout_margin="5dp"/>
+            android:layout_margin="10dp"/>
 
-        <TextView
-            android:id="@+id/artist_name"
+        <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="3dp"
-            android:text="@string/artist_name_placeholder"
-            android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_toEndOf="@+id/artist_picture"
-            android:layout_marginStart="5dp"/>
+            android:layout_alignTop="@+id/artist_picture"
+            android:layout_alignBottom="@+id/artist_picture"
+            android:layout_marginEnd="10dp">
 
-        <TextView
-            android:id="@+id/artist_followers"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="5dp"
-            android:text="@string/artist_followers_placeholder"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:layout_toEndOf="@+id/artist_picture"
-            android:layout_below="@+id/artist_name"
-            android:layout_marginStart="5dp"/>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginEnd="12dp"
-            android:layout_alignEnd="@+id/artist_name"
-            android:layout_alignTop="@+id/artist_followers"
-            android:layout_alignBottom="@+id/artist_followers"
-            android:layout_alignParentEnd="true">
-
-            <RatingBar
-                android:id="@+id/artist_popularity"
+            <TextView
+                android:id="@+id/artist_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                style="?android:attr/ratingBarStyleSmall"/>
+                android:layout_gravity="center_horizontal"
+                android:text="@string/artist_name_placeholder"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@android:color/black"
+                android:alpha=".87"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="5dp"/>
 
-        </LinearLayout>
+            <TextView
+                android:id="@+id/artist_followers"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="5dp"
+                android:text="@string/artist_followers_placeholder"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@android:color/black"
+                android:alpha=".60"
+                android:layout_alignParentBottom="true"
+                android:layout_below="@+id/artist_name"
+                android:layout_marginStart="5dp"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_alignEnd="@+id/artist_name"
+                android:layout_alignTop="@+id/artist_followers"
+                android:layout_alignBottom="@+id/artist_followers"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true">
+
+                <RatingBar
+                    android:id="@+id/artist_popularity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    style="?android:attr/ratingBarStyleSmall"/>
+
+            </LinearLayout>
+
+        </RelativeLayout>
 
     </RelativeLayout>
 
