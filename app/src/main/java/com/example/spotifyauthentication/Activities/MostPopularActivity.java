@@ -11,7 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -408,7 +408,7 @@ public class MostPopularActivity extends AppCompatActivity
     // set up artist recycler view using list of items
     private void setUpArtistRecycler(List<com.example.spotifyauthentication.Models.Artists.Item> items) {
         artistAdapter = new ArtistAdapter(MostPopularActivity.this, items);
-        layoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
+        layoutManager = new GridLayoutManager(this, getResources().getInteger(R.integer.grid_column_count));
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(artistAdapter);
     }
@@ -416,7 +416,7 @@ public class MostPopularActivity extends AppCompatActivity
     // set up artist recycler view using list of items
     private void setUpTrackRecycler(List<com.example.spotifyauthentication.Models.Tracks.Item> items) {
         trackAdapter = new TrackAdapter(MostPopularActivity.this, items);
-        layoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
+        layoutManager = new GridLayoutManager(this, getResources().getInteger(R.integer.grid_column_count));
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(trackAdapter);
     }
@@ -424,6 +424,7 @@ public class MostPopularActivity extends AppCompatActivity
     @Override
     protected void onPause() {
         super.onPause();
+        Log.d(TAG, "Activity Paused");
 
         // save RecyclerView state
         bundle = new Bundle();
@@ -434,6 +435,7 @@ public class MostPopularActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d(TAG, "Activity Resumed");
 
         // restore RecyclerView state
         if (bundle != null) {

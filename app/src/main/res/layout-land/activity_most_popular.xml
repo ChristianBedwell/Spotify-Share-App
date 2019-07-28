@@ -153,7 +153,6 @@
                 android:layout_alignBottom="@+id/limitEditText"
                 android:layout_alignStart="@+id/offsetLabel"
                 android:layout_alignEnd="@+id/offsetLabel"
-                android:layout_alignParentEnd="true"
                 android:layout_width="50dp"
                 android:dropDownWidth="200dp"
                 android:layout_height="35dp"
