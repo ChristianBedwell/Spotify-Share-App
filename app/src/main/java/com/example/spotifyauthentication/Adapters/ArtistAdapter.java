@@ -38,8 +38,9 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.ArtistView
 
     @Override
     public void onBindViewHolder(@NonNull ArtistAdapter.ArtistViewHolder artistViewHolder, int position) {
+        int artistItemNum = position + 1;
        Picasso.get().load(artistItems.get(position).getImages().get(0).getUrl()).into(artistViewHolder.artistImage);
-       artistViewHolder.artistName.setText(artistItems.get(position).getName());
+       artistViewHolder.artistName.setText(new StringBuilder().append(artistItemNum).append(".").append(" ").append(artistItems.get(position).getName()));
 
        NumberFormat numberFormat = NumberFormat.getInstance();
        numberFormat.setGroupingUsed(true);

@@ -16,8 +16,7 @@
         tools:ignore="GoogleAppIndexingWarning">
 
         <activity
-            android:name=".Activities.AuthenticationActivity"
-            android:configChanges="orientation|screenSize">
+            android:name=".Activities.AuthenticationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -25,7 +24,7 @@
         </activity>
         <activity
             android:name=".Activities.MostPopularActivity"
-            android:configChanges="orientation|screenSize">
+            android:configChanges="orientation|screenLayout">
         </activity>
         <activity
             android:name=".Activities.TrackDetailActivity">

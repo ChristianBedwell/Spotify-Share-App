@@ -1,18 +1,14 @@
 package com.example.spotifyauthentication.Activities;
 
+import android.support.v4.app.FragmentTransaction;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -20,24 +16,11 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.example.spotifyauthentication.Adapters.ArtistAdapter;
-import com.example.spotifyauthentication.Adapters.TrackAdapter;
-import com.example.spotifyauthentication.Models.Artists.Artist;
-import com.example.spotifyauthentication.Models.Tracks.Track;
-import com.example.spotifyauthentication.Retrofit.GetDataService;
-import com.example.spotifyauthentication.Retrofit.RetrofitInstance;
 import com.example.spotifyauthentication.CustomSpinner;
+import com.example.spotifyauthentication.Fragments.ItemsFragment;
 import com.example.spotifyauthentication.R;
 
-import java.lang.ref.WeakReference;
-import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
 
 public class MostPopularActivity extends AppCompatActivity
         implements AdapterView.OnItemSelectedListener {
@@ -46,21 +29,13 @@ public class MostPopularActivity extends AppCompatActivity
 
     private EditText limitEditText, offsetEditText;
     private Button submitButton;
-
-    private TrackAdapter trackAdapter;
-    private ArtistAdapter artistAdapter;
-
-    private RecyclerView recyclerView;
-    private RecyclerView.LayoutManager layoutManager;
     private SwipeRefreshLayout swipeContainer;
-    Bundle bundle;
 
     // string and integer to hold query parameters
     public String type, timeRange;
 
     // key for access token
     private final String TOKEN_KEY = "token";
-    private final String RECYCLER_STATE_KEY = "recycler_state";
 
     // define the list of items that will appear in the type and time range spinner
     String[] typeItems = {"Artists", "Tracks"};
@@ -79,17 +54,18 @@ public class MostPopularActivity extends AppCompatActivity
                 Locale.US, "Top Artists and Tracks",
                 com.spotify.sdk.android.authentication.BuildConfig.VERSION_NAME));
 
-        recyclerView = (RecyclerView) findViewById(R.id.card_recycler_view);
+        // create swipe listener for swipe container
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                // get parameter strings from edit text fields
-                String strLimit = limitEditText.getText().toString();
-                String strOffset = offsetEditText.getText().toString();
+                // create new instance of itemsFragment and fill fragment placeholder
+                ItemsFragment itemsFragment = newInstance(mAccessToken, type, timeRange,
+                        limitEditText.getText().toString(), offsetEditText.getText().toString());
+                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.items_fragment_placeholder, itemsFragment);
+                fragmentTransaction.commit();
 
-                // use parameters to build JSON request
-                new getData(mAccessToken, type, timeRange, strLimit, strOffset).execute();
                 swipeContainer.setRefreshing(false);
             }
         });
@@ -144,12 +120,13 @@ public class MostPopularActivity extends AppCompatActivity
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // get parameter strings from edit text fields
-                String strLimit = limitEditText.getText().toString();
-                String strOffset = offsetEditText.getText().toString();
+                // create new instance of itemsFragment and fill fragment placeholder
+                ItemsFragment itemsFragment = newInstance(mAccessToken, type, timeRange,
+                        limitEditText.getText().toString(), offsetEditText.getText().toString());
+                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.items_fragment_placeholder, itemsFragment);
+                fragmentTransaction.commit();
 
-                // use parameters to build JSON request
-                new getData(mAccessToken, type, timeRange, strLimit, strOffset).execute();
                 submitButton.setVisibility(View.INVISIBLE);
                 swipeContainer.setRefreshing(false);
             }
@@ -159,289 +136,6 @@ public class MostPopularActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         // Do nothing
-    }
-
-    private class getData extends AsyncTask<Void, Void, Void> {
-
-        // weak references for query parameters
-        private WeakReference<String> weakAccessToken;
-        private WeakReference<String> weakType;
-        private WeakReference<String> weakTimeRange;
-        private WeakReference<String> weakLimit;
-        private WeakReference<String> weakOffset;
-
-        // tag for debugging logcat entries
-        private String TAG = MostPopularActivity.class.getSimpleName();
-
-        // getData() constructor
-        getData(String mAccessToken, String type, String timeRange,
-                String strLimit, String strOffset) {
-
-            weakAccessToken = new WeakReference<>(mAccessToken);
-            weakType = new WeakReference<>(type);
-            weakTimeRange = new WeakReference<>(timeRange);
-            weakLimit = new WeakReference<>(strLimit);
-            weakOffset = new WeakReference<>(strOffset);
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            // top artists has been selected
-            if(weakType.get().equals("artists")) {
-                // time range parameter is empty
-                if(weakTimeRange.get().equals("")) {
-                    // limit parameter is empty
-                    if(weakLimit.get().equals("")) {
-                        // offset parameter is empty
-                        if(weakOffset.get().equals("")) {
-                            // all query parameters are empty
-                            requestTopArtists("Bearer " + weakAccessToken.get(),
-                                    null, null, null);
-                        }
-                        // offset is not empty
-		                else {
-                            // all query parameters are empty except offset
-                            requestTopArtists("Bearer " + weakAccessToken.get(),
-                                    null, null, Integer.parseInt(weakOffset.get()));
-                        }
-                    }
-                    // limit parameter is not empty
-	                else {
-                        // offset parameter is empty
-                        if(weakOffset.get().equals("")) {
-                            // all parameters are empty except limit
-                            requestTopArtists("Bearer " + weakAccessToken.get(),
-                                    null, Integer.parseInt(weakLimit.get()),
-                                    null);
-                        }
-                        // offset parameter is not empty
-		                else {
-                            // all parameters are empty except limit and offset
-                            requestTopArtists("Bearer " + weakAccessToken.get(),
-                                    null, Integer.parseInt(weakLimit.get()),
-                                    Integer.parseInt(weakOffset.get()));
-                        }
-                    }
-                }
-                // time range parameter is not empty
-                else {
-                    // limit parameter is empty
-                    if(weakLimit.get().equals("")) {
-                        // offset parameter is empty
-                        if(weakOffset.get().equals("")) {
-                            // all parameters are empty except time range
-                            requestTopArtists("Bearer " + weakAccessToken.get(),
-                                    weakTimeRange.get(), null, null);
-                        }
-                        // offset parameter is not empty
-		                else {
-                            // all parameters are empty except time range and offset
-                            requestTopArtists("Bearer " + weakAccessToken.get(),
-                                    weakTimeRange.get(), null,
-                                    Integer.parseInt(weakOffset.get()));
-                        }
-                    }
-                    // limit parameter is not empty
-	                else {
-                        // offset parameter is empty
-                        if(weakOffset.get().equals("")) {
-                            // all fields are empty except time range and limit
-                            requestTopArtists("Bearer " + weakAccessToken.get(),
-                                    weakTimeRange.get(), Integer.parseInt(weakLimit.get()),
-                                    null);
-                        }
-                        // offset parameter is not empty
-		                else {
-                            // all parameters are full
-                            requestTopArtists("Bearer " + weakAccessToken.get(),
-                                    weakTimeRange.get(), Integer.parseInt(weakLimit.get()),
-                                    Integer.parseInt(weakOffset.get()));
-                        }
-                    }
-                }
-            }
-            // top tracks has been selected
-            else if(weakType.get().equals("tracks")) {
-                // time range parameter is empty
-                if(weakTimeRange.get().equals("")) {
-                    // limit parameter is empty
-                    if(weakLimit.get().equals("")) {
-                        // offset parameter is empty
-                        if(weakOffset.get().equals("")) {
-                            // all query parameters are empty
-                            requestTopTracks("Bearer " + weakAccessToken.get(),
-                                    null, null, null);
-                        }
-                        // offset is not empty
-                        else {
-                            // all query parameters are empty except offset
-                            requestTopTracks("Bearer " + weakAccessToken.get(),
-                                    null, null, Integer.parseInt(weakOffset.get()));
-                        }
-                    }
-                    // limit parameter is not empty
-                    else {
-                        // offset parameter is empty
-                        if(weakOffset.get().equals("")) {
-                            // all parameters are empty except limit
-                            requestTopTracks("Bearer " + weakAccessToken.get(),
-                                    null, Integer.parseInt(weakLimit.get()),
-                                    null);
-                        }
-                        // offset parameter is not empty
-                        else {
-                            // all parameters are empty except limit and offset
-                            requestTopTracks("Bearer " + weakAccessToken.get(),
-                                    null, Integer.parseInt(weakLimit.get()),
-                                    Integer.parseInt(weakOffset.get()));
-                        }
-                    }
-                }
-                // time range parameter is not empty
-                else {
-                    // limit parameter is empty
-                    if(weakLimit.get().equals("")) {
-                        // offset parameter is empty
-                        if(weakOffset.get().equals("")) {
-                            // all parameters are empty except time range
-                            requestTopTracks("Bearer " + weakAccessToken.get(),
-                                    weakTimeRange.get(), null, null);
-                        }
-                        // offset parameter is not empty
-                        else {
-                            // all parameters are empty except time range and offset
-                            requestTopTracks("Bearer " + weakAccessToken.get(),
-                                    weakTimeRange.get(), null,
-                                    Integer.parseInt(weakOffset.get()));
-                        }
-                    }
-                    // limit parameter is not empty
-                    else {
-                        // offset parameter is empty
-                        if(weakOffset.get().equals("")) {
-                            // all fields are empty except time range and limit
-                            requestTopTracks("Bearer " + weakAccessToken.get(),
-                                    weakTimeRange.get(), Integer.parseInt(weakLimit.get()),
-                                    null);
-                        }
-                        // offset parameter is not empty
-                        else {
-                            // all parameters are full
-                            requestTopTracks("Bearer " + weakAccessToken.get(),
-                                    weakTimeRange.get(), Integer.parseInt(weakLimit.get()),
-                                    Integer.parseInt(weakOffset.get()));
-                        }
-                    }
-                }
-            }
-            return null;
-        }
-
-        // send API request for top artists
-        private void requestTopArtists(String mAccessToken, String timeRange,
-                                       final Integer limit, Integer offset) {
-
-            // instantiate retrofit instance with base url
-            Retrofit retrofit = RetrofitInstance.getRetrofit();
-            GetDataService api = retrofit.create(GetDataService.class);
-
-            Call<Artist> call = api.getTopArtists(mAccessToken, timeRange, limit, offset);
-            Log.d(TAG, call.toString());
-
-            call.enqueue(new Callback<Artist>() {
-                @Override
-                public void onResponse(@NonNull Call <Artist> call, @NonNull Response <Artist> response) {
-                    if (response.isSuccessful()) {
-                        // successful JSON response, create JSON response body and parse details
-                        if(response.body() != null) {
-                            List<com.example.spotifyauthentication.Models.Artists.Item> artistItems = response.body().getItems();
-                            setUpArtistRecycler(artistItems);
-                        }
-                    }
-                    else {
-                        // failed to parse data, throw exception
-                        Log.e(TAG, "Failed to parse data!");
-                    }
-                }
-                @Override
-                public void onFailure(@NonNull Call <Artist> call, @NonNull Throwable e) {
-                    // failed to fetch data, throw exception
-                    Log.e(TAG, "Failed to fetch data: " + e.getMessage());
-                }
-            });
-        }
-
-        // send API request for top tracks
-        private void requestTopTracks(String mAccessToken, String timeRange, Integer limit, Integer offset) {
-
-            // instantiate retrofit instance with base url
-            Retrofit retrofit = RetrofitInstance.getRetrofit();
-            GetDataService api = retrofit.create(GetDataService.class);
-
-            Call<Track> call = api.getTopTracks(mAccessToken, timeRange, limit, offset);
-            Log.d(TAG, call.toString());
-
-            call.enqueue(new Callback<Track>() {
-                @Override
-                public void onResponse(@NonNull Call <Track> call, @NonNull Response <Track> response) {
-                    // successful JSON response, create JSON response body and parse details
-                    if (response.isSuccessful()) {
-                        if(response.body() != null) {
-                            List<com.example.spotifyauthentication.Models.Tracks.Item> trackItems = response.body().getItems();
-                            setUpTrackRecycler(trackItems);
-                        }
-                    }
-                    else {
-                        // failed to parse data, throw exception
-                        Log.e(TAG, "Failed to parse data!");
-                    }
-                }
-                @Override
-                public void onFailure(@NonNull Call <Track> call, @NonNull Throwable e) {
-                    // failed to fetch data, throw exception
-                    Log.e(TAG, "Failed to fetch data: " + e.getMessage());
-                }
-            });
-        }
-    }
-
-    // set up artist recycler view using list of items
-    private void setUpArtistRecycler(List<com.example.spotifyauthentication.Models.Artists.Item> items) {
-        artistAdapter = new ArtistAdapter(MostPopularActivity.this, items);
-        layoutManager = new GridLayoutManager(this, getResources().getInteger(R.integer.grid_column_count));
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(artistAdapter);
-    }
-
-    // set up artist recycler view using list of items
-    private void setUpTrackRecycler(List<com.example.spotifyauthentication.Models.Tracks.Item> items) {
-        trackAdapter = new TrackAdapter(MostPopularActivity.this, items);
-        layoutManager = new GridLayoutManager(this, getResources().getInteger(R.integer.grid_column_count));
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(trackAdapter);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Log.d(TAG, "Activity Paused");
-
-        // save RecyclerView state
-        bundle = new Bundle();
-        Parcelable listState = Objects.requireNonNull(recyclerView.getLayoutManager()).onSaveInstanceState();
-        bundle.putParcelable(RECYCLER_STATE_KEY, listState);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.d(TAG, "Activity Resumed");
-
-        // restore RecyclerView state
-        if (bundle != null) {
-            Parcelable listState = bundle.getParcelable(RECYCLER_STATE_KEY);
-            Objects.requireNonNull(recyclerView.getLayoutManager()).onRestoreInstanceState(listState);
-        }
     }
 
     // retrieve access token from shared preferences
@@ -491,6 +185,21 @@ public class MostPopularActivity extends AppCompatActivity
             default:
                 // Do nothing
         }
+    }
+
+    // pass user parameters to the items fragment
+    public static ItemsFragment newInstance(String accessToken, String type, String timeRange, String limit, String offset) {
+        ItemsFragment itemsFragment = new ItemsFragment();
+
+        Bundle args = new Bundle();
+        args.putString("access_token", accessToken);
+        args.putString("type", type);
+        args.putString("time_range", timeRange);
+        args.putString("limit", limit);
+        args.putString("offset", offset);
+        itemsFragment.setArguments(args);
+
+        return itemsFragment;
     }
 
     @Override
