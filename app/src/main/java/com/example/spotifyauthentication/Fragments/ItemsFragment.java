@@ -33,6 +33,7 @@ import retrofit2.Retrofit;
 
 public class ItemsFragment extends Fragment {
 
+    private static final String RECYCLER_VIEW_KEY = "recycler-view-key";
     private String TAG = ItemsFragment.class.getSimpleName();
 
     private RecyclerView recyclerView;
@@ -52,7 +53,6 @@ public class ItemsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_items, container, false);
-        setRetainInstance(true);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.card_recycler_view);
         recyclerView.setHasFixedSize(true);
 

@@ -39,17 +39,17 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.ArtistView
     @Override
     public void onBindViewHolder(@NonNull ArtistAdapter.ArtistViewHolder artistViewHolder, int position) {
         int artistItemNum = position + 1;
-       Picasso.get().load(artistItems.get(position).getImages().get(0).getUrl()).into(artistViewHolder.artistImage);
-       artistViewHolder.artistName.setText(new StringBuilder().append(artistItemNum).append(".").append(" ").append(artistItems.get(position).getName()));
+        Picasso.get().load(artistItems.get(position).getImages().get(0).getUrl()).into(artistViewHolder.artistImage);
+        artistViewHolder.artistName.setText(new StringBuilder().append(artistItemNum).append(".").append(" ").append(artistItems.get(position).getName()));
 
-       NumberFormat numberFormat = NumberFormat.getInstance();
-       numberFormat.setGroupingUsed(true);
+        NumberFormat numberFormat = NumberFormat.getInstance();
+        numberFormat.setGroupingUsed(true);
 
-       int number = artistItems.get(position).getFollowers().getTotal();
-       String formatFollowerCount = numberFormat.format(number);
+        int number = artistItems.get(position).getFollowers().getTotal();
+        String formatFollowerCount = numberFormat.format(number);
 
-       artistViewHolder.artistFollowers.setText(new StringBuilder().append(mContext.getString(R.string.follower_count)).append(": ").append(formatFollowerCount));
-       artistViewHolder.artistPopularity.setRating((float) (artistItems.get(position).getPopularity()) / 20);
+        artistViewHolder.artistFollowers.setText(new StringBuilder().append(mContext.getString(R.string.follower_count)).append(": ").append(formatFollowerCount));
+        artistViewHolder.artistPopularity.setRating((float) (artistItems.get(position).getPopularity()) / 20);
     }
 
     @Override
@@ -86,13 +86,16 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.ArtistView
                     append(mContext.getString(R.string.follower_count)).
                     append(": ").append(formatFollowerCount)).toString();
 
+            int artistItemNum = getAdapterPosition() + 1;
             Item artistItem = artistItems.get(getAdapterPosition());
             Intent detailIntent = new Intent(mContext, ArtistDetailActivity.class);
 
-            detailIntent.putExtra("artist_name", artistItem.getName());
+            detailIntent.putExtra("artist_name", new StringBuilder().append(artistItemNum).
+                    append(".").append(" ").append(artistItem.getName()).toString());
             detailIntent.putExtra("artist_followers", formatFollowerString);
             detailIntent.putExtra("artist_image_resource", artistItem.getImages().get(0).getUrl());
             detailIntent.putExtra("artist_share_link", artistItem.getExternalUrls().getSpotify());
+            detailIntent.putExtra("artist_popularity", (float) (artistItem.getPopularity()) / 20);
             mContext.startActivity(detailIntent);
         }
     }

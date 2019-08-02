@@ -5,10 +5,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.spotify.android.appremote.api.ConnectionParams;
@@ -32,6 +32,7 @@ public class TrackDetailActivity extends AppCompatActivity {
     private TextView trackName, trackYear, trackArtist;
     private ImageView trackImage;
     private Button playButton, shareButton;
+    RatingBar trackPopularity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,14 +51,15 @@ public class TrackDetailActivity extends AppCompatActivity {
         trackImage = (ImageView) findViewById(R.id.track_detail_image);
         playButton = (Button) findViewById(R.id.play_button);
         shareButton = (Button) findViewById(R.id.share_button);
+        trackPopularity = (RatingBar) findViewById(R.id.track_detail_popularity);
 
+        // get intent extras from adapter
         trackUri = getIntent().getStringExtra("track_uri");
-        Log.d(TAG, getIntent().getStringExtra("track_uri"));
         shareLink = getIntent().getStringExtra("track_share_link");
-        Log.d(TAG, getIntent().getStringExtra("track_share_link"));
         trackName.setText(getIntent().getStringExtra("track_name"));
         trackYear.setText(getIntent().getStringExtra("track_year"));
         trackArtist.setText(getIntent().getStringExtra("track_artist"));
+        trackPopularity.setRating((getIntent().getFloatExtra("track_popularity", 0.0f)));
         Picasso.get().load(getIntent().getStringExtra("track_image_resource")).into(trackImage);
 
         playButton.setOnClickListener(new View.OnClickListener() {
@@ -108,7 +110,7 @@ public class TrackDetailActivity extends AppCompatActivity {
         });
     }
 
-    // App Remote is connected
+    // app remote is connected
     private void connected() {
         // Play a playlist
         mSpotifyAppRemote.getPlayerApi().play(trackUri);
@@ -130,6 +132,7 @@ public class TrackDetailActivity extends AppCompatActivity {
                 .build();
     }
 
+    // share the track uri with a contact
     public void shareTrack() {
         Intent share = new Intent(android.content.Intent.ACTION_SEND);
         share.setType("text/plain");

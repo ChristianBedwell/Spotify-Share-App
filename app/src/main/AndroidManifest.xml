@@ -23,8 +23,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Activities.MostPopularActivity"
-            android:configChanges="orientation|screenLayout">
+            android:name=".Activities.MostPopularActivity">
         </activity>
         <activity
             android:name=".Activities.TrackDetailActivity">

@@ -53,8 +53,8 @@ public class AuthenticationActivity extends AppCompatActivity {
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         progressMessage = (TextView) findViewById(R.id.progressMessage);
 
-        // by default, checkbox state is off because the user hasn't clicked the checkbox
-        buttonAuthenticate.setEnabled(false);
+        // by default, button state is off because the user hasn't clicked the checkbox
+        buttonAuthenticate.setVisibility(View.INVISIBLE);
 
         // by default, progress bar/message is invisible because the user hasn't clicked authenticate
         progressBar.setVisibility(ProgressBar.INVISIBLE);
@@ -66,11 +66,11 @@ public class AuthenticationActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 // if user has agreed to authentication statement, enable authentication button
                 if (isChecked) {
-                    buttonAuthenticate.setEnabled(true);
+                    buttonAuthenticate.setVisibility(View.VISIBLE);
                 }
                 // if user has not agreed to authentication statement, disable authentication button
                 else {
-                    buttonAuthenticate.setEnabled(false);
+                    buttonAuthenticate.setVisibility(View.INVISIBLE);;
                 }
             }
         });

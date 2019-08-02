@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.example.spotifyauthentication.R;
@@ -19,6 +20,7 @@ public class ArtistDetailActivity extends AppCompatActivity {
     private TextView artistName, artistFollowers;
     private Button shareButton;
     private ImageView artistImage;
+    private RatingBar artistPopularity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,9 +38,11 @@ public class ArtistDetailActivity extends AppCompatActivity {
         shareLink = getIntent().getStringExtra("artist_share_link");
         artistImage = (ImageView) findViewById(R.id.artist_detail_image);
         shareButton = (Button) findViewById(R.id.share_button);
+        artistPopularity = (RatingBar) findViewById(R.id.artist_detail_popularity);
 
         artistName.setText(getIntent().getStringExtra("artist_name"));
         artistFollowers.setText(getIntent().getStringExtra("artist_followers"));
+        artistPopularity.setRating((getIntent().getFloatExtra("artist_popularity", 0.0f)));
         Picasso.get().load(getIntent().getStringExtra("artist_image_resource")).into(artistImage);
 
         shareButton.setOnClickListener(new View.OnClickListener() {
