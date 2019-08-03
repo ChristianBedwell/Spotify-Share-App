@@ -1,6 +1,7 @@
 package com.example.spotifyauthentication.Activities;
 
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -22,6 +23,7 @@ import com.example.spotifyauthentication.Fragments.ItemsFragment;
 import com.example.spotifyauthentication.R;
 
 import java.util.Locale;
+import java.util.Objects;
 
 public class MostPopularActivity extends AppCompatActivity
         implements AdapterView.OnItemSelectedListener {
@@ -34,6 +36,8 @@ public class MostPopularActivity extends AppCompatActivity
 
     // string and integer to hold query parameters
     public String type, timeRange;
+
+    public Fragment itemsFragment;
 
     // key for access token
     private final String TOKEN_KEY = "token";
@@ -57,18 +61,15 @@ public class MostPopularActivity extends AppCompatActivity
 
         // create swipe listener for swipe container
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
-        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                // create new instance of itemsFragment and fill fragment placeholder
-                ItemsFragment itemsFragment = newInstance(mAccessToken, type, timeRange,
-                        limitEditText.getText().toString(), offsetEditText.getText().toString());
-                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.items_fragment_placeholder, itemsFragment);
-                fragmentTransaction.commit();
+        swipeContainer.setOnRefreshListener(() -> {
+            // create new instance of itemsFragment and fill fragment placeholder
+            ItemsFragment itemsFragment = newInstance(mAccessToken, type, timeRange,
+                    limitEditText.getText().toString(), offsetEditText.getText().toString());
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.items_fragment_placeholder, itemsFragment);
+            fragmentTransaction.commit();
 
-                swipeContainer.setRefreshing(false);
-            }
+            swipeContainer.setRefreshing(false);
         });
 
         // create array adapter to set items for type spinner
@@ -118,19 +119,16 @@ public class MostPopularActivity extends AppCompatActivity
         mAccessToken = getDefaults(TOKEN_KEY, this);
 
         // create on click listener for submit button
-        submitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // create new instance of itemsFragment and fill fragment placeholder
-                ItemsFragment itemsFragment = newInstance(mAccessToken, type, timeRange,
-                        limitEditText.getText().toString(), offsetEditText.getText().toString());
-                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.items_fragment_placeholder, itemsFragment);
-                fragmentTransaction.commit();
+        submitButton.setOnClickListener(v -> {
+            // create new instance of itemsFragment and fill fragment placeholder
+            itemsFragment = newInstance(mAccessToken, type, timeRange,
+                    limitEditText.getText().toString(), offsetEditText.getText().toString());
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.items_fragment_placeholder, itemsFragment);
+            fragmentTransaction.commit();
 
-                submitButton.setVisibility(View.INVISIBLE);
-                swipeContainer.setRefreshing(false);
-            }
+            submitButton.setVisibility(View.INVISIBLE);
+            swipeContainer.setRefreshing(false);
         });
     }
 
