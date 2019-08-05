@@ -8,8 +8,8 @@
         android:drawable="@android:color/white" />
     <item>
         <inset
-            android:insetLeft="-1dp"
-            android:insetRight="-1dp">
+            android:insetLeft="0dp"
+            android:insetRight="0dp">
             <shape
                 android:shape="rectangle">
                 <stroke
@@ -17,6 +17,8 @@
                     android:color="#D3D3D3" />
                 <solid
                     android:color="@android:color/white" />
+                <corners
+                    android:radius="2dp" />
             </shape>
         </inset>
     </item>

@@ -120,6 +120,9 @@ public class MostPopularActivity extends AppCompatActivity
 
         // create on click listener for submit button
         submitButton.setOnClickListener(v -> {
+            // display progress wheel until data has been pulled
+            swipeContainer.setRefreshing(true);
+
             // create new instance of itemsFragment and fill fragment placeholder
             itemsFragment = newInstance(mAccessToken, type, timeRange,
                     limitEditText.getText().toString(), offsetEditText.getText().toString());
@@ -127,7 +130,6 @@ public class MostPopularActivity extends AppCompatActivity
             fragmentTransaction.replace(R.id.items_fragment_placeholder, itemsFragment);
             fragmentTransaction.commit();
 
-            submitButton.setVisibility(View.INVISIBLE);
             swipeContainer.setRefreshing(false);
         });
     }

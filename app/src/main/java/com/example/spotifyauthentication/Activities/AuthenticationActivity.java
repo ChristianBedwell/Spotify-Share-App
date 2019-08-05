@@ -45,7 +45,7 @@ public class AuthenticationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authentication);
         getSupportActionBar().setTitle(String.format(
-                Locale.US, "Spotify Analytics", com.spotify.sdk.android.authentication.BuildConfig.VERSION_NAME));
+                Locale.US, "Spotify Share App", com.spotify.sdk.android.authentication.BuildConfig.VERSION_NAME));
 
         // instantiate agreement checkbox, authentication button, and status bar/message
         checkbox = (CheckBox) findViewById(R.id.checkbox);

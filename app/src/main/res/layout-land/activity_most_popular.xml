@@ -16,6 +16,8 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentBottom="true"
         android:padding="8dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
         android:orientation="vertical">
 
         <ImageView
@@ -27,7 +29,7 @@
             android:src="@drawable/ic_spotify_logo"/>
 
         <View
-            android:id="@+id/line"
+            android:id="@+id/horizontal_line"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_below="@+id/spotify_logo_most_popular"
@@ -39,16 +41,17 @@
             android:id="@+id/userInput"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/line"
+            android:layout_below="@+id/horizontal_line"
             android:layout_centerHorizontal="true"
+            android:layout_alignParentStart="true"
             android:layout_gravity="center"
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:layout_marginTop="5dp">
 
             <!-- label for query type -->
             <TextView
                 android:id="@+id/typeLabel"
-                android:layout_width="125dp"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:layout_marginEnd="10dp"
@@ -63,12 +66,13 @@
                 android:layout_alignStart="@+id/typeLabel"
                 android:layout_alignEnd="@+id/typeLabel"
                 android:layout_marginTop="5dp"
-                android:layout_width="100dp"
+                android:layout_width="wrap_content"
                 android:layout_height="35dp"
-                android:dropDownWidth="125dp"
+                android:dropDownWidth="100dp"
                 android:dropDownVerticalOffset="10dp"
                 android:background="@drawable/spinner_bg"
                 android:popupBackground="@android:color/white"
+                android:paddingStart="0dp"
                 android:paddingEnd="14dp"
                 android:stateListAnimator="@animator/spinner_sla"
                 android:popupElevation="3dp"/>
@@ -76,11 +80,11 @@
             <!-- label for query time range -->
             <TextView
                 android:id = "@+id/timeRangeLabel"
-                android:layout_width="140dp"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/typeLabel"
-                android:layout_alignBottom="@+id/typeLabel"
-                android:layout_toEndOf="@+id/typeLabel"
+                android:layout_below="@+id/typeSpinner"
+                android:layout_alignStart="@+id/typeLabel"
+                android:layout_marginTop="5dp"
                 android:layout_marginEnd="10dp"
                 android:text="@string/timeRange"
                 android:textColor="#1E1E1E"/>
@@ -90,16 +94,16 @@
                 android:id="@+id/timeRangeSpinner"
                 style="@style/Widget.AppCompat.Spinner"
                 android:layout_below="@+id/timeRangeLabel"
-                android:layout_alignTop="@+id/typeSpinner"
-                android:layout_alignBottom="@+id/typeSpinner"
                 android:layout_alignStart="@+id/timeRangeLabel"
                 android:layout_alignEnd="@+id/timeRangeLabel"
-                android:layout_width="150dp"
-                android:dropDownWidth="140dp"
+                android:layout_marginTop="5dp"
+                android:layout_width="wrap_content"
+                android:dropDownWidth="150dp"
                 android:layout_height="35dp"
                 android:dropDownVerticalOffset="10dp"
                 android:background="@drawable/spinner_bg"
                 android:popupBackground="@android:color/white"
+                android:paddingStart="0dp"
                 android:paddingEnd="14dp"
                 android:stateListAnimator="@animator/spinner_sla"
                 android:popupElevation="3dp"/>
@@ -107,11 +111,11 @@
             <!-- label for query limit -->
             <TextView
                 android:id = "@+id/limitLabel"
-                android:layout_width="50dp"
+                android:layout_width="75dp"
                 android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/timeRangeLabel"
-                android:layout_alignBottom="@+id/timeRangeLabel"
-                android:layout_toEndOf="@+id/timeRangeLabel"
+                android:layout_below="@+id/timeRangeSpinner"
+                android:layout_alignStart="@+id/timeRangeLabel"
+                android:layout_marginTop="5dp"
                 android:layout_marginEnd="10dp"
                 android:text="@string/limit"
                 android:textColor="#1E1E1E"/>
@@ -120,15 +124,12 @@
             <EditText
                 android:id="@+id/limitEditText"
                 android:layout_below="@+id/limitLabel"
-                android:layout_alignTop="@+id/timeRangeSpinner"
-                android:layout_alignBottom="@+id/timeRangeSpinner"
                 android:layout_alignStart="@+id/limitLabel"
                 android:layout_alignEnd="@+id/limitLabel"
-                android:layout_width="50dp"
+                android:layout_marginTop="5dp"
+                android:layout_width="wrap_content"
                 android:gravity="center_horizontal|center_vertical"
-                android:dropDownWidth="200dp"
                 android:layout_height="35dp"
-                android:dropDownVerticalOffset="10dp"
                 android:background="@drawable/edittext_bg"
                 android:hint="@string/enter_a_limit"
                 android:inputType="number"/>
@@ -136,11 +137,12 @@
             <!-- label for query offset -->
             <TextView
                 android:id = "@+id/offsetLabel"
-                android:layout_width="50dp"
+                android:layout_width="40dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_toEndOf="@+id/limitLabel"
                 android:layout_alignTop="@+id/limitLabel"
                 android:layout_alignBottom="@+id/limitLabel"
-                android:layout_toEndOf="@+id/limitLabel"
                 android:text="@string/offset"
                 android:textColor="#1E1E1E"/>
 
@@ -148,28 +150,55 @@
             <EditText
                 android:id="@+id/offsetEditText"
                 android:layout_below="@+id/offsetLabel"
-                android:layout_alignTop="@+id/limitEditText"
-                android:layout_alignBottom="@+id/limitEditText"
                 android:layout_alignStart="@+id/offsetLabel"
                 android:layout_alignEnd="@+id/offsetLabel"
-                android:layout_width="50dp"
+                android:layout_marginTop="5dp"
+                android:layout_width="wrap_content"
                 android:gravity="center_horizontal|center_vertical"
-                android:dropDownWidth="200dp"
                 android:layout_height="35dp"
-                android:dropDownVerticalOffset="10dp"
                 android:background="@drawable/edittext_bg"
                 android:hint="@string/enter_an_offset"
                 android:inputType="number"/>
 
+            <Button
+                android:id="@+id/submit_button"
+                android:layout_width="90dp"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@+id/limitEditText"
+                android:layout_alignEnd="@+id/offsetEditText"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="5dp"
+                android:layout_below="@+id/limitEditText"
+                android:padding="10dp"
+                android:textColor="#FFFFFF"
+                android:layout_gravity="center_horizontal|center_vertical"
+                android:background="@drawable/green_rounded_button"
+                android:text="@string/submit_button_text"/>
+
         </RelativeLayout>
+
+        <View
+            android:id="@+id/vertical_line"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_toEndOf="@+id/userInput"
+            android:layout_alignTop="@+id/userInput"
+            android:layout_alignBottom="@+id/userInput"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginStart="10dp"
+            app:layout_constraintTop_toBottomOf="@+id/spotify_logo_most_popular"
+            android:background="#D3D3D3"/>
 
         <android.support.v4.widget.SwipeRefreshLayout
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/swipeContainer"
             android:layout_width="match_parent"
             android:layout_height="500dp"
-            android:layout_marginTop="10dp"
-            android:layout_below="@+id/userInput">
+            android:layout_alignBottom="@+id/userInput"
+            android:layout_toEndOf="@+id/vertical_line"
+            android:layout_alignTop="@+id/userInput"
+            android:layout_marginStart="20dp">
 
             <FrameLayout
                 android:id="@+id/items_fragment_placeholder"
@@ -178,19 +207,6 @@
             </FrameLayout>
 
         </android.support.v4.widget.SwipeRefreshLayout>
-
-        <Button
-            android:id="@+id/submit_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/swipeContainer"
-            android:padding="10dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:textColor="#FFFFFF"
-            android:layout_gravity="center_horizontal|center_vertical"
-            android:background="@drawable/green_rounded_button"
-            android:text="@string/submit_button_text"/>
 
     </RelativeLayout>
 

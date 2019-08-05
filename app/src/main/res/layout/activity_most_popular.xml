@@ -39,19 +39,16 @@
             android:id="@+id/userInput"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentEnd="true"
             android:layout_below="@+id/line"
-            android:layout_gravity="center"
+            android:layout_centerHorizontal="true"
             android:orientation="vertical"
             android:layout_marginTop="5dp">
 
             <!-- label for query type -->
             <TextView
                 android:id="@+id/typeLabel"
-                android:layout_width="125dp"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
                 android:layout_marginTop="5dp"
                 android:layout_marginEnd="10dp"
                 android:text="@string/type"
@@ -65,12 +62,13 @@
                 android:layout_alignStart="@+id/typeLabel"
                 android:layout_alignEnd="@+id/typeLabel"
                 android:layout_marginTop="5dp"
-                android:layout_width="100dp"
+                android:layout_width="wrap_content"
                 android:layout_height="35dp"
-                android:dropDownWidth="125dp"
+                android:dropDownWidth="100dp"
                 android:dropDownVerticalOffset="10dp"
                 android:background="@drawable/spinner_bg"
                 android:popupBackground="@android:color/white"
+                android:paddingStart="0dp"
                 android:paddingEnd="14dp"
                 android:stateListAnimator="@animator/spinner_sla"
                 android:popupElevation="3dp"/>
@@ -78,7 +76,7 @@
             <!-- label for query time range -->
             <TextView
                 android:id = "@+id/timeRangeLabel"
-                android:layout_width="140dp"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:layout_alignTop="@+id/typeLabel"
                 android:layout_alignBottom="@+id/typeLabel"
@@ -96,12 +94,13 @@
                 android:layout_alignBottom="@+id/typeSpinner"
                 android:layout_alignStart="@+id/timeRangeLabel"
                 android:layout_alignEnd="@+id/timeRangeLabel"
-                android:layout_width="150dp"
-                android:dropDownWidth="140dp"
+                android:layout_width="wrap_content"
+                android:dropDownWidth="150dp"
                 android:layout_height="35dp"
                 android:dropDownVerticalOffset="10dp"
                 android:background="@drawable/spinner_bg"
                 android:popupBackground="@android:color/white"
+                android:paddingStart="0dp"
                 android:paddingEnd="14dp"
                 android:stateListAnimator="@animator/spinner_sla"
                 android:popupElevation="3dp"/>
@@ -109,7 +108,7 @@
             <!-- label for query limit -->
             <TextView
                 android:id = "@+id/limitLabel"
-                android:layout_width="50dp"
+                android:layout_width="75dp"
                 android:layout_height="wrap_content"
                 android:layout_alignTop="@+id/timeRangeLabel"
                 android:layout_alignBottom="@+id/timeRangeLabel"
@@ -128,9 +127,7 @@
                 android:layout_alignEnd="@+id/limitLabel"
                 android:layout_width="50dp"
                 android:gravity="center_horizontal|center_vertical"
-                android:dropDownWidth="200dp"
                 android:layout_height="35dp"
-                android:dropDownVerticalOffset="10dp"
                 android:background="@drawable/edittext_bg"
                 android:hint="@string/enter_a_limit"
                 android:inputType="number"/>
@@ -138,7 +135,7 @@
             <!-- label for query offset -->
             <TextView
                 android:id = "@+id/offsetLabel"
-                android:layout_width="50dp"
+                android:layout_width="40dp"
                 android:layout_height="wrap_content"
                 android:layout_alignTop="@+id/limitLabel"
                 android:layout_alignBottom="@+id/limitLabel"
@@ -154,12 +151,9 @@
                 android:layout_alignBottom="@+id/limitEditText"
                 android:layout_alignStart="@+id/offsetLabel"
                 android:layout_alignEnd="@+id/offsetLabel"
-                android:layout_alignParentEnd="true"
-                android:layout_width="50dp"
+                android:layout_width="wrap_content"
                 android:gravity="center_horizontal|center_vertical"
-                android:dropDownWidth="200dp"
                 android:layout_height="35dp"
-                android:dropDownVerticalOffset="10dp"
                 android:background="@drawable/edittext_bg"
                 android:hint="@string/enter_an_offset"
                 android:inputType="number"/>
