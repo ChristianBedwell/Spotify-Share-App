@@ -12,9 +12,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        tools:ignore="GoogleAppIndexingWarning">
-
+        tools:ignore="GoogleAppIndexingWarning"
+        android:theme="@style/LightTheme">
         <activity
             android:name=".Activities.AuthenticationActivity">
             <intent-filter>
@@ -31,6 +30,10 @@
         <activity
             android:name=".Activities.ArtistDetailActivity">
         </activity>
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>

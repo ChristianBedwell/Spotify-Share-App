@@ -39,11 +39,6 @@ public class TrackDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_track_detail);
 
-        // set title of action bar from default
-        getSupportActionBar().setTitle(String.format(
-                Locale.US, "View Track",
-                com.spotify.sdk.android.authentication.BuildConfig.VERSION_NAME));
-
         // initialize the views
         trackName = (TextView) findViewById(R.id.track_detail_name);
         trackYear = (TextView) findViewById(R.id.track_detail_year);

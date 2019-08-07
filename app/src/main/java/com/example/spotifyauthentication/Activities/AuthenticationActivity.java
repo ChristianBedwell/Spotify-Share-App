@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -20,8 +21,6 @@ import com.example.spotifyauthentication.R;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
-
-import java.util.Locale;
 
 public class AuthenticationActivity extends AppCompatActivity {
 
@@ -36,6 +35,7 @@ public class AuthenticationActivity extends AppCompatActivity {
     Button buttonAuthenticate;
     ProgressBar progressBar;
     TextView progressMessage;
+    Toolbar toolbar;
 
     // key for access token
     private final String TOKEN_KEY = "token";
@@ -44,14 +44,13 @@ public class AuthenticationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authentication);
-        getSupportActionBar().setTitle(String.format(
-                Locale.US, "Spotify Share App", com.spotify.sdk.android.authentication.BuildConfig.VERSION_NAME));
 
         // instantiate agreement checkbox, authentication button, and status bar/message
         checkbox = (CheckBox) findViewById(R.id.checkbox);
         buttonAuthenticate = (Button) findViewById(R.id.authentication_button);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         progressMessage = (TextView) findViewById(R.id.progressMessage);
+        toolbar = (Toolbar) findViewById(R.id.app_bar);
 
         // by default, button state is off because the user hasn't clicked the checkbox
         buttonAuthenticate.setVisibility(View.INVISIBLE);

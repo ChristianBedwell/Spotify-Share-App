@@ -33,5 +33,7 @@
     <string name="follower_count"> Followers</string>
     <string name="track_ranking">#</string>
     <string name="track_year_placeholder">Track Year</string>
+    <string name="default_action_bar_title">Share App</string>
+    <string name="most_popular_title">Top Artists and Tracks</string>
 
 </resources>

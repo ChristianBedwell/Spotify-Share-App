@@ -42,7 +42,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/horizontal_line"
-            android:layout_centerHorizontal="true"
             android:layout_alignParentStart="true"
             android:layout_gravity="center"
             android:orientation="horizontal"
@@ -195,9 +194,11 @@
             android:id="@+id/swipeContainer"
             android:layout_width="match_parent"
             android:layout_height="500dp"
+            android:layout_alignTop="@+id/userInput"
             android:layout_alignBottom="@+id/userInput"
             android:layout_toEndOf="@+id/vertical_line"
-            android:layout_alignTop="@+id/userInput"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="3dp"
             android:layout_marginStart="20dp">
 
             <FrameLayout

@@ -27,11 +27,6 @@ public class ArtistDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_artist_detail);
 
-        // set title of action bar from default
-        getSupportActionBar().setTitle(String.format(
-                Locale.US, "Share Artist",
-                com.spotify.sdk.android.authentication.BuildConfig.VERSION_NAME));
-
         // initialize the views
         artistName = (TextView) findViewById(R.id.artist_detail_name);
         artistFollowers = (TextView) findViewById(R.id.artist_detail_followers);

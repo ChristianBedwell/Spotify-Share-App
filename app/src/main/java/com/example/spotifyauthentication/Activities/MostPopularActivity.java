@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -33,6 +34,7 @@ public class MostPopularActivity extends AppCompatActivity
     private EditText limitEditText, offsetEditText;
     private Button submitButton;
     private SwipeRefreshLayout swipeContainer;
+    Toolbar toolbar;
 
     // string and integer to hold query parameters
     public String type, timeRange;
@@ -54,10 +56,7 @@ public class MostPopularActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_most_popular);
 
-        // set title of action bar from default
-        getSupportActionBar().setTitle(String.format(
-                Locale.US, "Top Artists and Tracks",
-                com.spotify.sdk.android.authentication.BuildConfig.VERSION_NAME));
+        toolbar = (Toolbar) findViewById(R.id.app_bar);
 
         // create swipe listener for swipe container
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
