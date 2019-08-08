@@ -22,6 +22,8 @@ import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
 
+import java.util.Objects;
+
 public class AuthenticationActivity extends AppCompatActivity {
 
     // declare constants
@@ -31,11 +33,11 @@ public class AuthenticationActivity extends AppCompatActivity {
     private String mAccessToken;
 
     // declare UI widgets
-    CheckBox checkbox;
-    Button buttonAuthenticate;
-    ProgressBar progressBar;
-    TextView progressMessage;
-    Toolbar toolbar;
+    private CheckBox checkbox;
+    private Button buttonAuthenticate;
+    private ProgressBar progressBar;
+    private TextView progressMessage;
+    private Toolbar toolbar;
 
     // key for access token
     private final String TOKEN_KEY = "token";
@@ -45,12 +47,16 @@ public class AuthenticationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authentication);
 
+        // add custom toolbar to the activity
+        toolbar = (Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(toolbar);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
+
         // instantiate agreement checkbox, authentication button, and status bar/message
         checkbox = (CheckBox) findViewById(R.id.checkbox);
         buttonAuthenticate = (Button) findViewById(R.id.authentication_button);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         progressMessage = (TextView) findViewById(R.id.progressMessage);
-        toolbar = (Toolbar) findViewById(R.id.app_bar);
 
         // by default, button state is off because the user hasn't clicked the checkbox
         buttonAuthenticate.setVisibility(View.INVISIBLE);
@@ -91,7 +97,6 @@ public class AuthenticationActivity extends AppCompatActivity {
     @Override
     protected void onPause(){
         super.onPause();
-
     }
 
     public void requestToken() {
@@ -136,12 +141,6 @@ public class AuthenticationActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(key, value);
         editor.apply();
-    }
-
-    // retrieve access token from shared preferences
-    public static String getDefaults(String key, Context context) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        return preferences.getString(key, null);
     }
 
     // get redirect uri using redirect scheme and host

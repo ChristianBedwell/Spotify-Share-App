@@ -1,18 +1,22 @@
 package com.example.spotifyauthentication.Activities;
 
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.support.v7.widget.Toolbar;
 
 import com.example.spotifyauthentication.R;
 import com.squareup.picasso.Picasso;
 
-import java.util.Locale;
+import java.util.Objects;
 
 public class ArtistDetailActivity extends AppCompatActivity {
 
@@ -21,11 +25,20 @@ public class ArtistDetailActivity extends AppCompatActivity {
     private Button shareButton;
     private ImageView artistImage;
     private RatingBar artistPopularity;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_artist_detail);
+
+        toolbar = (Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        Objects.requireNonNull(actionBar).setDisplayShowTitleEnabled(false);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(toolbar.getNavigationIcon()).setColorFilter(getResources().
+                getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
 
         // initialize the views
         artistName = (TextView) findViewById(R.id.artist_detail_name);
@@ -47,6 +60,16 @@ public class ArtistDetailActivity extends AppCompatActivity {
                 shareTrack();
             }
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home){
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public void shareTrack() {

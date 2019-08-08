@@ -25,10 +25,20 @@
             android:name=".Activities.MostPopularActivity">
         </activity>
         <activity
-            android:name=".Activities.TrackDetailActivity">
+            android:name=".Activities.TrackDetailActivity"
+            android:parentActivityName=".Activities.MostPopularActivity">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Activities.MostPopularActivity" />
         </activity>
         <activity
-            android:name=".Activities.ArtistDetailActivity">
+            android:name=".Activities.ArtistDetailActivity"
+            android:parentActivityName=".Activities.MostPopularActivity">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Activities.MostPopularActivity" />
         </activity>
 
         <meta-data

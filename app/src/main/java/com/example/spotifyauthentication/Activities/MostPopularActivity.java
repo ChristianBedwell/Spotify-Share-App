@@ -1,7 +1,7 @@
 package com.example.spotifyauthentication.Activities;
 
+import android.content.Intent;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -9,10 +9,13 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -22,8 +25,8 @@ import android.widget.EditText;
 import com.example.spotifyauthentication.CustomSpinner;
 import com.example.spotifyauthentication.Fragments.ItemsFragment;
 import com.example.spotifyauthentication.R;
+import com.spotify.sdk.android.authentication.AuthenticationClient;
 
-import java.util.Locale;
 import java.util.Objects;
 
 public class MostPopularActivity extends AppCompatActivity
@@ -34,7 +37,7 @@ public class MostPopularActivity extends AppCompatActivity
     private EditText limitEditText, offsetEditText;
     private Button submitButton;
     private SwipeRefreshLayout swipeContainer;
-    Toolbar toolbar;
+    private Toolbar toolbar;
 
     // string and integer to hold query parameters
     public String type, timeRange;
@@ -56,7 +59,11 @@ public class MostPopularActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_most_popular);
 
+        // add custom toolbar to the activity
         toolbar = (Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        Objects.requireNonNull(actionBar).setDisplayShowTitleEnabled(false);
 
         // create swipe listener for swipe container
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
@@ -136,6 +143,30 @@ public class MostPopularActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         // Do nothing
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // add the options items to the action bar
+        getMenuInflater().inflate(R.menu.menu_most_popular, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handle action bar item clicks
+        int id = item.getItemId();
+
+        // if logout item is clicked
+        if (id == R.id.action_logout) {
+            // clear authentication client cookies and navigate to authentication activity
+            //AuthenticationClient.logout(context);
+            Intent intent = new Intent(this, AuthenticationActivity.class);
+            startActivity(intent);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     // retrieve access token from shared preferences

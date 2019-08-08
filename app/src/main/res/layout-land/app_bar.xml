@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_marginStart="18dp"
-        android:layout_marginBottom="13.25dp"
+        android:layout_marginBottom="9.25dp"
         android:layout_toEndOf="@+id/spotify_logo"
         android:fontFamily="@font/lato"
         android:text="@string/default_action_bar_title"

@@ -1,10 +1,14 @@
 package com.example.spotifyauthentication.Activities;
 
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -19,7 +23,7 @@ import com.example.spotifyauthentication.R;
 import com.spotify.protocol.types.Track;
 import com.squareup.picasso.Picasso;
 
-import java.util.Locale;
+import java.util.Objects;
 
 public class TrackDetailActivity extends AppCompatActivity {
 
@@ -32,12 +36,22 @@ public class TrackDetailActivity extends AppCompatActivity {
     private TextView trackName, trackYear, trackArtist;
     private ImageView trackImage;
     private Button playButton, shareButton;
-    RatingBar trackPopularity;
+    private RatingBar trackPopularity;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_track_detail);
+
+        // add custom toolbar to the activity
+        toolbar = (Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        Objects.requireNonNull(actionBar).setDisplayShowTitleEnabled(false);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(toolbar.getNavigationIcon()).setColorFilter(getResources().
+                getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
 
         // initialize the views
         trackName = (TextView) findViewById(R.id.track_detail_name);
@@ -79,6 +93,16 @@ public class TrackDetailActivity extends AppCompatActivity {
         super.onBackPressed();
         Log.d(TAG, "Back pressed");
         SpotifyAppRemote.disconnect(mSpotifyAppRemote);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home){
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void openTrack() {

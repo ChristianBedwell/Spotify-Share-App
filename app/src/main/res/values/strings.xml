@@ -1,5 +1,4 @@
 <resources>
-
     <string name="app_name">Spotify Authentication</string>
     <string name="warning_need_agreement">You need to agree to the authentication statement.</string>
     <string name="token">Access Token: %1$s</string>
@@ -10,10 +9,11 @@
     <string name="authentication_prompt_title">Privacy Statement:</string>
     <string name="progress_message">Requesting access token...</string>
 
-
+    <!-- labels for each of the user input fields -->
     <string name="type">Type*</string>
     <string name="timeRange">Time Range</string>
     <string name="limit">Limit</string>
+    <string name="offset">Offset</string>
 
     <!-- prompts for type and time range spinners -->
     <string name="type_prompt">Type</string>
@@ -21,7 +21,7 @@
 
     <string name="submit_button_text">Submit</string>
     <string name="action_refresh">Refresh</string>
-    <string name="offset">Offset</string>
+
     <string name="enter_a_limit">0 - 50</string>
     <string name="enter_an_offset">0</string>
     <string name="track_name_placeholder">Track Name</string>
@@ -35,5 +35,12 @@
     <string name="track_year_placeholder">Track Year</string>
     <string name="default_action_bar_title">Share App</string>
     <string name="most_popular_title">Top Artists and Tracks</string>
+    <string name="action_logout">Logout</string>
+
+    <!-- tooltip text for each of the user input fields -->
+    <string name="type_tooltip_text">The type of entity to return.</string>
+    <string name="time_range_tooltip_text">Over what time frame the affinities are computed.</string>
+    <string name="limit_tooltip_text">The number of entities to return.</string>
+    <string name="offset_tooltip_text">The index of the first entity to return.</string>
 
 </resources>
