@@ -1,2 +1,2 @@
-# Spotify-API-Project
+# Spotify Share App
 Having recently acquired the skill-set for Android development, I created the Spotify Share App to apply what I have learned and to create an app that would be useful to me, since I am a hard-core music enthusiast. Essentially, the Spotify Share App authenticates an Android user with the Spotify API, allows the user to query their top artists and tracks with parameters entered via TextViews/Spinners, and displays the results in a RecyclerView. The user may also click on each query result to view an artist/track in detail and share it with a friend.
