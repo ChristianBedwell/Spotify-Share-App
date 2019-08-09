@@ -32,7 +32,7 @@ public class TrackDetailActivity extends AppCompatActivity {
     private static SpotifyAppRemote mSpotifyAppRemote;
     private static final String TAG = TrackDetailActivity.class.getSimpleName();
 
-    private String trackUri, shareLink;
+    private String trackUri, shareLink, trackShareName, trackShareArtist;
     private TextView trackName, trackYear, trackArtist;
     private ImageView trackImage;
     private Button playButton, shareButton;
@@ -65,6 +65,8 @@ public class TrackDetailActivity extends AppCompatActivity {
         // get intent extras from adapter
         trackUri = getIntent().getStringExtra("track_uri");
         shareLink = getIntent().getStringExtra("track_share_link");
+        trackShareName = getIntent().getStringExtra("track_share_name");
+        trackShareArtist = getIntent().getStringExtra("track_artist");
         trackName.setText(getIntent().getStringExtra("track_name"));
         trackYear.setText(getIntent().getStringExtra("track_year"));
         trackArtist.setText(getIntent().getStringExtra("track_artist"));
@@ -159,7 +161,8 @@ public class TrackDetailActivity extends AppCompatActivity {
 
         // Add data to the intent, the receiving app will decide
         // what to do with it.
-        share.putExtra(Intent.EXTRA_SUBJECT, trackName.toString() + " by " + trackArtist.toString());
+        share.putExtra(Intent.EXTRA_SUBJECT, trackShareName
+                + " by " + trackShareArtist);
         share.putExtra(Intent.EXTRA_TEXT, shareLink);
 
         startActivity(Intent.createChooser(share, "Share link!"));

@@ -92,6 +92,7 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.ArtistView
 
             detailIntent.putExtra("artist_name", new StringBuilder().append(artistItemNum).
                     append(".").append(" ").append(artistItem.getName()).toString());
+            detailIntent.putExtra("artist_share_name", artistItem.getName());
             detailIntent.putExtra("artist_followers", formatFollowerString);
             detailIntent.putExtra("artist_image_resource", artistItem.getImages().get(0).getUrl());
             detailIntent.putExtra("artist_share_link", artistItem.getExternalUrls().getSpotify());

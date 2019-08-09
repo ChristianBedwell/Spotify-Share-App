@@ -22,6 +22,11 @@
     <string name="submit_button_text">Submit</string>
     <string name="action_refresh">Refresh</string>
 
+    <!-- dynamic headers for MostPopularActivity -->
+    <string name="most_popular_header">Top Artists and Tracks</string>
+    <string name="top_artists_header">Top Artists</string>
+    <string name="top_tracks_header">Top Tracks</string>
+
     <string name="enter_a_limit">0 - 50</string>
     <string name="enter_an_offset">0</string>
     <string name="track_name_placeholder">Track Name</string>
@@ -34,7 +39,6 @@
     <string name="track_ranking">#</string>
     <string name="track_year_placeholder">Track Year</string>
     <string name="default_action_bar_title">Share App</string>
-    <string name="most_popular_title">Top Artists and Tracks</string>
     <string name="action_logout">Logout</string>
 
     <!-- tooltip text for each of the user input fields -->
@@ -42,5 +46,6 @@
     <string name="time_range_tooltip_text">Over what time frame the affinities are computed.</string>
     <string name="limit_tooltip_text">The number of entities to return.</string>
     <string name="offset_tooltip_text">The index of the first entity to return.</string>
+
 
 </resources>

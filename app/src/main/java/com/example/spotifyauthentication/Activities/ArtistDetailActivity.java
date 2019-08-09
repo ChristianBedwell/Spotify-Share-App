@@ -20,7 +20,7 @@ import java.util.Objects;
 
 public class ArtistDetailActivity extends AppCompatActivity {
 
-    private String shareLink;
+    private String shareLink, artistShareName;
     private TextView artistName, artistFollowers;
     private Button shareButton;
     private ImageView artistImage;
@@ -43,11 +43,12 @@ public class ArtistDetailActivity extends AppCompatActivity {
         // initialize the views
         artistName = (TextView) findViewById(R.id.artist_detail_name);
         artistFollowers = (TextView) findViewById(R.id.artist_detail_followers);
-        shareLink = getIntent().getStringExtra("artist_share_link");
         artistImage = (ImageView) findViewById(R.id.artist_detail_image);
         shareButton = (Button) findViewById(R.id.share_button);
         artistPopularity = (RatingBar) findViewById(R.id.artist_detail_popularity);
 
+        shareLink = getIntent().getStringExtra("artist_share_link");
+        artistShareName = getIntent().getStringExtra("artist_share_name");
         artistName.setText(getIntent().getStringExtra("artist_name"));
         artistFollowers.setText(getIntent().getStringExtra("artist_followers"));
         artistPopularity.setRating((getIntent().getFloatExtra("artist_popularity", 0.0f)));
@@ -79,7 +80,7 @@ public class ArtistDetailActivity extends AppCompatActivity {
 
         // Add data to the intent, the receiving app will decide
         // what to do with it.
-        share.putExtra(Intent.EXTRA_SUBJECT, artistName.toString() + " by " + artistName.toString());
+        share.putExtra(Intent.EXTRA_SUBJECT, artistShareName);
         share.putExtra(Intent.EXTRA_TEXT, shareLink);
 
         startActivity(Intent.createChooser(share, "Share link!"));

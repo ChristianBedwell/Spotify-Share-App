@@ -21,6 +21,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.example.spotifyauthentication.CustomSpinner;
 import com.example.spotifyauthentication.Fragments.ItemsFragment;
@@ -38,6 +39,7 @@ public class MostPopularActivity extends AppCompatActivity
     private Button submitButton;
     private SwipeRefreshLayout swipeContainer;
     private Toolbar toolbar;
+    private TextView header;
 
     // string and integer to hold query parameters
     public String type, timeRange;
@@ -138,6 +140,8 @@ public class MostPopularActivity extends AppCompatActivity
 
             swipeContainer.setRefreshing(false);
         });
+
+        header = (TextView) findViewById(R.id.most_popular_header);
     }
 
     @Override
@@ -183,11 +187,13 @@ public class MostPopularActivity extends AppCompatActivity
                 if(parent.getItemAtPosition(position).toString().equals("Artists")) {
                     type = "artists";
                     Log.d(TAG, type + " selected");
+                    header.setText(getString(R.string.top_artists_header));
                     break;
                 }
                 else if(parent.getItemAtPosition(position).toString().equals("Tracks")) {
                     type = "tracks";
                     Log.d(TAG, type + " selected");
+                    header.setText(getString(R.string.top_tracks_header));
                     break;
                 }
                 break;

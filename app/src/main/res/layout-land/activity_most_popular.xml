@@ -40,7 +40,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="@string/most_popular_title"
+            android:text="@string/most_popular_header"
             android:textStyle="bold"
             android:textColor="@android:color/black"
             android:alpha=".87"

@@ -78,6 +78,7 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
 
             detailIntent.putExtra("track_name", new StringBuilder().append(trackItemNum).
                     append(".").append(" ").append(trackItem.getName()).toString());
+            detailIntent.putExtra("track_share_name", trackItem.getName());
             detailIntent.putExtra("track_year", trackItem.getAlbum().getReleaseDate().substring(0,4));
             detailIntent.putExtra("track_artist", trackItem.getArtists().get(0).getName());
             detailIntent.putExtra("track_uri", trackItem.getUri());
