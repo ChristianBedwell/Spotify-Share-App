@@ -117,16 +117,18 @@ public class AuthenticationActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         final AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, data);
 
-        // if access token is not received, show snackbar message
-        if (mAccessToken == null) {
-            final Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_main), R.string.warning_need_token, Snackbar.LENGTH_SHORT);
-            snackbar.getView().setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
-            snackbar.show();
-        }
-
-        // check response for equivalent access token
+        // get access token from authentication client response
         if (AUTH_TOKEN_REQUEST_CODE == requestCode) {
+
             mAccessToken = response.getAccessToken();
+
+            // if access token is not received, show snackbar message and exit
+            if (mAccessToken == null) {
+                final Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_main), R.string.warning_need_token, Snackbar.LENGTH_SHORT);
+                snackbar.getView().setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
+                snackbar.show();
+                return;
+            }
         }
 
         // store access token in shared preferences and navigate to MostPopularActivity

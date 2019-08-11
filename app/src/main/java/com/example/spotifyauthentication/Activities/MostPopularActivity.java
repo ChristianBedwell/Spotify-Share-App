@@ -13,6 +13,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.Toolbar;
+import android.text.InputFilter;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,6 +26,7 @@ import android.widget.TextView;
 
 import com.example.spotifyauthentication.CustomSpinner;
 import com.example.spotifyauthentication.Fragments.ItemsFragment;
+import com.example.spotifyauthentication.InputFilterMinMax;
 import com.example.spotifyauthentication.R;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 
@@ -118,7 +120,9 @@ public class MostPopularActivity extends AppCompatActivity
 
         // instantiate edit text for limit
         limitEditText = (EditText) findViewById(R.id.limitEditText);
+        limitEditText.setFilters(new InputFilter[]{ new InputFilterMinMax(1, 50)});
         offsetEditText = (EditText) findViewById(R.id.offsetEditText);
+        offsetEditText.setFilters(new InputFilter[]{ new InputFilterMinMax(0, 42)});
 
         // instantiate button for query submission
         submitButton = (Button) findViewById(R.id.submit_button);
@@ -147,30 +151,6 @@ public class MostPopularActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         // Do nothing
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // add the options items to the action bar
-        getMenuInflater().inflate(R.menu.menu_most_popular, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // handle action bar item clicks
-        int id = item.getItemId();
-
-        // if logout item is clicked
-        if (id == R.id.action_logout) {
-            // clear authentication client cookies and navigate to authentication activity
-            //AuthenticationClient.logout(context);
-            Intent intent = new Intent(this, AuthenticationActivity.class);
-            startActivity(intent);
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     // retrieve access token from shared preferences
