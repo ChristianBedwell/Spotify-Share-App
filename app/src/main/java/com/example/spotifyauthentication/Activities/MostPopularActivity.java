@@ -1,6 +1,5 @@
 package com.example.spotifyauthentication.Activities;
 
-import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.content.Context;
@@ -15,8 +14,6 @@ import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.Toolbar;
 import android.text.InputFilter;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -28,7 +25,6 @@ import com.example.spotifyauthentication.CustomSpinner;
 import com.example.spotifyauthentication.Fragments.ItemsFragment;
 import com.example.spotifyauthentication.InputFilterMinMax;
 import com.example.spotifyauthentication.R;
-import com.spotify.sdk.android.authentication.AuthenticationClient;
 
 import java.util.Objects;
 
@@ -166,7 +162,6 @@ public class MostPopularActivity extends AppCompatActivity
             case R.id.typeSpinner:
                 if(parent.getItemAtPosition(position).toString().equals("Artists")) {
                     type = "artists";
-                    Log.d(TAG, type + " selected");
                     header.setText(getString(R.string.top_artists_header));
                     break;
                 }

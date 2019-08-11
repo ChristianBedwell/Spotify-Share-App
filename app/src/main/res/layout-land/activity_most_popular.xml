@@ -36,7 +36,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <TextView
-            android:id="@+id/most_popular_title"
+            android:id="@+id/most_popular_header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
@@ -50,7 +50,7 @@
             android:id="@+id/horizontal_line"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_below="@+id/most_popular_title"
+            android:layout_below="@+id/most_popular_header"
             android:layout_marginTop="10dp"
             android:background="#D3D3D3"/>
 
