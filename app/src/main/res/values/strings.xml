@@ -1,11 +1,11 @@
 <resources>
-    <string name="app_name">Spotify Authentication</string>
+    <string name="app_name">Spotify Share App</string>
     <string name="warning_need_agreement">You need to agree to the authentication statement.</string>
     <string name="token">Access Token: %1$s</string>
     <string name="authentication_prompt">To access the analytics features provided with this app, you are required to authenticate with the Spotify API. You may authenticate with the Spotify API through the Spotify application, if it is installed locally on your Android device, or you may authenticate through a WebView provided. If you are not already logged into your Spotify account, you will be required to enter your Spotify login credentials and accept the supplied scopes. \n \nBy authenticating with the Spotify API, you acknowledge that we do not share your data with third party sources, and only store data that is relevant to the scope of analytical results provided. Please also note that on-demand playback requires a Spotify premium account or an Android tablet which supports this feature. </string>
     <string name="authenticate_button_text">Authenticate</string>
     <string name="checkbox_text">I Agree</string>
-    <string name="warning_need_token">You need to request an access token first.</string>
+    <string name="warning_need_token">A network error has occurred. Please check your network connection and try again.</string>
     <string name="authentication_prompt_title">Privacy Statement:</string>
     <string name="progress_message">Requesting access token...</string>
 

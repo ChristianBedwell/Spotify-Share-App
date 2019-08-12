@@ -124,7 +124,7 @@ public class AuthenticationActivity extends AppCompatActivity {
 
             // if access token is not received, show snackbar message and exit
             if (mAccessToken == null) {
-                final Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_main), R.string.warning_need_token, Snackbar.LENGTH_SHORT);
+                final Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_main), R.string.warning_need_token, Snackbar.LENGTH_LONG);
                 snackbar.getView().setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
                 snackbar.show();
                 return;
