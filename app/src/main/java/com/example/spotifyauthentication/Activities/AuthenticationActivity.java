@@ -135,6 +135,7 @@ public class AuthenticationActivity extends AppCompatActivity {
         setDefaults(TOKEN_KEY, mAccessToken, this);
         Intent intent = new Intent(getApplicationContext(), MostPopularActivity.class);
         startActivity(intent);
+        finish();
     }
 
     // set default shared preferences for app

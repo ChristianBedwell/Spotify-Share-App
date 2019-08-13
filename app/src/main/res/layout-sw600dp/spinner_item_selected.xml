@@ -8,6 +8,7 @@
     android:layout_marginStart="8dp"
     android:layout_marginTop="8dp"
     android:layout_marginEnd="8dp"
+    android:textSize="20sp"
     android:background="@drawable/abc_spinner_mtrl_am_alpha"
     android:ellipsize="marquee"
     android:singleLine="true" />

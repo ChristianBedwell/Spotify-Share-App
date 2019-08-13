@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.Toolbar
+    android:id="@+id/toolbar"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:background="@color/colorPrimary"
+    android:theme="@style/AppTheme.PopupOverlay"
+    android:elevation="4dp">
+
+    <ImageView
+        android:id="@+id/spotify_logo"
+        android:layout_width="125dp"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentStart="true"
+        android:src="@drawable/ic_spotify_logo_white" />
+
+    <TextView
+        android:id="@+id/default_action_bar_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="9dp"
+        android:layout_marginBottom="17dp"
+        android:layout_toEndOf="@+id/spotify_logo"
+        android:fontFamily="@font/lato"
+        android:text="@string/default_action_bar_title"
+        android:textColor="@android:color/white"
+        android:textSize="25.25sp" />
+
+</android.support.v7.widget.Toolbar>

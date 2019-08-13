@@ -1,6 +1,5 @@
 package com.example.spotifyauthentication.Activities;
 
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -8,7 +7,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.Toolbar;
@@ -17,7 +15,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -34,15 +31,13 @@ public class MostPopularActivity extends AppCompatActivity
     private String mAccessToken;
 
     private EditText limitEditText, offsetEditText;
-    private Button submitButton;
     private SwipeRefreshLayout swipeContainer;
     private Toolbar toolbar;
     private TextView header;
 
     // string and integer to hold query parameters
-    public String type, timeRange;
-
-    public Fragment itemsFragment;
+    public String type = "artists";
+    public String timeRange = "";
 
     // key for access token
     private final String TOKEN_KEY = "token";
@@ -62,8 +57,10 @@ public class MostPopularActivity extends AppCompatActivity
         // add custom toolbar to the activity
         toolbar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
-        ActionBar actionBar = getSupportActionBar();
-        Objects.requireNonNull(actionBar).setDisplayShowTitleEnabled(false);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
+
+        // retrieve access token from shared preferences and store it
+        mAccessToken = getDefaults(TOKEN_KEY, this);
 
         // create swipe listener for swipe container
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
@@ -120,28 +117,15 @@ public class MostPopularActivity extends AppCompatActivity
         offsetEditText = (EditText) findViewById(R.id.offsetEditText);
         offsetEditText.setFilters(new InputFilter[]{ new InputFilterMinMax(0, 42)});
 
-        // instantiate button for query submission
-        submitButton = (Button) findViewById(R.id.submit_button);
-
-        // retrieve access token from shared preferences and store it
-        mAccessToken = getDefaults(TOKEN_KEY, this);
-
-        // create on click listener for submit button
-        submitButton.setOnClickListener(v -> {
-            // display progress wheel until data has been pulled
-            swipeContainer.setRefreshing(true);
-
-            // create new instance of itemsFragment and fill fragment placeholder
-            itemsFragment = newInstance(mAccessToken, type, timeRange,
-                    limitEditText.getText().toString(), offsetEditText.getText().toString());
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.items_fragment_placeholder, itemsFragment);
-            fragmentTransaction.commit();
-
-            swipeContainer.setRefreshing(false);
-        });
-
+        // instantiate header text view
         header = (TextView) findViewById(R.id.most_popular_header);
+
+        // create new instance of itemsFragment and fill fragment placeholder
+        ItemsFragment itemsFragment = newInstance(mAccessToken, type, timeRange,
+                limitEditText.getText().toString(), offsetEditText.getText().toString());
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.items_fragment_placeholder, itemsFragment);
+        fragmentTransaction.commit();
     }
 
     @Override
