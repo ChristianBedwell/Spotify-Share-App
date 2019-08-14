@@ -10,61 +10,74 @@
 
     <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp">
 
         <ImageView
-            android:id="@+id/artist_picture"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_centerVertical="true"
-            android:layout_margin="10dp"/>
+            android:id="@+id/track_picture"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:layout_centerVertical="true"/>
 
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toEndOf="@+id/artist_picture"
-            android:layout_alignTop="@+id/artist_picture"
-            android:layout_alignBottom="@+id/artist_picture"
-            android:layout_marginEnd="10dp">
+            android:layout_toEndOf="@+id/track_picture"
+            android:layout_alignTop="@+id/track_picture"
+            android:layout_alignBottom="@+id/track_picture"
+            android:layout_marginEnd="10dp"
+            android:layout_marginStart="15dp">
 
             <TextView
-                android:id="@+id/artist_name"
+                android:id="@+id/track_name"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal|center_vertical"
-                android:text="@string/artist_name_placeholder"
+                android:text="@string/track_name_placeholder"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@android:color/black"
                 android:alpha=".87"
-                android:layout_alignParentTop="true"
-                android:layout_marginStart="6dp"/>
+                android:layout_alignParentTop="true"/>
 
             <TextView
-                android:id="@+id/artist_followers"
+                android:id="@+id/track_year"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="5dp"
-                android:text="@string/artist_followers_placeholder"
+                android:text="@string/track_year_placeholder"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@android:color/black"
+                android:alpha=".60"
+                android:layout_below="@+id/track_name"
+                android:layout_alignStart="@+id/track_name"/>
+
+            <TextView
+                android:id="@+id/track_artist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="5dp"
+                android:text="@string/track_artist_placeholder"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="@android:color/black"
                 android:alpha=".60"
                 android:layout_alignParentBottom="true"
-                android:layout_below="@+id/artist_name"
-                android:layout_marginStart="5dp"/>
+                android:layout_below="@+id/track_year"
+                android:layout_alignStart="@+id/track_name"/>
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_alignEnd="@+id/artist_name"
-                android:layout_alignTop="@+id/artist_followers"
-                android:layout_alignBottom="@+id/artist_followers"
+                android:layout_alignTop="@+id/track_artist"
+                android:layout_alignBottom="@+id/track_artist"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentBottom="true">
 
                 <RatingBar
-                    android:id="@+id/artist_popularity"
+                    android:id="@+id/track_popularity"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"

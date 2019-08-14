@@ -1,5 +1,7 @@
 package com.example.spotifyauthentication.Fragments;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -314,19 +316,25 @@ public class ItemsFragment extends Fragment {
 
     // set up artist recycler view using list of items
     private void setUpArtistRecycler(List<com.example.spotifyauthentication.Models.Artists.Item> items) {
-        artistAdapter = new ArtistAdapter(getActivity(), items);
-        layoutManager = new GridLayoutManager(getContext(),
-                getResources().getInteger(R.integer.grid_column_count));
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(artistAdapter);
+        Activity activity = getActivity();
+        if(activity != null) {
+            artistAdapter = new ArtistAdapter(activity, items);
+            layoutManager = new GridLayoutManager(activity,
+                    getResources().getInteger(R.integer.grid_column_count));
+            recyclerView.setLayoutManager(layoutManager);
+            recyclerView.setAdapter(artistAdapter);
+        }
     }
 
     // set up artist recycler view using list of items
     private void setUpTrackRecycler(List<com.example.spotifyauthentication.Models.Tracks.Item> items) {
-        trackAdapter = new TrackAdapter(getActivity(), items);
-        layoutManager = new GridLayoutManager(getContext(),
-                getResources().getInteger(R.integer.grid_column_count));
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(trackAdapter);
+        Activity activity = getActivity();
+        if(activity != null) {
+            trackAdapter = new TrackAdapter(activity, items);
+            layoutManager = new GridLayoutManager(activity,
+                    getResources().getInteger(R.integer.grid_column_count));
+            recyclerView.setLayoutManager(layoutManager);
+            recyclerView.setAdapter(trackAdapter);
+        }
     }
 }

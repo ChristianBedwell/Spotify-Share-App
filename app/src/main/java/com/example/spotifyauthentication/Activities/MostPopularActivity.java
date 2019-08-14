@@ -78,7 +78,7 @@ public class MostPopularActivity extends AppCompatActivity
         // create array adapter to set items for type spinner
         ArrayAdapter typeItemsAdapter = new ArrayAdapter<>(MostPopularActivity.this,
                 R.layout.spinner_item_selected, typeItems);
-        typeItemsAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        typeItemsAdapter.setDropDownViewResource(R.layout.spinner_item_dropdown);
 
         // instantiate type spinner and set item selected listener
         final CustomSpinner typeSpinner = (CustomSpinner) findViewById(R.id.typeSpinner);
@@ -96,7 +96,7 @@ public class MostPopularActivity extends AppCompatActivity
         // create array adapter to set items for time range spinner
         ArrayAdapter timeRangeItemsAdapter = new ArrayAdapter<>(MostPopularActivity.this,
                 R.layout.spinner_item_selected, timeRangeItems);
-        timeRangeItemsAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        timeRangeItemsAdapter.setDropDownViewResource(R.layout.spinner_item_dropdown);
 
         // instantiate time range spinner and set item selected listener
         final CustomSpinner timeRangeSpinner = (CustomSpinner) findViewById(R.id.timeRangeSpinner);

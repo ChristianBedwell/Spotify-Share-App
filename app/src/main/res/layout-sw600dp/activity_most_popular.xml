@@ -75,7 +75,7 @@
             <!-- selects type (album or track) to filter the query results -->
             <com.example.spotifyauthentication.CustomSpinner
                 android:id="@+id/typeSpinner"
-                style="@style/Widget.AppCompat.Spinner"
+                style="@style/SpinnerTheme"
                 android:layout_below="@+id/typeLabel"
                 android:layout_alignStart="@+id/typeLabel"
                 android:layout_alignEnd="@+id/typeLabel"
@@ -84,13 +84,11 @@
                 android:layout_height="50dp"
                 android:dropDownWidth="150dp"
                 android:dropDownVerticalOffset="10dp"
-                android:background="@drawable/spinner_bg"
                 android:popupBackground="@android:color/white"
                 android:paddingStart="0dp"
                 android:paddingEnd="14dp"
                 android:stateListAnimator="@animator/spinner_sla"
                 android:popupElevation="3dp"
-                android:textSize="20sp"
                 android:tooltipText="@string/type_tooltip_text"/>
 
             <!-- label for query time range -->
@@ -109,7 +107,7 @@
             <!-- selects time range from which to query results -->
             <com.example.spotifyauthentication.CustomSpinner
                 android:id="@+id/timeRangeSpinner"
-                style="@style/Widget.AppCompat.Spinner"
+                style="@style/SpinnerTheme"
                 android:layout_below="@+id/timeRangeLabel"
                 android:layout_alignTop="@+id/typeSpinner"
                 android:layout_alignBottom="@+id/typeSpinner"
@@ -119,13 +117,11 @@
                 android:dropDownWidth="200dp"
                 android:layout_height="35dp"
                 android:dropDownVerticalOffset="10dp"
-                android:background="@drawable/spinner_bg"
                 android:popupBackground="@android:color/white"
                 android:paddingStart="0dp"
                 android:paddingEnd="14dp"
                 android:stateListAnimator="@animator/spinner_sla"
                 android:popupElevation="3dp"
-                android:textSize="20sp"
                 android:tooltipText="@string/time_range_tooltip_text"/>
 
             <!-- label for query limit -->
