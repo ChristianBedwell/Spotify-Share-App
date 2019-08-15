@@ -8,6 +8,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -98,13 +99,24 @@ public class TrackDetailActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_most_popular, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home){
-            onBackPressed();
-            return true;
+        switch (item.getItemId()) {
+            case R.id.home:
+                onBackPressed();
+                return true;
+            case R.id.action_settings:
+                // open settings activity
+                return true;
+            default:
+                return super.onContextItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     private void openTrack() {

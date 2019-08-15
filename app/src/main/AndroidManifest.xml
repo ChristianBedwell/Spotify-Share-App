@@ -27,6 +27,7 @@
         </activity>
         <activity
             android:name=".Activities.MostPopularActivity"
+            android:launchMode="singleTop"
             android:theme="@style/LightTheme">
         </activity>
         <activity

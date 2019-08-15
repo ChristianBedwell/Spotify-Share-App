@@ -30,6 +30,8 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentBottom="true"
         android:padding="8dp"
+        android:layout_marginStart="6dp"
+        android:layout_marginEnd="6dp"
         android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
@@ -67,7 +69,7 @@
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:layout_marginEnd="10dp"
+                android:layout_marginEnd="12dp"
                 android:text="@string/type"
                 android:textSize="20sp"
                 android:textColor="#1E1E1E"/>
@@ -79,9 +81,9 @@
                 android:layout_below="@+id/typeLabel"
                 android:layout_alignStart="@+id/typeLabel"
                 android:layout_alignEnd="@+id/typeLabel"
-                android:layout_marginTop="11dp"
+                android:layout_marginTop="8dp"
                 android:layout_width="wrap_content"
-                android:layout_height="50dp"
+                android:layout_height="45dp"
                 android:dropDownWidth="150dp"
                 android:dropDownVerticalOffset="10dp"
                 android:popupBackground="@android:color/white"
@@ -99,7 +101,7 @@
                 android:layout_alignTop="@+id/typeLabel"
                 android:layout_alignBottom="@+id/typeLabel"
                 android:layout_toEndOf="@+id/typeLabel"
-                android:layout_marginEnd="10dp"
+                android:layout_marginEnd="12dp"
                 android:text="@string/timeRange"
                 android:textSize="20sp"
                 android:textColor="#1E1E1E"/>
@@ -115,7 +117,7 @@
                 android:layout_alignEnd="@+id/timeRangeLabel"
                 android:layout_width="wrap_content"
                 android:dropDownWidth="200dp"
-                android:layout_height="35dp"
+                android:layout_height="30dp"
                 android:dropDownVerticalOffset="10dp"
                 android:popupBackground="@android:color/white"
                 android:paddingStart="0dp"
@@ -132,7 +134,7 @@
                 android:layout_alignTop="@+id/timeRangeLabel"
                 android:layout_alignBottom="@+id/timeRangeLabel"
                 android:layout_toEndOf="@+id/timeRangeLabel"
-                android:layout_marginEnd="10dp"
+                android:layout_marginEnd="12dp"
                 android:textSize="20sp"
                 android:text="@string/limit"
                 android:textColor="#1E1E1E"/>
@@ -147,7 +149,7 @@
                 android:layout_alignEnd="@+id/limitLabel"
                 android:layout_width="wrap_content"
                 android:gravity="center_horizontal|center_vertical"
-                android:layout_height="35dp"
+                android:layout_height="30dp"
                 android:background="@drawable/edittext_bg"
                 android:hint="@string/enter_a_limit"
                 android:inputType="number"
@@ -176,7 +178,7 @@
                 android:layout_alignEnd="@+id/offsetLabel"
                 android:layout_width="wrap_content"
                 android:gravity="center_horizontal|center_vertical"
-                android:layout_height="35dp"
+                android:layout_height="30dp"
                 android:background="@drawable/edittext_bg"
                 android:hint="@string/enter_an_offset"
                 android:inputType="number"
@@ -190,7 +192,7 @@
             android:id="@+id/swipeContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="11dp"
             android:layout_below="@+id/userInput">
 
             <FrameLayout
