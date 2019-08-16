@@ -56,7 +56,7 @@
         <ScrollView
             android:id="@+id/authentication_scroll_view"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="125dp"
             android:layout_below="@+id/line"
             android:layout_marginTop="16dp"
             android:layout_marginLeft="8dp"

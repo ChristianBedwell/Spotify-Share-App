@@ -36,10 +36,13 @@ public class MostPopularActivity extends AppCompatActivity
     private SwipeRefreshLayout swipeContainer;
     private Toolbar toolbar;
     private TextView header;
+    private ItemsFragment itemsFragment;
 
     // string and integer to hold query parameters
-    public String type = "artists";
-    public String timeRange = "";
+    public String type;
+    public String timeRange;
+    public String limit;
+    public String offset;
 
     // key for access token
     private final String TOKEN_KEY = "token";
@@ -67,9 +70,13 @@ public class MostPopularActivity extends AppCompatActivity
         // create swipe listener for swipe container
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
         swipeContainer.setOnRefreshListener(() -> {
+            // get values from limit and offset edit text fields
+            limit = limitEditText.getText().toString();
+            offset = offsetEditText.getText().toString();
+
             // create new instance of itemsFragment and fill fragment placeholder
-            ItemsFragment itemsFragment = newInstance(mAccessToken, type, timeRange,
-                    limitEditText.getText().toString(), offsetEditText.getText().toString());
+            itemsFragment = newInstance(mAccessToken, type, timeRange,
+                    limit, offset);
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.items_fragment_placeholder, itemsFragment);
             fragmentTransaction.commit();
@@ -122,12 +129,27 @@ public class MostPopularActivity extends AppCompatActivity
         // instantiate header text view
         header = (TextView) findViewById(R.id.most_popular_header);
 
-        // create new instance of itemsFragment and fill fragment placeholder
-        ItemsFragment itemsFragment = newInstance(mAccessToken, type, timeRange,
-                limitEditText.getText().toString(), offsetEditText.getText().toString());
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.items_fragment_placeholder, itemsFragment);
-        fragmentTransaction.commit();
+        // if a configuration change has occurred, restore the fragment placeholder
+        if(savedInstanceState != null) {
+            itemsFragment = (ItemsFragment) getSupportFragmentManager().findFragmentById(R.id.items_fragment_placeholder);
+        }
+        // if it is first time onCreate() method is called
+        else {
+            // instantiate default values for type and time range spinners
+            type = "artists";
+            timeRange = "";
+
+            // get values from limit and offset edit text fields
+            limit = limitEditText.getText().toString();
+            offset = offsetEditText.getText().toString();
+
+            // create new instance of itemsFragment and fill fragment placeholder
+            itemsFragment = newInstance(mAccessToken, type, timeRange,
+                    limitEditText.getText().toString(), offsetEditText.getText().toString());
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.items_fragment_placeholder, itemsFragment);
+            fragmentTransaction.commit();
+        }
     }
 
     @Override
