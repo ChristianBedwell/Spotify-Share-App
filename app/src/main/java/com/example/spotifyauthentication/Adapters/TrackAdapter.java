@@ -1,5 +1,6 @@
 package com.example.spotifyauthentication.Adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -97,6 +98,7 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
             detailIntent.putExtra("track_share_link", trackItem.getExternalUrls().getSpotify());
             detailIntent.putExtra("track_popularity", (float) (trackItem.getPopularity()) / 20);
             mContext.startActivity(detailIntent);
+            ((Activity) mContext).overridePendingTransition(R.anim.most_popular_activity_in, R.anim.most_popular_activity_out);
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.example.spotifyauthentication.Adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -53,6 +54,7 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.ArtistView
 
         artistViewHolder.artistFollowers.setText(new StringBuilder().append(mContext.getString(R.string.follower_count)).append(": ").append(formatFollowerCount));
         artistViewHolder.artistPopularityNumber.setText(String.valueOf(precision.format((float) artistItems.get(position).getPopularity() / 20)));
+        artistViewHolder.artistItemNumber.setText(new StringBuilder().append(artistItemNum));
         artistViewHolder.artistPopularity.setRating((float) (artistItems.get(position).getPopularity()) / 20);
     }
 
@@ -64,7 +66,7 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.ArtistView
     public class ArtistViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         ImageView artistImage;
-        TextView artistName, artistFollowers, artistPopularityNumber;
+        TextView artistName, artistFollowers, artistPopularityNumber, artistItemNumber;
         RatingBar artistPopularity;
 
         public ArtistViewHolder(View itemView) {
@@ -75,6 +77,7 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.ArtistView
             artistName = (TextView) itemView.findViewById(R.id.artist_name);
             artistFollowers = (TextView) itemView.findViewById(R.id.artist_followers);
             artistPopularityNumber = (TextView) itemView.findViewById(R.id.artist_popularity_number);
+            artistItemNumber = (TextView) itemView.findViewById(R.id.artist_item_number);
             artistPopularity = (RatingBar) itemView.findViewById(R.id.artist_popularity);
 
             itemView.setOnClickListener(this);
@@ -101,10 +104,12 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.ArtistView
             detailIntent.putExtra("artist_share_name", artistItem.getName());
             detailIntent.putExtra("artist_followers", formatFollowerString);
             detailIntent.putExtra("artist_popularity_number", String.valueOf(precision.format((float) artistItem.getPopularity() / 20)));
+            detailIntent.putExtra("artist_item_number", String.valueOf(artistItemNum));
             detailIntent.putExtra("artist_image_resource", artistItem.getImages().get(0).getUrl());
             detailIntent.putExtra("artist_share_link", artistItem.getExternalUrls().getSpotify());
             detailIntent.putExtra("artist_popularity", (float) (artistItem.getPopularity()) / 20);
             mContext.startActivity(detailIntent);
+            ((Activity) mContext).overridePendingTransition(R.anim.most_popular_activity_in, R.anim.most_popular_activity_out);
         }
     }
 }

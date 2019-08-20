@@ -98,7 +98,7 @@ public class TrackDetailActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Log.d(TAG, "Back pressed");
+        overridePendingTransition(R.anim.detail_activity_in, R.anim.detail_activity_out);
         SpotifyAppRemote.disconnect(mSpotifyAppRemote);
     }
 
@@ -111,16 +111,16 @@ public class TrackDetailActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.home:
-                onBackPressed();
-                return true;
-            case R.id.action_settings:
-                // open settings activity
-                return true;
-            default:
-                return super.onContextItemSelected(item);
+        int id = item.getItemId();
+        if (id == android.R.id.home){
+            onBackPressed();
+            return true;
         }
+        else if(id == R.id.action_settings) {
+            // open settings activity
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void openTrack() {

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -14,6 +13,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 
 import com.example.spotifyauthentication.Adapters.ArtistAdapter;
 import com.example.spotifyauthentication.Adapters.TrackAdapter;
@@ -323,6 +324,7 @@ public class ItemsFragment extends Fragment {
                     getResources().getInteger(R.integer.grid_column_count));
             recyclerView.setLayoutManager(layoutManager);
             recyclerView.setAdapter(artistAdapter);
+            runLayoutAnimation(recyclerView);
         }
     }
 
@@ -335,6 +337,16 @@ public class ItemsFragment extends Fragment {
                     getResources().getInteger(R.integer.grid_column_count));
             recyclerView.setLayoutManager(layoutManager);
             recyclerView.setAdapter(trackAdapter);
+            runLayoutAnimation(recyclerView);
         }
+    }
+
+    private void runLayoutAnimation(final RecyclerView recyclerView) {
+        final Context context = recyclerView.getContext();
+        final LayoutAnimationController controller =
+                AnimationUtils.loadLayoutAnimation(context, R.anim.layout_animation_fall_down);
+        recyclerView.setLayoutAnimation(controller);
+        Objects.requireNonNull(recyclerView.getAdapter()).notifyDataSetChanged();
+        recyclerView.scheduleLayoutAnimation();
     }
 }

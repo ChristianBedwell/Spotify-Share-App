@@ -108,6 +108,23 @@
 
         </RelativeLayout>
 
+        <TextView
+            android:id="@+id/artist_detail_item_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/artist_detail_image"
+            android:layout_alignEnd="@+id/artist_detail_image"
+            android:layout_alignTop="@+id/artist_detail_image"
+            android:layout_alignBottom="@+id/artist_detail_image"
+            android:gravity="center_vertical|center_horizontal"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@android:color/white"
+            android:fontFamily="@font/lato"
+            android:textSize="30sp"
+            android:shadowColor="@android:color/black"
+            android:text="@string/track_item_number_placeholder"
+            android:background="@drawable/scrim"/>
+
         <View
             android:id="@+id/line_separator"
             android:layout_width="match_parent"

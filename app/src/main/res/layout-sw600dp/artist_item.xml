@@ -85,6 +85,23 @@
 
         </RelativeLayout>
 
+        <TextView
+            android:id="@+id/artist_item_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/artist_picture"
+            android:layout_alignEnd="@+id/artist_picture"
+            android:layout_alignTop="@+id/artist_picture"
+            android:layout_alignBottom="@+id/artist_picture"
+            android:gravity="center_vertical|center_horizontal"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@android:color/white"
+            android:fontFamily="@font/lato"
+            android:textSize="24sp"
+            android:shadowColor="@android:color/black"
+            android:text="@string/track_item_number_placeholder"
+            android:background="@drawable/scrim"/>
+
     </RelativeLayout>
 
 </android.support.v7.widget.CardView>
