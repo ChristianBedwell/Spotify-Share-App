@@ -24,7 +24,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="5dp"
+        android:paddingTop="0dp"
         android:paddingBottom="10dp"
         android:layout_margin="10dp"
         tools:context="com.example.spotifyauthentication.Activities.TrackDetailActivity"
@@ -32,8 +32,8 @@
 
         <ImageView
             android:id="@+id/artist_detail_image"
-            android:layout_width="75dp"
-            android:layout_height="75dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:layout_alignParentTop="true"
             android:adjustViewBounds="true" />
 
@@ -57,6 +57,7 @@
                 android:layout_alignParentStart="true"
                 android:layout_centerHorizontal="true"
                 android:text="@string/artist_name_placeholder"
+                android:textSize="28sp"
                 android:textColor="@android:color/black"
                 android:alpha=".87"/>
 
@@ -69,6 +70,22 @@
                 android:layout_marginBottom="5dp"
                 android:layout_alignStart="@+id/artist_detail_name"
                 android:text="@string/artist_followers_placeholder"
+                android:textSize="22sp"
+                android:textColor="@android:color/black"
+                android:alpha=".60"/>
+
+            <TextView
+                android:id="@+id/artist_popularity_number"
+                style="@style/TextAppearance.AppCompat.Medium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/artist_detail_name"
+                android:layout_alignBottom="@+id/artist_detail_name"
+                android:layout_alignEnd="@+id/artist_detail_name"
+                android:layout_alignParentEnd="true"
+                android:gravity="center_vertical"
+                android:text="@string/popularity_number_placeholder"
+                android:textSize="22sp"
                 android:textColor="@android:color/black"
                 android:alpha=".60"/>
 
@@ -110,7 +127,7 @@
             <Button
                 android:id="@+id/share_button"
                 android:layout_width="175dp"
-                android:layout_height="65dp"
+                android:layout_height="55dp"
                 android:layout_centerHorizontal="true"
                 android:layout_alignParentStart="true"
                 android:background="@drawable/white_rounded_button"

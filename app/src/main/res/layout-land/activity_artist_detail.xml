@@ -24,7 +24,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="5dp"
+        android:paddingTop="0dp"
         android:paddingBottom="10dp"
         android:layout_margin="10dp"
         tools:context="com.example.spotifyauthentication.Activities.TrackDetailActivity"
@@ -69,6 +69,19 @@
                 android:layout_marginBottom="5dp"
                 android:layout_alignStart="@+id/artist_detail_name"
                 android:text="@string/artist_followers_placeholder"
+                android:textColor="@android:color/black"
+                android:alpha=".60"/>
+
+            <TextView
+                android:id="@+id/artist_popularity_number"
+                style="@style/TextAppearance.AppCompat.Subhead"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/artist_detail_name"
+                android:layout_alignBottom="@+id/artist_detail_name"
+                android:layout_alignEnd="@+id/artist_detail_name"
+                android:layout_alignParentEnd="true"
+                android:text="@string/popularity_number_placeholder"
                 android:textColor="@android:color/black"
                 android:alpha=".60"/>
 

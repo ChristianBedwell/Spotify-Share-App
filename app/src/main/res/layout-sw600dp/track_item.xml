@@ -32,7 +32,7 @@
                 android:id="@+id/track_name"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:layout_width="wrap_content"
+                android:layout_width="350dp"
                 android:layout_height="wrap_content"
                 android:text="@string/track_name_placeholder"
                 android:textAppearance="?android:attr/textAppearanceLarge"
@@ -67,7 +67,21 @@
                 android:layout_below="@+id/track_year"
                 android:layout_alignStart="@+id/track_name"/>
 
+            <TextView
+                android:id="@+id/track_popularity_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/track_year"
+                android:layout_alignBottom="@+id/track_year"
+                android:layout_alignEnd="@+id/track_year"
+                android:layout_alignParentEnd="true"
+                android:text="@string/popularity_number_placeholder"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@android:color/black"
+                android:alpha=".60"/>
+
             <LinearLayout
+                android:id="@+id/track_popularity_container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -86,6 +100,23 @@
             </LinearLayout>
 
         </RelativeLayout>
+
+        <TextView
+            android:id="@+id/track_item_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/track_picture"
+            android:layout_alignEnd="@+id/track_picture"
+            android:layout_alignTop="@+id/track_picture"
+            android:layout_alignBottom="@+id/track_picture"
+            android:gravity="center_vertical|center_horizontal"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@android:color/white"
+            android:fontFamily="@font/lato"
+            android:textSize="30sp"
+            android:shadowColor="@android:color/black"
+            android:text="@string/track_item_number_placeholder"
+            android:background="@drawable/scrim"/>
 
     </RelativeLayout>
 

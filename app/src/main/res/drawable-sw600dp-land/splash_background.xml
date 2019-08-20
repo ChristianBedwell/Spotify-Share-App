@@ -6,8 +6,8 @@
 
     <item
         android:drawable="@color/colorPrimary"
-        android:height="1000dp"
-        android:width="1000dp">
+        android:height="1200dp"
+        android:width="1920dp">
     </item>
 
     <item

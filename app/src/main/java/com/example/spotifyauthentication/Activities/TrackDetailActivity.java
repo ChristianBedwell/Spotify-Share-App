@@ -34,7 +34,7 @@ public class TrackDetailActivity extends AppCompatActivity {
     private static final String TAG = TrackDetailActivity.class.getSimpleName();
 
     private String trackUri, shareLink, trackShareName, trackShareArtist;
-    private TextView trackName, trackYear, trackArtist;
+    private TextView trackName, trackYear, trackArtist, trackPopularityNumber, trackItemNumber;
     private ImageView trackImage;
     private Button playButton, shareButton;
     private RatingBar trackPopularity;
@@ -58,6 +58,8 @@ public class TrackDetailActivity extends AppCompatActivity {
         trackName = (TextView) findViewById(R.id.track_detail_name);
         trackYear = (TextView) findViewById(R.id.track_detail_year);
         trackArtist = (TextView) findViewById(R.id.track_detail_artist);
+        trackPopularityNumber = (TextView) findViewById(R.id.track_detail_popularity_number);
+        trackItemNumber = (TextView) findViewById(R.id.track_detail_item_number);
         trackImage = (ImageView) findViewById(R.id.track_detail_image);
         playButton = (Button) findViewById(R.id.play_button);
         shareButton = (Button) findViewById(R.id.share_button);
@@ -71,6 +73,8 @@ public class TrackDetailActivity extends AppCompatActivity {
         trackName.setText(getIntent().getStringExtra("track_name"));
         trackYear.setText(getIntent().getStringExtra("track_year"));
         trackArtist.setText(getIntent().getStringExtra("track_artist"));
+        trackPopularityNumber.setText(getIntent().getStringExtra("track_popularity_number"));
+        trackItemNumber.setText(getIntent().getStringExtra("track_item_number"));
         trackPopularity.setRating((getIntent().getFloatExtra("track_popularity", 0.0f)));
         Picasso.get().load(getIntent().getStringExtra("track_image_resource")).into(trackImage);
 

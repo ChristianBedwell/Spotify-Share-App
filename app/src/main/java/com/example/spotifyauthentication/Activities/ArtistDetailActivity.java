@@ -21,7 +21,7 @@ import java.util.Objects;
 public class ArtistDetailActivity extends AppCompatActivity {
 
     private String shareLink, artistShareName;
-    private TextView artistName, artistFollowers;
+    private TextView artistName, artistFollowers, artistPopularityNumber;
     private Button shareButton;
     private ImageView artistImage;
     private RatingBar artistPopularity;
@@ -46,12 +46,14 @@ public class ArtistDetailActivity extends AppCompatActivity {
         artistImage = (ImageView) findViewById(R.id.artist_detail_image);
         shareButton = (Button) findViewById(R.id.share_button);
         artistPopularity = (RatingBar) findViewById(R.id.artist_detail_popularity);
+        artistPopularityNumber = (TextView) findViewById(R.id.artist_popularity_number);
 
         shareLink = getIntent().getStringExtra("artist_share_link");
         artistShareName = getIntent().getStringExtra("artist_share_name");
         artistName.setText(getIntent().getStringExtra("artist_name"));
         artistFollowers.setText(getIntent().getStringExtra("artist_followers"));
         artistPopularity.setRating((getIntent().getFloatExtra("artist_popularity", 0.0f)));
+        artistPopularityNumber.setText(getIntent().getStringExtra("artist_popularity_number"));
         Picasso.get().load(getIntent().getStringExtra("artist_image_resource")).into(artistImage);
 
         shareButton.setOnClickListener(new View.OnClickListener() {

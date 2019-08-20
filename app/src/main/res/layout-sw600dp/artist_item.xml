@@ -31,7 +31,6 @@
                 android:id="@+id/artist_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal|center_vertical"
                 android:text="@string/artist_name_placeholder"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@android:color/black"
@@ -43,7 +42,6 @@
                 android:id="@+id/artist_followers"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
                 android:layout_marginTop="5dp"
                 android:text="@string/artist_followers_placeholder"
                 android:textAppearance="?android:attr/textAppearanceMedium"
@@ -52,6 +50,19 @@
                 android:layout_alignParentBottom="true"
                 android:layout_below="@+id/artist_name"
                 android:layout_marginStart="5dp"/>
+
+            <TextView
+                android:id="@+id/artist_popularity_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/artist_name"
+                android:layout_alignBottom="@+id/artist_name"
+                android:layout_alignEnd="@+id/artist_name"
+                android:layout_alignParentEnd="true"
+                android:text="@string/popularity_number_placeholder"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@android:color/black"
+                android:alpha=".60"/>
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -68,7 +79,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    style="?android:attr/ratingBarStyleSmall"/>
+                    style="@style/Base.Widget.AppCompat.RatingBar.Small"/>
 
             </LinearLayout>
 

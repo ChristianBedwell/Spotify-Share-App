@@ -56,7 +56,7 @@
         <ScrollView
             android:id="@+id/authentication_scroll_view"
             android:layout_width="wrap_content"
-            android:layout_height="125dp"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/line"
             android:layout_marginTop="16dp"
             android:layout_marginLeft="8dp"
@@ -91,10 +91,8 @@
 
         <Button
             android:id="@+id/authentication_button"
-            android:layout_width="wrap_content"
-            android:layout_height="65dp"
-            android:layout_alignStart="@+id/authentication_scroll_view"
-            android:layout_alignEnd="@+id/authentication_scroll_view"
+            android:layout_width="350dp"
+            android:layout_height="55dp"
             android:layout_below="@+id/checkbox"
             android:padding="10dp"
             android:layout_marginTop="30dp"
@@ -102,6 +100,9 @@
             android:textSize="20sp"
             android:layout_centerHorizontal="true"
             android:background="@drawable/green_rounded_button"
+            android:drawableStart="@drawable/ic_authenticate"
+            android:paddingStart="75dp"
+            android:paddingEnd="75dp"
             android:text="@string/authenticate_button_text"/>
 
         <RelativeLayout
@@ -116,7 +117,7 @@
                 android:id="@+id/progressBar"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_marginEnd="10dp"
+                android:layout_marginEnd="8dp"
                 android:layout_gravity="center_vertical"/>
 
             <TextView

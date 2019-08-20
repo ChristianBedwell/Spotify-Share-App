@@ -24,7 +24,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="5dp"
+        android:paddingTop="0dp"
         android:paddingBottom="10dp"
         android:layout_margin="10dp"
         tools:context="com.example.spotifyauthentication.Activities.TrackDetailActivity"
@@ -84,6 +84,19 @@
                 android:textColor="@android:color/black"
                 android:alpha=".60"/>
 
+            <TextView
+                android:id="@+id/track_detail_popularity_number"
+                style="@style/TextAppearance.AppCompat.Subhead"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/track_detail_year"
+                android:layout_alignBottom="@+id/track_detail_year"
+                android:layout_alignEnd="@+id/track_detail_year"
+                android:layout_alignParentEnd="true"
+                android:text="@string/popularity_number_placeholder"
+                android:textColor="@android:color/black"
+                android:alpha=".60"/>
+
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -102,6 +115,23 @@
             </LinearLayout>
 
         </RelativeLayout>
+
+        <TextView
+            android:id="@+id/track_detail_item_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/track_detail_image"
+            android:layout_alignEnd="@+id/track_detail_image"
+            android:layout_alignTop="@+id/track_detail_image"
+            android:layout_alignBottom="@+id/track_detail_image"
+            android:gravity="center_vertical|center_horizontal"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@android:color/white"
+            android:fontFamily="@font/lato"
+            android:textSize="30sp"
+            android:shadowColor="@android:color/black"
+            android:text="@string/track_item_number_placeholder"
+            android:background="@drawable/scrim"/>
 
         <View
             android:id="@+id/line_separator"

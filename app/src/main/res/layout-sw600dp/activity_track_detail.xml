@@ -24,7 +24,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="5dp"
+        android:paddingTop="0dp"
         android:paddingBottom="10dp"
         android:layout_margin="10dp"
         tools:context="com.example.spotifyauthentication.Activities.TrackDetailActivity"
@@ -32,8 +32,8 @@
 
         <ImageView
             android:id="@+id/track_detail_image"
-            android:layout_width="95dp"
-            android:layout_height="95dp"
+            android:layout_width="110dp"
+            android:layout_height="110dp"
             android:layout_alignParentTop="true"
             android:adjustViewBounds="true"/>
 
@@ -58,6 +58,7 @@
                 android:layout_marginBottom="5dp"
                 android:layout_alignParentStart="true"
                 android:text="@string/track_name_placeholder"
+                android:textSize="28sp"
                 android:textColor="@android:color/black"
                 android:alpha=".87"/>
 
@@ -70,6 +71,7 @@
                 android:layout_marginBottom="5dp"
                 android:layout_alignStart="@+id/track_detail_name"
                 android:text="@string/track_year_placeholder"
+                android:textSize="22sp"
                 android:textColor="@android:color/black"
                 android:alpha=".60"/>
 
@@ -81,6 +83,21 @@
                 android:layout_below="@+id/track_detail_year"
                 android:layout_alignStart="@+id/track_detail_year"
                 android:text="@string/track_artist_placeholder"
+                android:textSize="22sp"
+                android:textColor="@android:color/black"
+                android:alpha=".60"/>
+
+            <TextView
+                android:id="@+id/track_detail_popularity_number"
+                style="@style/TextAppearance.AppCompat.Medium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/track_detail_year"
+                android:layout_alignBottom="@+id/track_detail_year"
+                android:layout_alignEnd="@+id/track_detail_year"
+                android:layout_alignParentEnd="true"
+                android:text="@string/popularity_number_placeholder"
+                android:textSize="22sp"
                 android:textColor="@android:color/black"
                 android:alpha=".60"/>
 
@@ -103,6 +120,23 @@
 
         </RelativeLayout>
 
+        <TextView
+            android:id="@+id/track_detail_item_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/track_detail_image"
+            android:layout_alignEnd="@+id/track_detail_image"
+            android:layout_alignTop="@+id/track_detail_image"
+            android:layout_alignBottom="@+id/track_detail_image"
+            android:gravity="center_vertical|center_horizontal"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@android:color/white"
+            android:fontFamily="@font/lato"
+            android:textSize="36sp"
+            android:shadowColor="@android:color/black"
+            android:text="@string/track_item_number_placeholder"
+            android:background="@drawable/scrim"/>
+
         <View
             android:id="@+id/line_separator"
             android:layout_width="match_parent"
@@ -122,7 +156,7 @@
             <Button
                 android:id="@+id/play_button"
                 android:layout_width="175dp"
-                android:layout_height="65dp"
+                android:layout_height="55dp"
                 android:layout_marginEnd="15dp"
                 android:layout_alignParentStart="true"
                 android:background="@drawable/green_rounded_button"
@@ -137,7 +171,7 @@
             <Button
                 android:id="@+id/share_button"
                 android:layout_width="175dp"
-                android:layout_height="65dp"
+                android:layout_height="55dp"
                 android:layout_toEndOf="@+id/play_button"
                 android:layout_alignParentEnd="true"
                 android:background="@drawable/white_rounded_button"
