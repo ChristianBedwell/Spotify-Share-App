@@ -89,16 +89,17 @@
 
         <Button
             android:id="@+id/authentication_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="260dp"
+            android:layout_height="40dp"
             android:layout_below="@+id/checkbox"
             android:padding="10dp"
             android:layout_marginTop="30dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
             android:textColor="@android:color/white"
-            android:layout_gravity="center_horizontal"
+            android:layout_centerHorizontal="true"
             android:background="@drawable/green_rounded_button"
+            android:drawableStart="@drawable/ic_authenticate"
+            android:paddingStart="55dp"
+            android:paddingEnd="55dp"
             android:text="@string/authenticate_button_text"/>
 
         <RelativeLayout

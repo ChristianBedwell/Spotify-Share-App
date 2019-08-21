@@ -6,14 +6,14 @@
 
     <item
         android:drawable="@color/colorPrimary"
-        android:height="1000dp"
-        android:width="500dp">
+        android:height="1920dp"
+        android:width="1080dp">
     </item>
 
     <item
         android:gravity="center"
-        android:height="100dp"
-        android:width="100dp">
+        android:height="75dp"
+        android:width="75dp">
         <bitmap
             android:gravity="fill_horizontal|fill_vertical"
             android:src="@drawable/splash_logo"/>
