@@ -85,9 +85,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="45dp"
                 android:dropDownWidth="150dp"
-                android:dropDownVerticalOffset="10dp"
+                android:dropDownVerticalOffset="0dp"
                 android:popupBackground="@android:color/white"
-                android:paddingStart="0dp"
+                android:paddingStart="1dp"
                 android:paddingEnd="14dp"
                 android:stateListAnimator="@animator/spinner_sla"
                 android:popupElevation="3dp"
@@ -118,9 +118,9 @@
                 android:layout_width="wrap_content"
                 android:dropDownWidth="200dp"
                 android:layout_height="30dp"
-                android:dropDownVerticalOffset="10dp"
+                android:dropDownVerticalOffset="0dp"
                 android:popupBackground="@android:color/white"
-                android:paddingStart="0dp"
+                android:paddingStart="1dp"
                 android:paddingEnd="14dp"
                 android:stateListAnimator="@animator/spinner_sla"
                 android:popupElevation="3dp"
@@ -129,7 +129,7 @@
             <!-- label for query limit -->
             <TextView
                 android:id = "@+id/limitLabel"
-                android:layout_width="125dp"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:layout_alignTop="@+id/timeRangeLabel"
                 android:layout_alignBottom="@+id/timeRangeLabel"
@@ -159,7 +159,7 @@
             <!-- label for query offset -->
             <TextView
                 android:id = "@+id/offsetLabel"
-                android:layout_width="90dp"
+                android:layout_width="65dp"
                 android:layout_height="wrap_content"
                 android:layout_alignTop="@+id/limitLabel"
                 android:layout_alignBottom="@+id/limitLabel"

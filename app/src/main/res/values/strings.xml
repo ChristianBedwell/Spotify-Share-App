@@ -42,12 +42,12 @@
     <string name="action_logout">Logout</string>
 
     <!-- tooltip text for each of the user input fields -->
-    <string name="type_tooltip_text">The type of entity to return.</string>
-    <string name="time_range_tooltip_text">Over what time frame the affinities are computed.</string>
-    <string name="limit_tooltip_text">The number of entities to return.</string>
-    <string name="offset_tooltip_text">The index of the first entity to return.</string>
+    <string name="type_tooltip_text">The type of entity to return. Valid values: artists or tracks.</string>
+    <string name="time_range_tooltip_text">Over what time frame the affinities are computed. Valid values: long term (calculated from several years of data and including all new data as it becomes available), medium term (approximately last 6 months), short term (approximately last 4 weeks). Default: medium term.</string>
+    <string name="limit_tooltip_text">The number of entities to return. Default: 20. Minimum: 1. Maximum: 50.</string>
+    <string name="offset_tooltip_text">The index of the first entity to return. Default: 0 (i.e. the first track).</string>
     <string name="popularity_number_placeholder">0.0</string>
     <string name="track_item_number_placeholder">1</string>
-
+    <string name="spinner_item_dropdown_placeholder">None</string>
 
 </resources>
