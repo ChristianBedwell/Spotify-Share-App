@@ -30,7 +30,7 @@ public class TrackDetailActivity extends AppCompatActivity {
 
     // declare constants
     public static final String CLIENT_ID = "clientid";
-    private static SpotifyAppRemote mSpotifyAppRemote;
+    public static SpotifyAppRemote mSpotifyAppRemote;
     private static final String TAG = TrackDetailActivity.class.getSimpleName();
 
     private String trackUri, shareLink, trackShareName, trackShareArtist;
@@ -78,6 +78,26 @@ public class TrackDetailActivity extends AppCompatActivity {
         trackPopularity.setRating((getIntent().getFloatExtra("track_popularity", 0.0f)));
         Picasso.get().load(getIntent().getStringExtra("track_image_resource")).into(trackImage);
 
+        // if Spotify app is installed on Android device
+        if(SpotifyAppRemote.isSpotifyInstalled(getApplicationContext())) {
+            if(mSpotifyAppRemote != null) {
+                mSpotifyAppRemote.getUserApi().getCapabilities().setResultCallback(capabilities -> {
+                    // current user is able to play on demand
+                    if (capabilities.canPlayOnDemand) {
+                        playButton.setVisibility(View.VISIBLE);
+                    }
+                    // current user is not able to play on demand
+                    else {
+                        playButton.setVisibility(View.INVISIBLE);
+                    }
+                });
+            }
+        }
+        // if Spotify app is not installed on Android device
+        else {
+            playButton.setVisibility(View.INVISIBLE);
+        }
+
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -89,7 +109,7 @@ public class TrackDetailActivity extends AppCompatActivity {
         shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // send track via SMS
+                // send track via SMS or email
                 shareTrack();
             }
         });
@@ -99,7 +119,18 @@ public class TrackDetailActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(R.anim.detail_activity_in, R.anim.detail_activity_out);
-        SpotifyAppRemote.disconnect(mSpotifyAppRemote);
+        // if Spotify app is installed on Android device
+        if(SpotifyAppRemote.isSpotifyInstalled(getApplicationContext())) {
+            if(mSpotifyAppRemote != null) {
+                mSpotifyAppRemote.getUserApi().getCapabilities().setResultCallback(capabilities -> {
+                    // current user is able to play on demand
+                    if (capabilities.canPlayOnDemand) {
+                        mSpotifyAppRemote.getPlayerApi().pause();
+                        SpotifyAppRemote.disconnect(mSpotifyAppRemote);
+                    }
+                });
+            }
+        }
     }
 
     @Override
