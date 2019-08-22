@@ -12,9 +12,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.RatingBar;
+import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
@@ -34,10 +36,11 @@ public class TrackDetailActivity extends AppCompatActivity {
     private static final String TAG = TrackDetailActivity.class.getSimpleName();
 
     private String trackUri, shareLink, trackShareName, trackShareArtist;
-    private TextView trackName, trackYear, trackArtist, trackPopularityNumber, trackItemNumber;
+    private TextView trackName, trackArtist, trackItemNumber;
     private ImageView trackImage;
-    private Button playButton, shareButton;
-    private RatingBar trackPopularity;
+    private SeekBar trackSeekBar;
+    private Button favoriteButton, skipPreviousButton, skipNextButton, repeatButton;
+    private ToggleButton playbackButton;
     private Toolbar toolbar;
 
     @Override
@@ -56,14 +59,15 @@ public class TrackDetailActivity extends AppCompatActivity {
 
         // initialize the views
         trackName = (TextView) findViewById(R.id.track_detail_name);
-        trackYear = (TextView) findViewById(R.id.track_detail_year);
         trackArtist = (TextView) findViewById(R.id.track_detail_artist);
-        trackPopularityNumber = (TextView) findViewById(R.id.track_detail_popularity_number);
         trackItemNumber = (TextView) findViewById(R.id.track_detail_item_number);
         trackImage = (ImageView) findViewById(R.id.track_detail_image);
-        playButton = (Button) findViewById(R.id.play_button);
-        shareButton = (Button) findViewById(R.id.share_button);
-        trackPopularity = (RatingBar) findViewById(R.id.track_detail_popularity);
+        trackSeekBar = (SeekBar) findViewById(R.id.seekBar);
+        favoriteButton = (Button) findViewById(R.id.favorite_button);
+        skipPreviousButton = (Button) findViewById(R.id.skip_previous_button);
+        skipNextButton = (Button) findViewById(R.id.skip_next_button);
+        repeatButton = (Button) findViewById(R.id.repeat_button);
+        playbackButton = (ToggleButton) findViewById(R.id.play_button);
 
         // get intent extras from adapter
         trackUri = getIntent().getStringExtra("track_uri");
@@ -71,71 +75,52 @@ public class TrackDetailActivity extends AppCompatActivity {
         trackShareName = getIntent().getStringExtra("track_share_name");
         trackShareArtist = getIntent().getStringExtra("track_artist");
         trackName.setText(getIntent().getStringExtra("track_name"));
-        trackYear.setText(getIntent().getStringExtra("track_year"));
         trackArtist.setText(getIntent().getStringExtra("track_artist"));
-        trackPopularityNumber.setText(getIntent().getStringExtra("track_popularity_number"));
         trackItemNumber.setText(getIntent().getStringExtra("track_item_number"));
-        trackPopularity.setRating((getIntent().getFloatExtra("track_popularity", 0.0f)));
         Picasso.get().load(getIntent().getStringExtra("track_image_resource")).into(trackImage);
 
         // if Spotify app is installed on Android device
         if(SpotifyAppRemote.isSpotifyInstalled(getApplicationContext())) {
+            // if Spotify app remote object is equal to null
             if(mSpotifyAppRemote != null) {
                 mSpotifyAppRemote.getUserApi().getCapabilities().setResultCallback(capabilities -> {
                     // current user is able to play on demand
                     if (capabilities.canPlayOnDemand) {
-                        playButton.setVisibility(View.VISIBLE);
+                        playbackButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                                // if toggle button is enabled, playback is paused
+                                if (isChecked) {
+                                    mSpotifyAppRemote.getPlayerApi().pause();
+                                }
+                                // if toggle button is not enabled, playback is started/resumed
+                                else {
+                                    openTrack();
+                                }
+                            }
+                        });
                     }
                     // current user is not able to play on demand
                     else {
-                        playButton.setVisibility(View.INVISIBLE);
+
                     }
                 });
             }
         }
         // if Spotify app is not installed on Android device
         else {
-            playButton.setVisibility(View.INVISIBLE);
+
         }
-
-        playButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // open track with Spotify app remote
-                openTrack();
-            }
-        });
-
-        shareButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // send track via SMS or email
-                shareTrack();
-            }
-        });
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(R.anim.detail_activity_in, R.anim.detail_activity_out);
-        // if Spotify app is installed on Android device
-        if(SpotifyAppRemote.isSpotifyInstalled(getApplicationContext())) {
-            if(mSpotifyAppRemote != null) {
-                mSpotifyAppRemote.getUserApi().getCapabilities().setResultCallback(capabilities -> {
-                    // current user is able to play on demand
-                    if (capabilities.canPlayOnDemand) {
-                        mSpotifyAppRemote.getPlayerApi().pause();
-                        SpotifyAppRemote.disconnect(mSpotifyAppRemote);
-                    }
-                });
-            }
-        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+        // inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_most_popular, menu);
         return true;
     }
@@ -168,7 +153,7 @@ public class TrackDetailActivity extends AppCompatActivity {
                 mSpotifyAppRemote = spotifyAppRemote;
                 Log.d(TAG, "Connected! Yay!");
 
-                // App Remote is connected and interactable
+                // app remote is connected and interactable
                 connected();
             }
 

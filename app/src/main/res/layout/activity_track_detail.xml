@@ -156,7 +156,7 @@
                 android:layout_marginEnd="15dp"
                 android:layout_alignParentStart="true"
                 android:background="@drawable/green_rounded_button"
-                android:drawableStart="@drawable/ic_listen"
+                android:drawableStart="@drawable/ic_play"
                 android:paddingStart="25dp"
                 android:paddingEnd="25dp"
                 android:gravity="center"

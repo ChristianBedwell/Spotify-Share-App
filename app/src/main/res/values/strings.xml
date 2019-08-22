@@ -49,5 +49,6 @@
     <string name="popularity_number_placeholder">0.0</string>
     <string name="track_item_number_placeholder">1</string>
     <string name="spinner_item_dropdown_placeholder">None</string>
+    <string name="seekBarTimeStamp">0:00</string>
 
 </resources>
