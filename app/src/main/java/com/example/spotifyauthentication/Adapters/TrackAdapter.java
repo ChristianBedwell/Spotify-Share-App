@@ -8,13 +8,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.example.spotifyauthentication.Activities.TrackDetailActivity;
+import com.example.spotifyauthentication.Database.DatabaseHandler;
+import com.example.spotifyauthentication.Database.Track;
 import com.example.spotifyauthentication.Models.Tracks.Item;
 import com.example.spotifyauthentication.R;
 import com.squareup.picasso.Picasso;
@@ -26,10 +26,13 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
 
     private List<Item> trackItems;
     private Context mContext;
+    private String strLimit;
+    private int limit;
 
-    public TrackAdapter(Context context, List<Item> items) {
+    public TrackAdapter(Context context, List<Item> items, String strLimit) {
         this.trackItems = items;
         this.mContext = context;
+        this.strLimit = strLimit;
     }
 
     @Override
@@ -44,6 +47,7 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
         int trackItemNum = position + 1;
         DecimalFormat precision = new DecimalFormat("0.0");
 
+        // load adapter data into card layout
         Picasso.get().load(trackItems.get(position).getAlbum().getImages().get(0).getUrl()).into(trackViewHolder.trackImage);
         trackViewHolder.trackArtist.setText(trackItems.get(position).getArtists().get(0).getName());
         trackViewHolder.trackName.setText(trackItems.get(position).getName());
@@ -51,6 +55,12 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
         trackViewHolder.trackPopularityNumber.setText(String.valueOf(precision.format((float) trackItems.get(position).getPopularity() / 20)));
         trackViewHolder.trackItemNumber.setText(new StringBuilder().append(trackItemNum));
         trackViewHolder.trackPopularity.setRating((float) (trackItems.get(position).getPopularity()) / 20);
+
+        // insert new record for track
+        DatabaseHandler db = new DatabaseHandler(mContext);
+        db.addTrack(new Track(trackItemNum, trackItems.get(position).getName(),
+                trackItems.get(position).getArtists().get(0).getName(),
+                trackItems.get(position).getUri()));
     }
 
     @Override
@@ -82,21 +92,28 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
 
         @Override
         public void onClick(View v) {
+            // if limit parameter is empty
+            if(strLimit.equals("")) {
+                // default size is 20, if no value is provided
+                limit = 20;
+            }
+            // if limit parameter is not empty
+            else {
+                // convert string to integer and store it
+                limit = Integer.parseInt(strLimit);
+            }
+
             int trackItemNum = getAdapterPosition() + 1;
             Item trackItem = trackItems.get(getAdapterPosition());
             Intent detailIntent = new Intent(mContext, TrackDetailActivity.class);
-            DecimalFormat precision = new DecimalFormat("0.0");
 
+            detailIntent.putExtra("track_limit", limit);
             detailIntent.putExtra("track_name", trackItem.getName());
-            detailIntent.putExtra("track_share_name", trackItem.getName());
-            detailIntent.putExtra("track_year", trackItem.getAlbum().getReleaseDate().substring(0,4));
             detailIntent.putExtra("track_artist", trackItem.getArtists().get(0).getName());
-            detailIntent.putExtra("track_popularity_number", String.valueOf(precision.format((float) trackItem.getPopularity() / 20)));
             detailIntent.putExtra("track_item_number", String.valueOf(trackItemNum));
             detailIntent.putExtra("track_uri", trackItem.getUri());
             detailIntent.putExtra("track_image_resource", trackItem.getAlbum().getImages().get(0).getUrl());
             detailIntent.putExtra("track_share_link", trackItem.getExternalUrls().getSpotify());
-            detailIntent.putExtra("track_popularity", (float) (trackItem.getPopularity()) / 20);
             mContext.startActivity(detailIntent);
             ((Activity) mContext).overridePendingTransition(R.anim.most_popular_activity_in, R.anim.most_popular_activity_out);
         }

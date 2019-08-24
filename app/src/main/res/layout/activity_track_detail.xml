@@ -24,97 +24,18 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="0dp"
+        android:layout_margin="20dp"
         android:paddingBottom="10dp"
-        android:layout_margin="10dp"
         tools:context="com.example.spotifyauthentication.Activities.TrackDetailActivity"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <ImageView
             android:id="@+id/track_detail_image"
-            android:layout_width="85dp"
-            android:layout_height="85dp"
+            android:layout_width="175dp"
+            android:layout_height="175dp"
             android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
             android:adjustViewBounds="true"/>
-
-        <RelativeLayout
-            android:id="@+id/track_detail_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toEndOf="@+id/track_detail_image"
-            android:layout_alignTop="@+id/track_detail_image"
-            android:layout_alignBottom="@+id/track_detail_image"
-            android:gravity="center"
-            android:layout_marginStart="15dp"
-            android:layout_marginEnd="10dp">
-
-            <TextView
-                android:id="@+id/track_detail_name"
-                android:ellipsize="end"
-                android:maxLines="1"
-                style="@style/TextAppearance.AppCompat.Headline"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:layout_alignParentStart="true"
-                android:text="@string/track_name_placeholder"
-                android:textColor="@android:color/black"
-                android:alpha=".87"/>
-
-            <TextView
-                android:id="@+id/track_detail_year"
-                style="@style/TextAppearance.AppCompat.Subhead"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/track_detail_name"
-                android:layout_marginBottom="5dp"
-                android:layout_alignStart="@+id/track_detail_name"
-                android:text="@string/track_year_placeholder"
-                android:textColor="@android:color/black"
-                android:alpha=".60"/>
-
-            <TextView
-                android:id="@+id/track_detail_artist"
-                style="@style/TextAppearance.AppCompat.Subhead"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/track_detail_year"
-                android:layout_alignStart="@+id/track_detail_year"
-                android:text="@string/track_artist_placeholder"
-                android:textColor="@android:color/black"
-                android:alpha=".60"/>
-
-            <TextView
-                android:id="@+id/track_detail_popularity_number"
-                style="@style/TextAppearance.AppCompat.Subhead"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/track_detail_year"
-                android:layout_alignBottom="@+id/track_detail_year"
-                android:layout_alignEnd="@+id/track_detail_year"
-                android:layout_alignParentEnd="true"
-                android:text="@string/popularity_number_placeholder"
-                android:textColor="@android:color/black"
-                android:alpha=".60"/>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_alignTop="@+id/track_detail_artist"
-                android:layout_alignBottom="@+id/track_detail_artist"
-                android:layout_alignParentEnd="true">
-
-                <RatingBar
-                    android:id="@+id/track_detail_popularity"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    style="?android:attr/ratingBarStyleSmall"/>
-
-            </LinearLayout>
-
-        </RelativeLayout>
 
         <TextView
             android:id="@+id/track_detail_item_number"
@@ -125,59 +46,143 @@
             android:layout_alignTop="@+id/track_detail_image"
             android:layout_alignBottom="@+id/track_detail_image"
             android:gravity="center_vertical|center_horizontal"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@android:color/white"
             android:fontFamily="@font/lato"
-            android:textSize="30sp"
+            android:textSize="60sp"
             android:shadowColor="@android:color/black"
             android:text="@string/track_item_number_placeholder"
             android:background="@drawable/scrim"/>
 
-        <View
-            android:id="@+id/line_separator"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_below="@+id/track_detail_info"
-            android:layout_marginTop="15dp"
-            android:background="#D3D3D3"/>
+        <RelativeLayout
+            android:id="@+id/track_detail_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/track_detail_image"
+            android:layout_marginTop="20dp">
+
+            <TextView
+                android:id="@+id/track_detail_name"
+                android:ellipsize="end"
+                android:maxLines="1"
+                style="@style/TextAppearance.AppCompat.Headline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="5dp"
+                android:text="@string/track_name_placeholder"
+                android:textColor="@android:color/black"
+                android:alpha=".87"/>
+
+            <TextView
+                android:id="@+id/track_detail_artist"
+                style="@style/TextAppearance.AppCompat.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/track_detail_name"
+                android:text="@string/track_artist_placeholder"
+                android:textColor="@android:color/black"
+                android:alpha=".60"/>
+
+        </RelativeLayout>
 
         <RelativeLayout
-            android:layout_width="280dp"
+            android:id="@+id/timeSeekBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:layout_below="@+id/track_detail_info"
+            android:layout_centerHorizontal="true">
+
+            <TextView
+                android:id="@+id/timeStampStart"
+                style="@style/TextAppearance.AppCompat.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="15dp"
+                android:text="@string/seekBarTimeStamp"
+                android:textColor="@android:color/black"
+                android:alpha=".60"/>
+
+            <SeekBar
+                android:id="@+id/seekBar"
+                android:layout_width="275dp"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/timeStampStart"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"/>
+
+            <TextView
+                android:id="@+id/timeStampEnd"
+                style="@style/TextAppearance.AppCompat.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/seekBar"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="15dp"
+                android:text="@string/seekBarTimeStamp"
+                android:textColor="@android:color/black"
+                android:alpha=".60"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/playback_buttons"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="15dp"
-            android:layout_below="@+id/line_separator">
+            android:layout_marginTop="21dp"
+            android:layout_below="@+id/timeSeekBar">
 
             <Button
+                android:id="@+id/favorite_button"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:background="@drawable/ic_favorite_black"
+                android:layout_marginEnd="30dp"
+                android:layout_centerVertical="true"/>
+
+            <Button
+                android:id="@+id/skip_previous_button"
+                android:layout_width="55dp"
+                android:layout_height="55dp"
+                android:layout_toEndOf="@+id/favorite_button"
+                android:background="@drawable/ic_skip_previous_black_selector"
+                android:layout_centerVertical="true"/>
+
+            <ToggleButton
                 android:id="@+id/play_button"
-                android:layout_width="130dp"
-                android:layout_height="40dp"
-                android:layout_marginEnd="15dp"
-                android:layout_alignParentStart="true"
-                android:background="@drawable/green_rounded_button"
-                android:drawableStart="@drawable/ic_play"
-                android:paddingStart="25dp"
-                android:paddingEnd="25dp"
-                android:gravity="center"
-                android:textColor="#FFFFFF"
-                android:textSize="15sp"
-                android:text="@string/listen_button"/>
+                android:layout_width="85dp"
+                android:layout_height="80dp"
+                android:layout_toEndOf="@+id/skip_previous_button"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/ic_toggle"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:textOff=""
+                android:textOn=""/>
 
             <Button
-                android:id="@+id/share_button"
-                android:layout_width="130dp"
-                android:layout_height="40dp"
+                android:id="@+id/skip_next_button"
+                android:layout_width="55dp"
+                android:layout_height="55dp"
                 android:layout_toEndOf="@+id/play_button"
-                android:layout_alignParentEnd="true"
-                android:background="@drawable/white_rounded_button"
-                android:drawableStart="@drawable/ic_share"
-                android:paddingStart="25dp"
-                android:paddingEnd="25dp"
-                android:gravity="center"
-                android:textColor="#656565"
-                android:textSize="15sp"
-                android:text="@string/share_button"/>
+                android:layout_marginEnd="30dp"
+                android:background="@drawable/ic_skip_next_black_selector"
+                android:layout_centerVertical="true"/>
+
+            <Button
+                android:id="@+id/repeat_button"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_toEndOf="@+id/skip_next_button"
+                android:background="@drawable/ic_repeat_black"
+                android:layout_centerVertical="true"/>
 
         </RelativeLayout>
 

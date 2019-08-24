@@ -36,7 +36,6 @@ import retrofit2.Retrofit;
 
 public class ItemsFragment extends Fragment {
 
-    private static final String RECYCLER_VIEW_KEY = "recycler-view-key";
     private String TAG = ItemsFragment.class.getSimpleName();
 
     private RecyclerView recyclerView;
@@ -332,7 +331,7 @@ public class ItemsFragment extends Fragment {
     private void setUpTrackRecycler(List<com.example.spotifyauthentication.Models.Tracks.Item> items) {
         Activity activity = getActivity();
         if(activity != null) {
-            trackAdapter = new TrackAdapter(activity, items);
+            trackAdapter = new TrackAdapter(activity, items, strLimit);
             layoutManager = new GridLayoutManager(activity,
                     getResources().getInteger(R.integer.grid_column_count));
             recyclerView.setLayoutManager(layoutManager);

@@ -155,7 +155,7 @@
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:layout_toEndOf="@+id/favorite_button"
-                android:background="@drawable/ic_skip_previous_black"
+                android:background="@drawable/ic_skip_previous_black_enabled"
                 android:layout_centerVertical="true"/>
 
             <ToggleButton
@@ -177,7 +177,7 @@
                 android:layout_height="70dp"
                 android:layout_toEndOf="@+id/play_button"
                 android:layout_marginEnd="70dp"
-                android:background="@drawable/ic_skip_next_black"
+                android:background="@drawable/ic_skip_next_black_enabled"
                 android:layout_centerVertical="true"/>
 
             <Button

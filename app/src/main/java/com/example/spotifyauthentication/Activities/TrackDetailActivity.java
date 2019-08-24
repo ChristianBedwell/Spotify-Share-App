@@ -18,6 +18,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import com.example.spotifyauthentication.Database.DatabaseHandler;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
@@ -42,6 +43,7 @@ public class TrackDetailActivity extends AppCompatActivity {
     private Button favoriteButton, skipPreviousButton, skipNextButton, repeatButton;
     private ToggleButton playbackButton;
     private Toolbar toolbar;
+    private int trackLimit, trackNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,22 +72,40 @@ public class TrackDetailActivity extends AppCompatActivity {
         playbackButton = (ToggleButton) findViewById(R.id.play_button);
 
         // get intent extras from adapter
+        trackLimit = getIntent().getIntExtra("track_limit", 0);
         trackUri = getIntent().getStringExtra("track_uri");
         shareLink = getIntent().getStringExtra("track_share_link");
-        trackShareName = getIntent().getStringExtra("track_share_name");
+        trackShareName = getIntent().getStringExtra("track_name");
         trackShareArtist = getIntent().getStringExtra("track_artist");
         trackName.setText(getIntent().getStringExtra("track_name"));
         trackArtist.setText(getIntent().getStringExtra("track_artist"));
         trackItemNumber.setText(getIntent().getStringExtra("track_item_number"));
+        trackNumber = Integer.parseInt(getIntent().getStringExtra("track_item_number"));
         Picasso.get().load(getIntent().getStringExtra("track_image_resource")).into(trackImage);
 
-        // if Spotify app is installed on Android device
+        DatabaseHandler dbHandler = new DatabaseHandler(this);
+
+        /*// if Spotify app is installed on Android device
         if(SpotifyAppRemote.isSpotifyInstalled(getApplicationContext())) {
+
             // if Spotify app remote object is equal to null
             if(mSpotifyAppRemote != null) {
+
                 mSpotifyAppRemote.getUserApi().getCapabilities().setResultCallback(capabilities -> {
                     // current user is able to play on demand
                     if (capabilities.canPlayOnDemand) {
+
+                        // set initial state of buttons based on track number
+                        if(trackNumber == 1) {
+                            // if track is first track in list, prevent user from going to previous track
+                            skipPreviousButton.setEnabled(false);
+                        }
+                        else if(trackNumber == trackLimit) {
+                            // if track is last track in list, prevent user from going to next track
+                            skipNextButton.setEnabled(false);
+                        }
+
+                        // set click listener for playback toggle button
                         playbackButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                                 // if toggle button is enabled, playback is paused
@@ -96,6 +116,18 @@ public class TrackDetailActivity extends AppCompatActivity {
                                 else {
                                     openTrack();
                                 }
+                            }
+                        });
+                        skipPreviousButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                            }
+                        });
+                        skipNextButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
                             }
                         });
                     }
@@ -109,7 +141,42 @@ public class TrackDetailActivity extends AppCompatActivity {
         // if Spotify app is not installed on Android device
         else {
 
+        }*/
+        // set initial state of buttons based on track number
+        if(trackNumber == 1) {
+            // if track is first track in list, prevent user from going to previous track
+            skipPreviousButton.setEnabled(false);
         }
+        else if(trackNumber == trackLimit) {
+            // if track is last track in list, prevent user from going to next track
+            skipNextButton.setEnabled(false);
+        }
+
+        // set click listener for playback toggle button
+        playbackButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                // if toggle button is enabled, playback is paused
+                if (isChecked) {
+                    mSpotifyAppRemote.getPlayerApi().pause();
+                }
+                // if toggle button is not enabled, playback is started/resumed
+                else {
+                    openTrack();
+                }
+            }
+        });
+        skipPreviousButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        skipNextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
     @Override
