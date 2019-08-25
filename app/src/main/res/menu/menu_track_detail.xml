@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.spotifyauthentication.Activities.MostPopularActivity">
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action_share_track"
         android:orderInCategory="100"
-        android:icon="@drawable/ic_settings"
-        android:title="Settings"
+        android:icon="@drawable/ic_share_track"
+        android:title="Share"
         app:showAsAction="always" />
 </menu>

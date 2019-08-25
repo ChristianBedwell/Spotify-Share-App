@@ -22,9 +22,9 @@ import com.example.spotifyauthentication.Database.DatabaseHandler;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
+import com.spotify.protocol.types.Track;
 
 import com.example.spotifyauthentication.R;
-import com.spotify.protocol.types.Track;
 import com.squareup.picasso.Picasso;
 
 import java.util.Objects;
@@ -37,13 +37,20 @@ public class TrackDetailActivity extends AppCompatActivity {
     private static final String TAG = TrackDetailActivity.class.getSimpleName();
 
     private String trackUri, shareLink, trackShareName, trackShareArtist;
-    private TextView trackName, trackArtist, trackItemNumber;
+    private TextView trackName, trackArtist, trackItemNumber, trackSeekBarMin, trackSeekBarMax;
     private ImageView trackImage;
     private SeekBar trackSeekBar;
     private Button favoriteButton, skipPreviousButton, skipNextButton, repeatButton;
     private ToggleButton playbackButton;
     private Toolbar toolbar;
     private int trackLimit, trackNumber;
+    private boolean isPlaying;
+
+    // duration of the track in milliseconds
+    public long trackDuration;
+
+    // position of the track
+    public long trackPlaybackPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,12 +66,17 @@ public class TrackDetailActivity extends AppCompatActivity {
         Objects.requireNonNull(toolbar.getNavigationIcon()).setColorFilter(getResources().
                 getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
 
-        // initialize the views
+        // initialize the text views
         trackName = (TextView) findViewById(R.id.track_detail_name);
         trackArtist = (TextView) findViewById(R.id.track_detail_artist);
         trackItemNumber = (TextView) findViewById(R.id.track_detail_item_number);
+        trackSeekBarMin = (TextView) findViewById(R.id.timeSeekBarMin);
+        trackSeekBarMax = (TextView) findViewById(R.id.timeSeekBarMax);
+
         trackImage = (ImageView) findViewById(R.id.track_detail_image);
         trackSeekBar = (SeekBar) findViewById(R.id.seekBar);
+
+        // initialize the buttons
         favoriteButton = (Button) findViewById(R.id.favorite_button);
         skipPreviousButton = (Button) findViewById(R.id.skip_previous_button);
         skipNextButton = (Button) findViewById(R.id.skip_next_button);
@@ -158,23 +170,78 @@ public class TrackDetailActivity extends AppCompatActivity {
                 // if toggle button is enabled, playback is paused
                 if (isChecked) {
                     mSpotifyAppRemote.getPlayerApi().pause();
+                    isPlaying = false;
                 }
                 // if toggle button is not enabled, playback is started/resumed
                 else {
                     openTrack();
+                    isPlaying = true;
                 }
             }
         });
+
+        // set click listener for skip previous button
         skipPreviousButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                // decrement track number and pull results for the corresponding track
+                trackNumber--;
             }
         });
+
+        // set click listener for skip next button
         skipNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // increment track number and pull results for the corresponding track
+                trackNumber++;
+            }
+        });
 
+        // set click listener for repeat button
+        repeatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mSpotifyAppRemote.getPlayerApi().toggleRepeat();
+            }
+        });
+
+        // set click listener for favorite button
+        favoriteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mSpotifyAppRemote.getUserApi().addToLibrary(trackUri);
+            }
+        });
+
+        trackSeekBar.setMax((int) trackDuration / 1000);
+
+        // set change listener for track seek bar
+        trackSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            // notification that the user has started a touch gesture
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                trackSeekBarMin.setVisibility(View.VISIBLE);
+                trackSeekBarMax.setVisibility(View.VISIBLE);
+            }
+
+            // notification that the progress level has changed
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                trackSeekBarMin.setVisibility(View.VISIBLE);
+                trackSeekBarMax.setVisibility(View.VISIBLE);
+
+                if(mSpotifyAppRemote != null && fromUser) {
+                    mSpotifyAppRemote.getPlayerApi().seekTo(trackPlaybackPosition);
+                }
+            }
+
+            // notification that the user has finished a touch gesture
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                if(mSpotifyAppRemote != null && isPlaying)
+                mSpotifyAppRemote.getPlayerApi().seekTo(trackSeekBar.getProgress());
             }
         });
     }
@@ -188,7 +255,7 @@ public class TrackDetailActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_most_popular, menu);
+        getMenuInflater().inflate(R.menu.menu_track_detail, menu);
         return true;
     }
 
@@ -199,8 +266,9 @@ public class TrackDetailActivity extends AppCompatActivity {
             onBackPressed();
             return true;
         }
-        else if(id == R.id.action_settings) {
-            // open settings activity
+        else if(id == R.id.action_share_track) {
+            // share track
+            shareTrack();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -232,12 +300,14 @@ public class TrackDetailActivity extends AppCompatActivity {
 
     // app remote is connected
     private void connected() {
-        // Play a playlist
+        // play a playlist
         mSpotifyAppRemote.getPlayerApi().play(trackUri);
 
-        // Subscribe to PlayerState
+        // subscribe to player state
         mSpotifyAppRemote.getPlayerApi().subscribeToPlayerState().setEventCallback(playerState -> {
             final Track track = playerState.track;
+            trackDuration = playerState.track.duration;
+            trackPlaybackPosition = playerState.playbackPosition;
             if (track != null) {
                 Log.d(TAG, track.name + " by " + track.artist.name);
             }
@@ -258,7 +328,7 @@ public class TrackDetailActivity extends AppCompatActivity {
         share.setType("text/plain");
         share.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
 
-        // Add data to the intent, the receiving app will decide
+        // add data to the intent, the receiving app will decide
         // what to do with it.
         share.putExtra(Intent.EXTRA_SUBJECT, trackShareName
                 + " by " + trackShareArtist);

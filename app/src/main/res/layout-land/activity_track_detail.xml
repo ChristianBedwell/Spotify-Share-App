@@ -171,7 +171,7 @@
                 android:layout_toEndOf="@+id/play_button"
                 android:layout_alignParentEnd="true"
                 android:background="@drawable/white_rounded_button"
-                android:drawableStart="@drawable/ic_share"
+                android:drawableStart="@drawable/ic_share_artist"
                 android:paddingStart="25dp"
                 android:paddingEnd="25dp"
                 android:gravity="center"

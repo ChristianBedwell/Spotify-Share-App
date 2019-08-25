@@ -207,24 +207,6 @@ public class MostPopularActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_most_popular, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_settings:
-                // open settings activity
-                return true;
-            default:
-                return super.onContextItemSelected(item);
-        }
-    }
-
     // pass user parameters to the items fragment
     public static ItemsFragment newInstance(String accessToken, String type, String timeRange, String limit, String offset) {
         ItemsFragment itemsFragment = new ItemsFragment();
