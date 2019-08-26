@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -73,6 +74,7 @@ public class TrackDetailActivity extends AppCompatActivity {
         trackSeekBarMin = (TextView) findViewById(R.id.timeSeekBarMin);
         trackSeekBarMax = (TextView) findViewById(R.id.timeSeekBarMax);
 
+        // initialize the image view and seek bar
         trackImage = (ImageView) findViewById(R.id.track_detail_image);
         trackSeekBar = (SeekBar) findViewById(R.id.seekBar);
 
@@ -154,6 +156,9 @@ public class TrackDetailActivity extends AppCompatActivity {
         else {
 
         }*/
+        openTrack();
+        isPlaying = true;
+
         // set initial state of buttons based on track number
         if(trackNumber == 1) {
             // if track is first track in list, prevent user from going to previous track
@@ -169,13 +174,17 @@ public class TrackDetailActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 // if toggle button is enabled, playback is paused
                 if (isChecked) {
-                    mSpotifyAppRemote.getPlayerApi().pause();
-                    isPlaying = false;
+                    if(mSpotifyAppRemote != null) {
+                        mSpotifyAppRemote.getPlayerApi().pause();
+                        isPlaying = false;
+                    }
                 }
                 // if toggle button is not enabled, playback is started/resumed
                 else {
-                    openTrack();
-                    isPlaying = true;
+                    if(mSpotifyAppRemote != null) {
+                        mSpotifyAppRemote.getPlayerApi().resume();
+                        isPlaying = true;
+                    }
                 }
             }
         });
@@ -214,7 +223,33 @@ public class TrackDetailActivity extends AppCompatActivity {
             }
         });
 
-        trackSeekBar.setMax((int) trackDuration / 1000);
+        // set seek bar max to track duration
+        trackSeekBar.setMax((int) trackDuration);
+
+        // update seek bar progress value every second
+        Handler mHandler = new Handler();
+        TrackDetailActivity.this.runOnUiThread(new Runnable() {
+
+            @Override
+            public void run() {
+                if(mSpotifyAppRemote != null && isPlaying){
+                    // get track playback position and track duration, convert from ms to s
+                    mSpotifyAppRemote.getPlayerApi().subscribeToPlayerState().setEventCallback(playerState -> {
+                        trackPlaybackPosition = (playerState.playbackPosition) / 1000;
+                        trackDuration = (playerState.track.duration) / 1000;
+                    });
+                    int mCurrentPosition = (int) trackPlaybackPosition;
+                    trackSeekBar.setProgress(mCurrentPosition);
+
+                    trackSeekBarMin.setText(String.valueOf(trackPlaybackPosition));
+                    trackSeekBarMax.setText(String.valueOf(trackDuration - trackPlaybackPosition));
+
+                    Log.d(TAG, "Current track position: " + String.valueOf(mCurrentPosition) + " seconds");
+                    Log.d(TAG, "Current track duration: " + String.valueOf(trackDuration) + " seconds");
+                }
+                mHandler.postDelayed(this, 1000);
+            }
+        });
 
         // set change listener for track seek bar
         trackSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -222,26 +257,21 @@ public class TrackDetailActivity extends AppCompatActivity {
             // notification that the user has started a touch gesture
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                trackSeekBarMin.setVisibility(View.VISIBLE);
-                trackSeekBarMax.setVisibility(View.VISIBLE);
+
             }
 
             // notification that the progress level has changed
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                trackSeekBarMin.setVisibility(View.VISIBLE);
-                trackSeekBarMax.setVisibility(View.VISIBLE);
-
                 if(mSpotifyAppRemote != null && fromUser) {
-                    mSpotifyAppRemote.getPlayerApi().seekTo(trackPlaybackPosition);
+                    mSpotifyAppRemote.getPlayerApi().seekTo(progress * 1000);
                 }
             }
 
             // notification that the user has finished a touch gesture
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                if(mSpotifyAppRemote != null && isPlaying)
-                mSpotifyAppRemote.getPlayerApi().seekTo(trackSeekBar.getProgress());
+
             }
         });
     }
@@ -306,8 +336,6 @@ public class TrackDetailActivity extends AppCompatActivity {
         // subscribe to player state
         mSpotifyAppRemote.getPlayerApi().subscribeToPlayerState().setEventCallback(playerState -> {
             final Track track = playerState.track;
-            trackDuration = playerState.track.duration;
-            trackPlaybackPosition = playerState.playbackPosition;
             if (track != null) {
                 Log.d(TAG, track.name + " by " + track.artist.name);
             }

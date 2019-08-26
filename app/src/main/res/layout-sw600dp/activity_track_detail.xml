@@ -99,7 +99,7 @@
             android:layout_centerHorizontal="true">
 
             <TextView
-                android:id="@+id/timeStampStart"
+                android:id="@+id/timeSeekBarMin"
                 style="@style/TextAppearance.AppCompat.Medium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -114,12 +114,12 @@
                 android:id="@+id/seekBar"
                 android:layout_width="425dp"
                 android:layout_height="wrap_content"
-                android:layout_toEndOf="@+id/timeStampStart"
+                android:layout_toEndOf="@+id/timeSeekBarMin"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"/>
 
             <TextView
-                android:id="@+id/timeStampEnd"
+                android:id="@+id/timeSeekBarMax"
                 style="@style/TextAppearance.AppCompat.Medium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
