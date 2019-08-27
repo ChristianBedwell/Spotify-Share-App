@@ -36,8 +36,6 @@ import retrofit2.Retrofit;
 
 public class ItemsFragment extends Fragment {
 
-    private String TAG = ItemsFragment.class.getSimpleName();
-
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
 

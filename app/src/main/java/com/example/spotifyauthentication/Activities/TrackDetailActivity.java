@@ -5,6 +5,7 @@ import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -20,10 +21,10 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.example.spotifyauthentication.Database.DatabaseHandler;
+import com.example.spotifyauthentication.Fragments.TrackPlaybackFragment;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
-import com.spotify.protocol.types.Track;
 
 import com.example.spotifyauthentication.R;
 import com.squareup.picasso.Picasso;
@@ -37,9 +38,10 @@ public class TrackDetailActivity extends AppCompatActivity {
     public static SpotifyAppRemote mSpotifyAppRemote;
     private static final String TAG = TrackDetailActivity.class.getSimpleName();
 
+    private TrackPlaybackFragment trackPlaybackFragment;
+
     private String trackUri, shareLink, trackShareName, trackShareArtist;
-    private TextView trackName, trackArtist, trackItemNumber, trackSeekBarMin, trackSeekBarMax;
-    private ImageView trackImage;
+    private TextView trackSeekBarMin, trackSeekBarMax;
     private SeekBar trackSeekBar;
     private Button favoriteButton, skipPreviousButton, skipNextButton, repeatButton;
     private ToggleButton playbackButton;
@@ -68,14 +70,10 @@ public class TrackDetailActivity extends AppCompatActivity {
                 getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
 
         // initialize the text views
-        trackName = (TextView) findViewById(R.id.track_detail_name);
-        trackArtist = (TextView) findViewById(R.id.track_detail_artist);
-        trackItemNumber = (TextView) findViewById(R.id.track_detail_item_number);
         trackSeekBarMin = (TextView) findViewById(R.id.timeSeekBarMin);
         trackSeekBarMax = (TextView) findViewById(R.id.timeSeekBarMax);
 
         // initialize the image view and seek bar
-        trackImage = (ImageView) findViewById(R.id.track_detail_image);
         trackSeekBar = (SeekBar) findViewById(R.id.seekBar);
 
         // initialize the buttons
@@ -91,11 +89,17 @@ public class TrackDetailActivity extends AppCompatActivity {
         shareLink = getIntent().getStringExtra("track_share_link");
         trackShareName = getIntent().getStringExtra("track_name");
         trackShareArtist = getIntent().getStringExtra("track_artist");
-        trackName.setText(getIntent().getStringExtra("track_name"));
-        trackArtist.setText(getIntent().getStringExtra("track_artist"));
-        trackItemNumber.setText(getIntent().getStringExtra("track_item_number"));
         trackNumber = Integer.parseInt(getIntent().getStringExtra("track_item_number"));
-        Picasso.get().load(getIntent().getStringExtra("track_image_resource")).into(trackImage);
+
+        Log.d(TAG, "Image URI passed to fragment: " + getIntent().getStringExtra("track_image_resource"));
+
+        // create new instance of trackPlaybackFragment and fill fragment placeholder
+        trackPlaybackFragment = newInstance(getIntent().getStringExtra("track_image_resource"),
+                getIntent().getStringExtra("track_item_number"), getIntent().getStringExtra("track_name"),
+                getIntent().getStringExtra("track_artist"));
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.track_playback_fragment_placeholder, trackPlaybackFragment);
+        fragmentTransaction.commit();
 
         DatabaseHandler dbHandler = new DatabaseHandler(this);
 
@@ -157,7 +161,6 @@ public class TrackDetailActivity extends AppCompatActivity {
 
         }*/
         openTrack();
-        isPlaying = true;
 
         // set initial state of buttons based on track number
         if(trackNumber == 1) {
@@ -194,7 +197,24 @@ public class TrackDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // decrement track number and pull results for the corresponding track
-                trackNumber--;
+                if(trackNumber > 1) {
+                    trackNumber--;
+
+                    skipPreviousButton.setEnabled(true);
+                    skipNextButton.setEnabled(true);
+
+                    // reset state of buttons based on track number
+                    if(trackNumber == 1) {
+                        // if track is first track in list, prevent user from going to previous track
+                        skipPreviousButton.setEnabled(false);
+                        skipNextButton.setEnabled(true);
+                    }
+                    else if(trackNumber == trackLimit) {
+                        // if track is last track in list, prevent user from going to next track
+                        skipPreviousButton.setEnabled(true);
+                        skipNextButton.setEnabled(false);
+                    }
+                }
             }
         });
 
@@ -203,7 +223,24 @@ public class TrackDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // increment track number and pull results for the corresponding track
-                trackNumber++;
+                if(trackNumber < trackLimit) {
+                    trackNumber++;
+
+                    skipPreviousButton.setEnabled(true);
+                    skipNextButton.setEnabled(true);
+
+                    // reset state of buttons based on track number
+                    if(trackNumber == 1) {
+                        // if track is first track in list, prevent user from going to previous track
+                        skipPreviousButton.setEnabled(false);
+                        skipNextButton.setEnabled(true);
+                    }
+                    else if(trackNumber == trackLimit) {
+                        // if track is last track in list, prevent user from going to next track
+                        skipPreviousButton.setEnabled(true);
+                        skipNextButton.setEnabled(false);
+                    }
+                }
             }
         });
 
@@ -223,29 +260,28 @@ public class TrackDetailActivity extends AppCompatActivity {
             }
         });
 
-        // set seek bar max to track duration
-        trackSeekBar.setMax((int) trackDuration);
-
         // update seek bar progress value every second
         Handler mHandler = new Handler();
         TrackDetailActivity.this.runOnUiThread(new Runnable() {
 
             @Override
             public void run() {
+
                 if(mSpotifyAppRemote != null && isPlaying){
                     // get track playback position and track duration, convert from ms to s
                     mSpotifyAppRemote.getPlayerApi().subscribeToPlayerState().setEventCallback(playerState -> {
                         trackPlaybackPosition = (playerState.playbackPosition) / 1000;
                         trackDuration = (playerState.track.duration) / 1000;
                     });
+
+                    trackSeekBar.setMax((int) trackDuration);
+
                     int mCurrentPosition = (int) trackPlaybackPosition;
                     trackSeekBar.setProgress(mCurrentPosition);
 
-                    trackSeekBarMin.setText(String.valueOf(trackPlaybackPosition));
-                    trackSeekBarMax.setText(String.valueOf(trackDuration - trackPlaybackPosition));
-
-                    Log.d(TAG, "Current track position: " + String.valueOf(mCurrentPosition) + " seconds");
-                    Log.d(TAG, "Current track duration: " + String.valueOf(trackDuration) + " seconds");
+                    // update seek bar values on UI thread
+                    trackSeekBarMin.setText(convertSecondsToMSs(trackPlaybackPosition));
+                    trackSeekBarMax.setText(convertSecondsToMSs(trackDuration - trackPlaybackPosition));
                 }
                 mHandler.postDelayed(this, 1000);
             }
@@ -332,14 +368,7 @@ public class TrackDetailActivity extends AppCompatActivity {
     private void connected() {
         // play a playlist
         mSpotifyAppRemote.getPlayerApi().play(trackUri);
-
-        // subscribe to player state
-        mSpotifyAppRemote.getPlayerApi().subscribeToPlayerState().setEventCallback(playerState -> {
-            final Track track = playerState.track;
-            if (track != null) {
-                Log.d(TAG, track.name + " by " + track.artist.name);
-            }
-        });
+        isPlaying = true;
     }
 
     // get redirect uri using redirect scheme and host
@@ -363,5 +392,26 @@ public class TrackDetailActivity extends AppCompatActivity {
         share.putExtra(Intent.EXTRA_TEXT, shareLink);
 
         startActivity(Intent.createChooser(share, "Share link!"));
+    }
+
+    // converts seconds to minutes-seconds format
+    public static String convertSecondsToMSs(long seconds) {
+        long s = seconds % 60;
+        long m = (seconds / 60) % 60;
+        return String.format("%d:%02d", m,s);
+    }
+
+    // pass user parameters to the items fragment
+    public static TrackPlaybackFragment newInstance(String trackImageUri, String trackItemNumber, String trackName, String trackArtist) {
+        TrackPlaybackFragment trackPlaybackFragment = new TrackPlaybackFragment();
+
+        Bundle args = new Bundle();
+        args.putString("track_image_uri", trackImageUri);
+        args.putString("track_item_number", trackItemNumber);
+        args.putString("track_name", trackName);
+        args.putString("track_artist", trackArtist);
+        trackPlaybackFragment.setArguments(args);
+
+        return trackPlaybackFragment;
     }
 }

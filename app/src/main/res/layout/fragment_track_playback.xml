@@ -1,6 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-</android.support.constraint.ConstraintLayout>
+    <ImageView
+        android:id="@+id/track_detail_image"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:adjustViewBounds="true"/>
+
+    <TextView
+        android:id="@+id/track_detail_item_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/track_detail_image"
+        android:layout_alignEnd="@+id/track_detail_image"
+        android:layout_alignTop="@+id/track_detail_image"
+        android:layout_alignBottom="@+id/track_detail_image"
+        android:gravity="center_vertical|center_horizontal"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@android:color/white"
+        android:fontFamily="@font/lato"
+        android:textSize="84sp"
+        android:shadowColor="@android:color/black"
+        android:text="@string/track_item_number_placeholder"
+        android:background="@drawable/scrim"/>
+
+    <RelativeLayout
+        android:id="@+id/track_detail_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/track_detail_image"
+        android:layout_marginTop="20dp">
+
+        <TextView
+            android:id="@+id/track_detail_name"
+            android:ellipsize="end"
+            android:maxLines="1"
+            style="@style/TextAppearance.AppCompat.Headline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="5dp"
+            android:text="@string/track_name_placeholder"
+            android:textSize="28sp"
+            android:textColor="@android:color/black"
+            android:alpha=".87"/>
+
+        <TextView
+            android:id="@+id/track_detail_artist"
+            style="@style/TextAppearance.AppCompat.Medium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/track_detail_name"
+            android:text="@string/track_artist_placeholder"
+            android:textSize="22sp"
+            android:textColor="@android:color/black"
+            android:alpha=".60"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>
