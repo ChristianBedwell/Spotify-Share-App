@@ -334,8 +334,6 @@ public class ItemsFragment extends Fragment {
     private void setUpTrackRecycler(List<com.example.spotifyauthentication.Models.Tracks.Item> items) {
         Activity activity = getActivity();
         if(activity != null) {
-            DatabaseHandler db = new DatabaseHandler(activity);
-            db.deleteAllTracks();
             trackAdapter = new TrackAdapter(activity, items, strLimit);
             layoutManager = new GridLayoutManager(activity,
                     getResources().getInteger(R.integer.grid_column_count));
@@ -348,16 +346,18 @@ public class ItemsFragment extends Fragment {
     private void storeTrackInfo(List<com.example.spotifyauthentication.Models.Tracks.Item> items) {
         // delete all previous entries in table before adding new entries
         DatabaseHandler db = new DatabaseHandler(getActivity());
+        db.dropTable();
         db.deleteAllTracks();
 
         // loop through list of tracks items and add each track as a database entry
         for(int i = 0; i < items.size(); i++) {
             int trackItemNumber = i + 1;
+            String trackImageUri = items.get(i).getAlbum().getImages().get(0).getUrl();
             String trackName = items.get(i).getName();
             String trackArtist = items.get(i).getArtists().get(0).getName();
             String trackUri = items.get(i).getUri();
 
-            db.addTrack(new com.example.spotifyauthentication.Database.Track(trackItemNumber, trackName, trackArtist, trackUri));
+            db.addTrack(new com.example.spotifyauthentication.Database.Track(trackItemNumber, trackImageUri, trackName, trackArtist, trackUri));
         }
 
         // print table entries to log for debugging

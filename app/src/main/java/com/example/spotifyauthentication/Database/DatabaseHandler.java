@@ -14,6 +14,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "trackPlaybackManager";
     private static final String TABLE_TRACK_PLAYBACK = "track_playback";
     private static final String KEY_TRACK_ITEM_NUMBER = "track_item_number";
+    private static final String KEY_TRACK_IMAGE_URI = "track_image_uri";
     private static final String KEY_TRACK_NAME = "track_name";
     private static final String KEY_TRACK_ARTIST = "track_artist";
     private static final String KEY_TRACK_URI = "track_uri";
@@ -25,7 +26,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_TRACKS_TABLE = "CREATE TABLE " + TABLE_TRACK_PLAYBACK + "("
-                + KEY_TRACK_ITEM_NUMBER + " INTEGER PRIMARY KEY," + KEY_TRACK_NAME + " TEXT,"
+                + KEY_TRACK_ITEM_NUMBER + " INTEGER PRIMARY KEY," + KEY_TRACK_IMAGE_URI + " TEXT,"
+                + KEY_TRACK_NAME + " TEXT,"
                 + KEY_TRACK_ARTIST + " TEXT,"
                 + KEY_TRACK_URI + " TEXT" + ")";
         db.execSQL(CREATE_TRACKS_TABLE);
@@ -45,6 +47,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
+        values.put(KEY_TRACK_IMAGE_URI, track.getTrackImageUri());  // track image uri
         values.put(KEY_TRACK_NAME, track.getTrackName()); // track name
         values.put(KEY_TRACK_ARTIST, track.getTrackArtist()); // track artist
         values.put(KEY_TRACK_URI, track.getTrackUri()); // track uri
@@ -59,14 +62,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_TRACK_PLAYBACK, new String[] { KEY_TRACK_ITEM_NUMBER,
-                        KEY_TRACK_NAME, KEY_TRACK_ARTIST, KEY_TRACK_URI }, KEY_TRACK_ITEM_NUMBER + "=?",
+                        KEY_TRACK_IMAGE_URI, KEY_TRACK_NAME, KEY_TRACK_ARTIST, KEY_TRACK_URI }, KEY_TRACK_ITEM_NUMBER + "=?",
                 new String[] { String.valueOf(trackItemNumber) }, null, null, null, null);
         if (cursor != null)
             cursor.moveToFirst();
 
         assert cursor != null;
         Track track = new Track(Integer.parseInt(cursor.getString(0)),
-                cursor.getString(1), cursor.getString(2), cursor.getString(3));
+                cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4));
         // return track
         return track;
     }
@@ -85,9 +88,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             do {
                 Track track = new Track();
                 track.setTrackItemNumber(Integer.parseInt(cursor.getString(0)));
-                track.setTrackName(cursor.getString(1));
-                track.setTrackArtist(cursor.getString(2));
-                track.setTrackUri(cursor.getString(3));
+                track.setTrackImageUri(cursor.getString(1));
+                track.setTrackName(cursor.getString(2));
+                track.setTrackArtist(cursor.getString(3));
+                track.setTrackUri(cursor.getString(4));
                 // add contact to list
                 trackList.add(track);
             }
@@ -103,6 +107,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
+        values.put(KEY_TRACK_IMAGE_URI, track.getTrackImageUri());
         values.put(KEY_TRACK_NAME, track.getTrackName());
         values.put(KEY_TRACK_ARTIST, track.getTrackArtist());
         values.put(KEY_TRACK_URI, track.getTrackUri());
@@ -125,6 +130,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("DELETE FROM " + TABLE_TRACK_PLAYBACK);
         db.close();
+    }
+
+    public void dropTable() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        // drop older table if existed
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_TRACK_PLAYBACK);
+
+        // create tables again
+        onCreate(db);
     }
 
     // get tracks count

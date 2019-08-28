@@ -1,7 +1,6 @@
 package com.example.spotifyauthentication.Activities;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
@@ -216,8 +215,18 @@ public class TrackDetailActivity extends AppCompatActivity {
 
                 // pull results for the next track
                 Track track = dbHandler.getTrack(trackNumber);
+                String previousTrackImageUri = track.getTrackImageUri();
+                int previousTrackItemNumber = track.getTrackItemNumber();
+                String previousTrackName = track.getTrackName();
+                String previousTrackArtist = track.getTrackArtist();
                 String previousTrackUri = track.getTrackUri();
-                Log.d(TAG, previousTrackUri);
+
+                // create new instance of trackPlaybackFragment and fill fragment placeholder
+                trackPlaybackFragment = newInstance(previousTrackImageUri, String.valueOf(previousTrackItemNumber),
+                        previousTrackName, previousTrackArtist);
+                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.track_playback_fragment_placeholder, trackPlaybackFragment);
+                fragmentTransaction.commit();
             }
         });
 
@@ -247,8 +256,18 @@ public class TrackDetailActivity extends AppCompatActivity {
 
                 // pull results for the next track
                 Track track = dbHandler.getTrack(trackNumber);
+                String nextTrackImageUri = track.getTrackImageUri();
+                int nextTrackItemNumber = track.getTrackItemNumber();
+                String nextTrackName = track.getTrackName();
+                String nextTrackArtist = track.getTrackArtist();
                 String nextTrackUri = track.getTrackUri();
-                Log.d(TAG, nextTrackUri);
+
+                // create new instance of trackPlaybackFragment and fill fragment placeholder
+                trackPlaybackFragment = newInstance(nextTrackImageUri, String.valueOf(nextTrackItemNumber),
+                        nextTrackName, nextTrackArtist);
+                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.track_playback_fragment_placeholder, trackPlaybackFragment);
+                fragmentTransaction.commit();
             }
         });
 
