@@ -26,9 +26,6 @@ public class TrackPlaybackFragment extends Fragment {
     private String strTrackName;
     private String strTrackArtist;
 
-    // tag for debugging logcat entries
-    private String TAG = TrackPlaybackFragment.class.getSimpleName();
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -44,11 +41,6 @@ public class TrackPlaybackFragment extends Fragment {
             strTrackItemNumber = getArguments().getString("track_item_number");
             strTrackName = getArguments().getString("track_name");
             strTrackArtist = getArguments().getString("track_artist");
-
-            Log.d(TAG, strTrackImageUri);
-            Log.d(TAG, strTrackItemNumber);
-            Log.d(TAG, strTrackName);
-            Log.d(TAG, strTrackArtist);
         }
 
         Picasso.get().load(strTrackImageUri).into(trackImage);

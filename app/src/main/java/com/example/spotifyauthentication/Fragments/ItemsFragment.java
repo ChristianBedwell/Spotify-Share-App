@@ -18,6 +18,7 @@ import android.view.animation.LayoutAnimationController;
 
 import com.example.spotifyauthentication.Adapters.ArtistAdapter;
 import com.example.spotifyauthentication.Adapters.TrackAdapter;
+import com.example.spotifyauthentication.Database.DatabaseHandler;
 import com.example.spotifyauthentication.Models.Artists.Artist;
 import com.example.spotifyauthentication.Models.Artists.Item;
 import com.example.spotifyauthentication.Models.Tracks.Track;
@@ -47,6 +48,9 @@ public class ItemsFragment extends Fragment {
     private String strTimeRange;
     private String strLimit;
     private String strOffset;
+
+    // tag for debugging logcat entries
+    private String TAG = ItemsFragment.class.getSimpleName();
 
     @Nullable
     @Override
@@ -295,6 +299,7 @@ public class ItemsFragment extends Fragment {
                     if (response.isSuccessful()) {
                         if(response.body() != null) {
                             List<com.example.spotifyauthentication.Models.Tracks.Item> trackItems = response.body().getItems();
+                            storeTrackInfo(trackItems);
                             setUpTrackRecycler(trackItems);
                         }
                     }
@@ -329,6 +334,8 @@ public class ItemsFragment extends Fragment {
     private void setUpTrackRecycler(List<com.example.spotifyauthentication.Models.Tracks.Item> items) {
         Activity activity = getActivity();
         if(activity != null) {
+            DatabaseHandler db = new DatabaseHandler(activity);
+            db.deleteAllTracks();
             trackAdapter = new TrackAdapter(activity, items, strLimit);
             layoutManager = new GridLayoutManager(activity,
                     getResources().getInteger(R.integer.grid_column_count));
@@ -338,6 +345,31 @@ public class ItemsFragment extends Fragment {
         }
     }
 
+    private void storeTrackInfo(List<com.example.spotifyauthentication.Models.Tracks.Item> items) {
+        // delete all previous entries in table before adding new entries
+        DatabaseHandler db = new DatabaseHandler(getActivity());
+        db.deleteAllTracks();
+
+        // loop through list of tracks items and add each track as a database entry
+        for(int i = 0; i < items.size(); i++) {
+            int trackItemNumber = i + 1;
+            String trackName = items.get(i).getName();
+            String trackArtist = items.get(i).getArtists().get(0).getName();
+            String trackUri = items.get(i).getUri();
+
+            db.addTrack(new com.example.spotifyauthentication.Database.Track(trackItemNumber, trackName, trackArtist, trackUri));
+        }
+
+        // print table entries to log for debugging
+        List<com.example.spotifyauthentication.Database.Track> tracks = db.getAllTracks();
+        for (com.example.spotifyauthentication.Database.Track tk : tracks) {
+            String log = "Track Item Number: " + tk.getTrackItemNumber() + ", Track Name: " + tk.getTrackName() + ", Track Artist: " +
+                    tk.getTrackArtist() + ", Track URI: " + tk.getTrackUri();
+            Log.d(TAG, log);
+        }
+    }
+
+    // run layout animation when loading cards into recycler view
     private void runLayoutAnimation(final RecyclerView recyclerView) {
         final Context context = recyclerView.getContext();
         final LayoutAnimationController controller =

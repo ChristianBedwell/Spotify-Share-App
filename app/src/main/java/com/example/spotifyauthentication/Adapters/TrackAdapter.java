@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,8 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
     private Context mContext;
     private String strLimit;
     private int limit;
+
+    private static final String TAG = TrackAdapter.class.getSimpleName();
 
     public TrackAdapter(Context context, List<Item> items, String strLimit) {
         this.trackItems = items;
@@ -55,12 +58,6 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
         trackViewHolder.trackPopularityNumber.setText(String.valueOf(precision.format((float) trackItems.get(position).getPopularity() / 20)));
         trackViewHolder.trackItemNumber.setText(new StringBuilder().append(trackItemNum));
         trackViewHolder.trackPopularity.setRating((float) (trackItems.get(position).getPopularity()) / 20);
-
-        // insert new record for track
-        DatabaseHandler db = new DatabaseHandler(mContext);
-        db.addTrack(new Track(trackItemNum, trackItems.get(position).getName(),
-                trackItems.get(position).getArtists().get(0).getName(),
-                trackItems.get(position).getUri()));
     }
 
     @Override

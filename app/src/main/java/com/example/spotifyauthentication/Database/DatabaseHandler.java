@@ -47,7 +47,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(KEY_TRACK_NAME, track.getTrackName()); // track name
         values.put(KEY_TRACK_ARTIST, track.getTrackArtist()); // track artist
-        values.put(KEY_TRACK_ITEM_NUMBER, track.getTrackUri()); // track uri
+        values.put(KEY_TRACK_URI, track.getTrackUri()); // track uri
 
         // insert row
         db.insert(TABLE_TRACK_PLAYBACK, null, values);
@@ -64,6 +64,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if (cursor != null)
             cursor.moveToFirst();
 
+        assert cursor != null;
         Track track = new Track(Integer.parseInt(cursor.getString(0)),
                 cursor.getString(1), cursor.getString(2), cursor.getString(3));
         // return track
@@ -111,11 +112,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 new String[] { String.valueOf(track.getTrackItemNumber()) });
     }
 
-    // delete single contact
+    // delete single track
     public void deleteTrack(Track track) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_TRACK_PLAYBACK, KEY_TRACK_ITEM_NUMBER + " = ?",
                 new String[] { String.valueOf(track.getTrackItemNumber()) });
+        db.close();
+    }
+
+    // delete all tracks from table
+    public void deleteAllTracks() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DELETE FROM " + TABLE_TRACK_PLAYBACK);
         db.close();
     }
 

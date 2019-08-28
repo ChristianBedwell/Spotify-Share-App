@@ -1,6 +1,7 @@
 package com.example.spotifyauthentication.Activities;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,19 +16,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.example.spotifyauthentication.Database.DatabaseHandler;
+import com.example.spotifyauthentication.Database.Track;
 import com.example.spotifyauthentication.Fragments.TrackPlaybackFragment;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 
 import com.example.spotifyauthentication.R;
-import com.squareup.picasso.Picasso;
 
 import java.util.Objects;
 
@@ -90,8 +90,6 @@ public class TrackDetailActivity extends AppCompatActivity {
         trackShareName = getIntent().getStringExtra("track_name");
         trackShareArtist = getIntent().getStringExtra("track_artist");
         trackNumber = Integer.parseInt(getIntent().getStringExtra("track_item_number"));
-
-        Log.d(TAG, "Image URI passed to fragment: " + getIntent().getStringExtra("track_image_resource"));
 
         // create new instance of trackPlaybackFragment and fill fragment placeholder
         trackPlaybackFragment = newInstance(getIntent().getStringExtra("track_image_resource"),
@@ -215,6 +213,11 @@ public class TrackDetailActivity extends AppCompatActivity {
                         skipNextButton.setEnabled(false);
                     }
                 }
+
+                // pull results for the next track
+                Track track = dbHandler.getTrack(trackNumber);
+                String previousTrackUri = track.getTrackUri();
+                Log.d(TAG, previousTrackUri);
             }
         });
 
@@ -222,7 +225,7 @@ public class TrackDetailActivity extends AppCompatActivity {
         skipNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // increment track number and pull results for the corresponding track
+                // increment track number
                 if(trackNumber < trackLimit) {
                     trackNumber++;
 
@@ -241,6 +244,11 @@ public class TrackDetailActivity extends AppCompatActivity {
                         skipNextButton.setEnabled(false);
                     }
                 }
+
+                // pull results for the next track
+                Track track = dbHandler.getTrack(trackNumber);
+                String nextTrackUri = track.getTrackUri();
+                Log.d(TAG, nextTrackUri);
             }
         });
 
