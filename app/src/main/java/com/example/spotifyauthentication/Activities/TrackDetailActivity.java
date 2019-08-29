@@ -30,6 +30,9 @@ import com.example.spotifyauthentication.R;
 
 import java.util.Objects;
 
+import static com.spotify.protocol.types.Repeat.ALL;
+import static com.spotify.protocol.types.Repeat.OFF;
+
 public class TrackDetailActivity extends AppCompatActivity {
 
     // declare constants
@@ -42,8 +45,8 @@ public class TrackDetailActivity extends AppCompatActivity {
     private String trackUri, shareLink, trackShareName, trackShareArtist;
     private TextView trackSeekBarMin, trackSeekBarMax;
     private SeekBar trackSeekBar;
-    private Button favoriteButton, skipPreviousButton, skipNextButton, repeatButton;
-    private ToggleButton playbackButton;
+    private Button skipPreviousButton, skipNextButton;
+    private ToggleButton playbackButton, favoriteButton, repeatButton;
     private Toolbar toolbar;
     private int trackLimit, trackNumber;
     private boolean isPlaying;
@@ -76,10 +79,10 @@ public class TrackDetailActivity extends AppCompatActivity {
         trackSeekBar = (SeekBar) findViewById(R.id.seekBar);
 
         // initialize the buttons
-        favoriteButton = (Button) findViewById(R.id.favorite_button);
+        favoriteButton = (ToggleButton) findViewById(R.id.favorite_button);
         skipPreviousButton = (Button) findViewById(R.id.skip_previous_button);
         skipNextButton = (Button) findViewById(R.id.skip_next_button);
-        repeatButton = (Button) findViewById(R.id.repeat_button);
+        repeatButton = (ToggleButton) findViewById(R.id.repeat_button);
         playbackButton = (ToggleButton) findViewById(R.id.play_button);
 
         // get intent extras from adapter
@@ -225,8 +228,11 @@ public class TrackDetailActivity extends AppCompatActivity {
                 trackPlaybackFragment = newInstance(previousTrackImageUri, String.valueOf(previousTrackItemNumber),
                         previousTrackName, previousTrackArtist);
                 FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.setCustomAnimations(R.anim.detail_activity_in, R.anim.detail_activity_out);
                 fragmentTransaction.replace(R.id.track_playback_fragment_placeholder, trackPlaybackFragment);
                 fragmentTransaction.commit();
+
+                mSpotifyAppRemote.getPlayerApi().play(previousTrackUri);
             }
         });
 
@@ -266,24 +272,47 @@ public class TrackDetailActivity extends AppCompatActivity {
                 trackPlaybackFragment = newInstance(nextTrackImageUri, String.valueOf(nextTrackItemNumber),
                         nextTrackName, nextTrackArtist);
                 FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.setCustomAnimations(R.anim.most_popular_activity_in, R.anim.most_popular_activity_out);
                 fragmentTransaction.replace(R.id.track_playback_fragment_placeholder, trackPlaybackFragment);
                 fragmentTransaction.commit();
+
+                mSpotifyAppRemote.getPlayerApi().play(nextTrackUri);
             }
         });
 
-        // set click listener for repeat button
-        repeatButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mSpotifyAppRemote.getPlayerApi().toggleRepeat();
+        // set click listener for repeat toggle button
+        repeatButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                // if repeat button is enabled, track is set to repeat
+                if (isChecked) {
+                    if (mSpotifyAppRemote != null) {
+                        mSpotifyAppRemote.getPlayerApi().setRepeat(ALL);
+                    }
+                }
+                // if favorite button is not enabled, track is set to not repeat
+                else {
+                    if (mSpotifyAppRemote != null) {
+                        mSpotifyAppRemote.getPlayerApi().setRepeat(OFF);
+                    }
+                }
             }
         });
 
-        // set click listener for favorite button
-        favoriteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mSpotifyAppRemote.getUserApi().addToLibrary(trackUri);
+        // set click listener for favorite toggle button
+        favoriteButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                // if favorite button is enabled, track is removed from library
+                if (isChecked) {
+                    if(mSpotifyAppRemote != null) {
+                        mSpotifyAppRemote.getUserApi().addToLibrary(trackUri);
+                    }
+                }
+                // if favorite button is not enabled, track is added to library
+                else {
+                    if(mSpotifyAppRemote != null) {
+                        mSpotifyAppRemote.getUserApi().removeFromLibrary(trackUri);
+                    }
+                }
             }
         });
 

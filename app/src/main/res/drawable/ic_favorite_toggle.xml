@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- item is not checked, so track has been removed from library -->
+    <item android:state_checked="false"
+        android:drawable="@drawable/ic_favorite_black_disabled" />
+
+    <!-- item is checked, so track has been added to library -->
+    <item android:state_checked="true"
+        android:drawable="@drawable/ic_favorite_black_enabled" />
+</selector>

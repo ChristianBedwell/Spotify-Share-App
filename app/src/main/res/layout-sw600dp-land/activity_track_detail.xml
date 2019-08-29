@@ -88,13 +88,15 @@
             android:layout_marginTop="21dp"
             android:layout_below="@+id/timeSeekBar">
 
-            <Button
+            <ToggleButton
                 android:id="@+id/favorite_button"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:background="@drawable/ic_favorite_black"
+                android:background="@drawable/ic_favorite_toggle"
                 android:layout_marginEnd="70dp"
-                android:layout_centerVertical="true"/>
+                android:layout_centerVertical="true"
+                android:textOff=""
+                android:textOn=""/>
 
             <Button
                 android:id="@+id/skip_previous_button"
@@ -104,7 +106,7 @@
                 android:background="@drawable/ic_skip_previous_black_selector"
                 android:layout_centerVertical="true"/>
 
-            <Button
+            <ToggleButton
                 android:id="@+id/play_button"
                 android:layout_width="70dp"
                 android:layout_height="100dp"
@@ -113,7 +115,9 @@
                 android:layout_marginEnd="20dp"
                 android:background="@drawable/ic_play_circle_black"
                 android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true"/>
+                android:layout_centerHorizontal="true"
+                android:textOff=""
+                android:textOn=""/>
 
             <Button
                 android:id="@+id/skip_next_button"
@@ -124,13 +128,15 @@
                 android:background="@drawable/ic_skip_next_black_selector"
                 android:layout_centerVertical="true"/>
 
-            <Button
+            <ToggleButton
                 android:id="@+id/repeat_button"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_toEndOf="@+id/skip_next_button"
-                android:background="@drawable/ic_repeat_black"
-                android:layout_centerVertical="true"/>
+                android:background="@drawable/ic_repeat_toggle"
+                android:layout_centerVertical="true"
+                android:textOff=""
+                android:textOn=""/>
 
         </RelativeLayout>
 
