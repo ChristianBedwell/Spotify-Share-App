@@ -48,7 +48,7 @@ public class TrackDetailActivity extends AppCompatActivity {
     private Button skipPreviousButton, skipNextButton;
     private ToggleButton playbackButton, favoriteButton, repeatButton;
     private Toolbar toolbar;
-    private int trackLimit, trackNumber;
+    private int trackLimit, trackNumber, repeatMode;
     private boolean isPlaying;
 
     // duration of the track in milliseconds
@@ -100,8 +100,6 @@ public class TrackDetailActivity extends AppCompatActivity {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.track_playback_fragment_placeholder, trackPlaybackFragment);
         fragmentTransaction.commit();
-
-        DatabaseHandler dbHandler = new DatabaseHandler(this);
 
         /*// if Spotify app is installed on Android device
         if(SpotifyAppRemote.isSpotifyInstalled(getApplicationContext())) {
@@ -196,43 +194,7 @@ public class TrackDetailActivity extends AppCompatActivity {
         skipPreviousButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // decrement track number and pull results for the corresponding track
-                if(trackNumber > 1) {
-                    trackNumber--;
-
-                    skipPreviousButton.setEnabled(true);
-                    skipNextButton.setEnabled(true);
-
-                    // reset state of buttons based on track number
-                    if(trackNumber == 1) {
-                        // if track is first track in list, prevent user from going to previous track
-                        skipPreviousButton.setEnabled(false);
-                        skipNextButton.setEnabled(true);
-                    }
-                    else if(trackNumber == trackLimit) {
-                        // if track is last track in list, prevent user from going to next track
-                        skipPreviousButton.setEnabled(true);
-                        skipNextButton.setEnabled(false);
-                    }
-                }
-
-                // pull results for the next track
-                Track track = dbHandler.getTrack(trackNumber);
-                String previousTrackImageUri = track.getTrackImageUri();
-                int previousTrackItemNumber = track.getTrackItemNumber();
-                String previousTrackName = track.getTrackName();
-                String previousTrackArtist = track.getTrackArtist();
-                String previousTrackUri = track.getTrackUri();
-
-                // create new instance of trackPlaybackFragment and fill fragment placeholder
-                trackPlaybackFragment = newInstance(previousTrackImageUri, String.valueOf(previousTrackItemNumber),
-                        previousTrackName, previousTrackArtist);
-                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.setCustomAnimations(R.anim.detail_activity_in, R.anim.detail_activity_out);
-                fragmentTransaction.replace(R.id.track_playback_fragment_placeholder, trackPlaybackFragment);
-                fragmentTransaction.commit();
-
-                mSpotifyAppRemote.getPlayerApi().play(previousTrackUri);
+                loadPreviousTrack();
             }
         });
 
@@ -240,43 +202,7 @@ public class TrackDetailActivity extends AppCompatActivity {
         skipNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // increment track number
-                if(trackNumber < trackLimit) {
-                    trackNumber++;
-
-                    skipPreviousButton.setEnabled(true);
-                    skipNextButton.setEnabled(true);
-
-                    // reset state of buttons based on track number
-                    if(trackNumber == 1) {
-                        // if track is first track in list, prevent user from going to previous track
-                        skipPreviousButton.setEnabled(false);
-                        skipNextButton.setEnabled(true);
-                    }
-                    else if(trackNumber == trackLimit) {
-                        // if track is last track in list, prevent user from going to next track
-                        skipPreviousButton.setEnabled(true);
-                        skipNextButton.setEnabled(false);
-                    }
-                }
-
-                // pull results for the next track
-                Track track = dbHandler.getTrack(trackNumber);
-                String nextTrackImageUri = track.getTrackImageUri();
-                int nextTrackItemNumber = track.getTrackItemNumber();
-                String nextTrackName = track.getTrackName();
-                String nextTrackArtist = track.getTrackArtist();
-                String nextTrackUri = track.getTrackUri();
-
-                // create new instance of trackPlaybackFragment and fill fragment placeholder
-                trackPlaybackFragment = newInstance(nextTrackImageUri, String.valueOf(nextTrackItemNumber),
-                        nextTrackName, nextTrackArtist);
-                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.setCustomAnimations(R.anim.most_popular_activity_in, R.anim.most_popular_activity_out);
-                fragmentTransaction.replace(R.id.track_playback_fragment_placeholder, trackPlaybackFragment);
-                fragmentTransaction.commit();
-
-                mSpotifyAppRemote.getPlayerApi().play(nextTrackUri);
+                loadNextTrack();
             }
         });
 
@@ -328,6 +254,8 @@ public class TrackDetailActivity extends AppCompatActivity {
                     mSpotifyAppRemote.getPlayerApi().subscribeToPlayerState().setEventCallback(playerState -> {
                         trackPlaybackPosition = (playerState.playbackPosition) / 1000;
                         trackDuration = (playerState.track.duration) / 1000;
+                        repeatMode = playerState.playbackOptions.repeatMode;
+                        Log.d(TAG, String.valueOf(repeatMode));
                     });
 
                     trackSeekBar.setMax((int) trackDuration);
@@ -338,6 +266,27 @@ public class TrackDetailActivity extends AppCompatActivity {
                     // update seek bar values on UI thread
                     trackSeekBarMin.setText(convertSecondsToMSs(trackPlaybackPosition));
                     trackSeekBarMax.setText(convertSecondsToMSs(trackDuration - trackPlaybackPosition));
+
+                    // if track is set not to repeat
+                    if(repeatMode == OFF) {
+                        repeatButton.setChecked(false);
+
+                        // if current track is close to ending, load next track
+                        if(trackDuration - trackPlaybackPosition < 3
+                                && trackPlaybackPosition != 0) {
+                            loadNextTrack();
+                        }
+                        // if track is final track and is close to ending, load first track
+                        else if(trackDuration - trackPlaybackPosition < 5
+                                && trackPlaybackPosition != 0
+                                && trackNumber == trackLimit) {
+                            loadFirstTrack();
+                        }
+                    }
+                    // else if track is set to repeat, do nothing
+                    else if(repeatMode == ALL) {
+                        repeatButton.setChecked(true);
+                    }
                 }
                 mHandler.postDelayed(this, 1000);
             }
@@ -385,6 +334,7 @@ public class TrackDetailActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home){
+            // navigate to parent activity
             onBackPressed();
             return true;
         }
@@ -448,6 +398,127 @@ public class TrackDetailActivity extends AppCompatActivity {
         share.putExtra(Intent.EXTRA_TEXT, shareLink);
 
         startActivity(Intent.createChooser(share, "Share link!"));
+    }
+
+    // load first track in recycler view
+    public void loadFirstTrack() {
+        trackNumber = 1;
+
+        // create new instance of the database handler
+        DatabaseHandler dbHandler = new DatabaseHandler(this);
+
+        // since track is first track in list, prevent user from going to previous track
+        playbackButton.setChecked(false);
+        skipPreviousButton.setEnabled(false);
+        skipNextButton.setEnabled(true);
+
+        // pull results for the next track
+        Track track = dbHandler.getTrack(trackNumber);
+        String nextTrackImageUri = track.getTrackImageUri();
+        int nextTrackItemNumber = track.getTrackItemNumber();
+        String nextTrackName = track.getTrackName();
+        String nextTrackArtist = track.getTrackArtist();
+        String nextTrackUri = track.getTrackUri();
+
+        // create new instance of trackPlaybackFragment and fill fragment placeholder
+        trackPlaybackFragment = newInstance(nextTrackImageUri, String.valueOf(nextTrackItemNumber),
+                nextTrackName, nextTrackArtist);
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.setCustomAnimations(R.anim.most_popular_activity_in, R.anim.most_popular_activity_out);
+        fragmentTransaction.replace(R.id.track_playback_fragment_placeholder, trackPlaybackFragment);
+        fragmentTransaction.commit();
+
+        mSpotifyAppRemote.getPlayerApi().play(nextTrackUri);
+    }
+
+    // load next track in recycler view
+    public void loadNextTrack() {
+        // create new instance of the database handler
+        DatabaseHandler dbHandler = new DatabaseHandler(this);
+
+        // increment track number
+        if(trackNumber < trackLimit) {
+            trackNumber++;
+
+            playbackButton.setChecked(false);
+            skipPreviousButton.setEnabled(true);
+            skipNextButton.setEnabled(true);
+
+            // reset state of buttons based on track number
+            if(trackNumber == 1) {
+                // if track is first track in list, prevent user from going to previous track
+                skipPreviousButton.setEnabled(false);
+                skipNextButton.setEnabled(true);
+            }
+            else if(trackNumber == trackLimit) {
+                // if track is last track in list, prevent user from going to next track
+                skipPreviousButton.setEnabled(true);
+                skipNextButton.setEnabled(false);
+            }
+        }
+
+        // pull results for the next track
+        Track track = dbHandler.getTrack(trackNumber);
+        String nextTrackImageUri = track.getTrackImageUri();
+        int nextTrackItemNumber = track.getTrackItemNumber();
+        String nextTrackName = track.getTrackName();
+        String nextTrackArtist = track.getTrackArtist();
+        String nextTrackUri = track.getTrackUri();
+
+        // create new instance of trackPlaybackFragment and fill fragment placeholder
+        trackPlaybackFragment = newInstance(nextTrackImageUri, String.valueOf(nextTrackItemNumber),
+                nextTrackName, nextTrackArtist);
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.setCustomAnimations(R.anim.most_popular_activity_in, R.anim.most_popular_activity_out);
+        fragmentTransaction.replace(R.id.track_playback_fragment_placeholder, trackPlaybackFragment);
+        fragmentTransaction.commit();
+
+        mSpotifyAppRemote.getPlayerApi().play(nextTrackUri);
+    }
+
+    // load previous track in recycler view
+    public void loadPreviousTrack() {
+        // create new instance of the database handler
+        DatabaseHandler dbHandler = new DatabaseHandler(this);
+
+        // decrement track number and pull results for the corresponding track
+        if(trackNumber > 1) {
+            trackNumber--;
+
+            playbackButton.setChecked(false);
+            skipPreviousButton.setEnabled(true);
+            skipNextButton.setEnabled(true);
+
+            // reset state of buttons based on track number
+            if(trackNumber == 1) {
+                // if track is first track in list, prevent user from going to previous track
+                skipPreviousButton.setEnabled(false);
+                skipNextButton.setEnabled(true);
+            }
+            else if(trackNumber == trackLimit) {
+                // if track is last track in list, prevent user from going to next track
+                skipPreviousButton.setEnabled(true);
+                skipNextButton.setEnabled(false);
+            }
+        }
+
+        // pull results for the next track
+        Track track = dbHandler.getTrack(trackNumber);
+        String previousTrackImageUri = track.getTrackImageUri();
+        int previousTrackItemNumber = track.getTrackItemNumber();
+        String previousTrackName = track.getTrackName();
+        String previousTrackArtist = track.getTrackArtist();
+        String previousTrackUri = track.getTrackUri();
+
+        // create new instance of trackPlaybackFragment and fill fragment placeholder
+        trackPlaybackFragment = newInstance(previousTrackImageUri, String.valueOf(previousTrackItemNumber),
+                previousTrackName, previousTrackArtist);
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.setCustomAnimations(R.anim.detail_activity_in, R.anim.detail_activity_out);
+        fragmentTransaction.replace(R.id.track_playback_fragment_placeholder, trackPlaybackFragment);
+        fragmentTransaction.commit();
+
+        mSpotifyAppRemote.getPlayerApi().play(previousTrackUri);
     }
 
     // converts seconds to minutes-seconds format
