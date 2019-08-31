@@ -49,7 +49,9 @@ public class TrackDetailActivity extends AppCompatActivity {
     private ToggleButton playbackButton, favoriteButton, repeatButton;
     private Toolbar toolbar;
     private int trackLimit, trackNumber, repeatMode;
-    private boolean isPlaying;
+    private boolean isPlaying, trackIsAdded;
+
+    TrackProgressBar mTrackProgressBar;
 
     // duration of the track in milliseconds
     public long trackDuration;
@@ -75,8 +77,9 @@ public class TrackDetailActivity extends AppCompatActivity {
         trackSeekBarMin = (TextView) findViewById(R.id.timeSeekBarMin);
         trackSeekBarMax = (TextView) findViewById(R.id.timeSeekBarMax);
 
-        // initialize the image view and seek bar
+        // initialize the seek bar and seek bar class
         trackSeekBar = (SeekBar) findViewById(R.id.seekBar);
+        mTrackProgressBar = new TrackProgressBar(trackSeekBar);
 
         // initialize the buttons
         favoriteButton = (ToggleButton) findViewById(R.id.favorite_button);
@@ -170,6 +173,53 @@ public class TrackDetailActivity extends AppCompatActivity {
             skipNextButton.setEnabled(false);
         }
 
+        // update seek bar progress value every second
+        Handler mHandler = new Handler();
+        TrackDetailActivity.this.runOnUiThread(new Runnable() {
+
+            @Override
+            public void run() {
+
+                if(mSpotifyAppRemote != null && isPlaying){
+                    // get track playback position and track duration, convert from ms to s
+                    mSpotifyAppRemote.getPlayerApi().subscribeToPlayerState().setEventCallback(playerState -> {
+                        trackPlaybackPosition = (playerState.playbackPosition) / 1000;
+                        trackDuration = (playerState.track.duration) / 1000;
+                        repeatMode = playerState.playbackOptions.repeatMode;
+                    });
+
+                    mTrackProgressBar.setDuration(trackDuration);
+                    mTrackProgressBar.update(trackPlaybackPosition);
+
+                    // update seek bar values on UI thread
+                    trackSeekBarMin.setText(convertSecondsToMSs(trackPlaybackPosition));
+                    trackSeekBarMax.setText(convertSecondsToMSs(trackDuration - trackPlaybackPosition));
+
+                    // if track is set not to repeat, toggle repeat button off
+                    if(repeatMode == OFF) {
+                        repeatButton.setChecked(false);
+
+                        // if current track is close to ending, load next track
+                        if(trackDuration - trackPlaybackPosition < 3
+                                && trackPlaybackPosition != 0) {
+                            loadNextTrack();
+                        }
+                        // if track is final track and is close to ending, load first track
+                        else if(trackDuration - trackPlaybackPosition < 5
+                                && trackPlaybackPosition != 0
+                                && trackNumber == trackLimit) {
+                            loadFirstTrack();
+                        }
+                    }
+                    // else if track is set to repeat, do nothing
+                    else if(repeatMode == ALL) {
+                        repeatButton.setChecked(true);
+                    }
+                }
+                mHandler.postDelayed(this, 1000);
+            }
+        });
+
         // set click listener for playback toggle button
         playbackButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -241,80 +291,6 @@ public class TrackDetailActivity extends AppCompatActivity {
                 }
             }
         });
-
-        // update seek bar progress value every second
-        Handler mHandler = new Handler();
-        TrackDetailActivity.this.runOnUiThread(new Runnable() {
-
-            @Override
-            public void run() {
-
-                if(mSpotifyAppRemote != null && isPlaying){
-                    // get track playback position and track duration, convert from ms to s
-                    mSpotifyAppRemote.getPlayerApi().subscribeToPlayerState().setEventCallback(playerState -> {
-                        trackPlaybackPosition = (playerState.playbackPosition) / 1000;
-                        trackDuration = (playerState.track.duration) / 1000;
-                        repeatMode = playerState.playbackOptions.repeatMode;
-                        Log.d(TAG, String.valueOf(repeatMode));
-                    });
-
-                    trackSeekBar.setMax((int) trackDuration);
-
-                    int mCurrentPosition = (int) trackPlaybackPosition;
-                    trackSeekBar.setProgress(mCurrentPosition);
-
-                    // update seek bar values on UI thread
-                    trackSeekBarMin.setText(convertSecondsToMSs(trackPlaybackPosition));
-                    trackSeekBarMax.setText(convertSecondsToMSs(trackDuration - trackPlaybackPosition));
-
-                    // if track is set not to repeat
-                    if(repeatMode == OFF) {
-                        repeatButton.setChecked(false);
-
-                        // if current track is close to ending, load next track
-                        if(trackDuration - trackPlaybackPosition < 3
-                                && trackPlaybackPosition != 0) {
-                            loadNextTrack();
-                        }
-                        // if track is final track and is close to ending, load first track
-                        else if(trackDuration - trackPlaybackPosition < 5
-                                && trackPlaybackPosition != 0
-                                && trackNumber == trackLimit) {
-                            loadFirstTrack();
-                        }
-                    }
-                    // else if track is set to repeat, do nothing
-                    else if(repeatMode == ALL) {
-                        repeatButton.setChecked(true);
-                    }
-                }
-                mHandler.postDelayed(this, 1000);
-            }
-        });
-
-        // set change listener for track seek bar
-        trackSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
-            // notification that the user has started a touch gesture
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            // notification that the progress level has changed
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if(mSpotifyAppRemote != null && fromUser) {
-                    mSpotifyAppRemote.getPlayerApi().seekTo(progress * 1000);
-                }
-            }
-
-            // notification that the user has finished a touch gesture
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
     }
 
     @Override
@@ -358,10 +334,9 @@ public class TrackDetailActivity extends AppCompatActivity {
 
             public void onConnected(SpotifyAppRemote spotifyAppRemote) {
                 mSpotifyAppRemote = spotifyAppRemote;
-                Log.d(TAG, "Connected! Yay!");
 
                 // app remote is connected and interactable
-                connected();
+                connected(trackUri);
             }
 
             public void onFailure(Throwable throwable) {
@@ -371,10 +346,23 @@ public class TrackDetailActivity extends AppCompatActivity {
     }
 
     // app remote is connected
-    private void connected() {
-        // play a playlist
+    private void connected(String trackUri) {
+        // play a track
         mSpotifyAppRemote.getPlayerApi().play(trackUri);
         isPlaying = true;
+
+        mSpotifyAppRemote.getUserApi().getLibraryState(trackUri).setResultCallback(userState -> {
+            trackIsAdded = userState.isAdded;
+        });
+
+        // if track is already added to library, toggle favorite button on
+        if(trackIsAdded) {
+            favoriteButton.setChecked(true);
+        }
+        // else if track is not added to library, toggle favorite button off
+        else {
+            favoriteButton.setChecked(false);
+        }
     }
 
     // get redirect uri using redirect scheme and host
@@ -414,21 +402,21 @@ public class TrackDetailActivity extends AppCompatActivity {
 
         // pull results for the next track
         Track track = dbHandler.getTrack(trackNumber);
-        String nextTrackImageUri = track.getTrackImageUri();
-        int nextTrackItemNumber = track.getTrackItemNumber();
-        String nextTrackName = track.getTrackName();
-        String nextTrackArtist = track.getTrackArtist();
-        String nextTrackUri = track.getTrackUri();
+        String firstTrackImageUri = track.getTrackImageUri();
+        int firstTrackItemNumber = track.getTrackItemNumber();
+        String firstTrackName = track.getTrackName();
+        String firstTrackArtist = track.getTrackArtist();
+        String firstTrackUri = track.getTrackUri();
 
         // create new instance of trackPlaybackFragment and fill fragment placeholder
-        trackPlaybackFragment = newInstance(nextTrackImageUri, String.valueOf(nextTrackItemNumber),
-                nextTrackName, nextTrackArtist);
+        trackPlaybackFragment = newInstance(firstTrackImageUri, String.valueOf(firstTrackItemNumber),
+                firstTrackName, firstTrackArtist);
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.setCustomAnimations(R.anim.most_popular_activity_in, R.anim.most_popular_activity_out);
         fragmentTransaction.replace(R.id.track_playback_fragment_placeholder, trackPlaybackFragment);
         fragmentTransaction.commit();
 
-        mSpotifyAppRemote.getPlayerApi().play(nextTrackUri);
+        connected(firstTrackUri);
     }
 
     // load next track in recycler view
@@ -473,7 +461,7 @@ public class TrackDetailActivity extends AppCompatActivity {
         fragmentTransaction.replace(R.id.track_playback_fragment_placeholder, trackPlaybackFragment);
         fragmentTransaction.commit();
 
-        mSpotifyAppRemote.getPlayerApi().play(nextTrackUri);
+        connected(nextTrackUri);
     }
 
     // load previous track in recycler view
@@ -518,7 +506,7 @@ public class TrackDetailActivity extends AppCompatActivity {
         fragmentTransaction.replace(R.id.track_playback_fragment_placeholder, trackPlaybackFragment);
         fragmentTransaction.commit();
 
-        mSpotifyAppRemote.getPlayerApi().play(previousTrackUri);
+        connected(previousTrackUri);
     }
 
     // converts seconds to minutes-seconds format
@@ -540,5 +528,57 @@ public class TrackDetailActivity extends AppCompatActivity {
         trackPlaybackFragment.setArguments(args);
 
         return trackPlaybackFragment;
+    }
+
+    private class TrackProgressBar {
+
+        private static final int LOOP_DURATION = 500;
+        private final SeekBar mSeekBar;
+        private final Handler mHandler;
+
+        // set change listener for track seek bar
+        private final SeekBar.OnSeekBarChangeListener mSeekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
+
+            // notification that the user has started a touch gesture
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            // notification that the progress level has changed
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+            }
+
+            // notification that the user has finished a touch gesture
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                mSpotifyAppRemote.getPlayerApi().seekTo(seekBar.getProgress() * 1000);
+            }
+        };
+
+        private final Runnable mSeekRunnable = new Runnable() {
+            @Override
+            public void run() {
+                int progress = mSeekBar.getProgress();
+                mSeekBar.setProgress(progress + LOOP_DURATION);
+                mHandler.postDelayed(mSeekRunnable, LOOP_DURATION);
+            }
+        };
+
+        private TrackProgressBar(SeekBar seekBar) {
+            mSeekBar = seekBar;
+            mSeekBar.setOnSeekBarChangeListener(mSeekBarChangeListener);
+            mHandler = new Handler();
+        }
+
+        private void setDuration(long duration) {
+            mSeekBar.setMax((int) duration);
+        }
+
+        private void update(long progress) {
+            mSeekBar.setProgress((int) progress);
+        }
     }
 }
