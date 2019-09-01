@@ -161,7 +161,24 @@ public class TrackDetailActivity extends AppCompatActivity {
         else {
 
         }*/
-        openTrack();
+        // if a configuration change has occurred, restore the position of track playback
+        if(savedInstanceState != null) {
+            trackDuration = savedInstanceState.getLong("track_duration");
+            Log.d(TAG, String.valueOf(trackDuration));
+            trackPlaybackPosition = savedInstanceState.getLong("track_position");
+            Log.d(TAG, String.valueOf(trackPlaybackPosition));
+            mTrackProgressBar.setDuration(trackDuration);
+            mTrackProgressBar.update(trackPlaybackPosition);
+            isPlaying = true;
+
+            // update seek bar values on UI thread
+            trackSeekBarMin.setText(convertSecondsToMSs(trackPlaybackPosition));
+            trackSeekBarMax.setText(convertSecondsToMSs(trackDuration - trackPlaybackPosition));
+        }
+        // if it is first time onCreate() method is called, open track
+        else {
+            openTrack();
+        }
 
         // set initial state of buttons based on track number
         if(trackNumber == 1) {
@@ -300,6 +317,13 @@ public class TrackDetailActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putLong("track_duration", trackDuration);
+        savedInstanceState.putLong("track_position", trackPlaybackPosition);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_track_detail, menu);
@@ -349,20 +373,22 @@ public class TrackDetailActivity extends AppCompatActivity {
     private void connected(String trackUri) {
         // play a track
         mSpotifyAppRemote.getPlayerApi().play(trackUri);
+        Log.d(TAG, trackUri);
         isPlaying = true;
 
-        mSpotifyAppRemote.getUserApi().getLibraryState(trackUri).setResultCallback(userState -> {
-            trackIsAdded = userState.isAdded;
-        });
+        mSpotifyAppRemote.getUserApi().getLibraryState(trackUri).setResultCallback(libraryState -> {
+            trackIsAdded = libraryState.isAdded;
+            Log.d(TAG, "Track is added to library: " + trackIsAdded);
 
-        // if track is already added to library, toggle favorite button on
-        if(trackIsAdded) {
-            favoriteButton.setChecked(true);
-        }
-        // else if track is not added to library, toggle favorite button off
-        else {
-            favoriteButton.setChecked(false);
-        }
+            // if track is already added to library, toggle favorite button on
+            if(libraryState.isAdded) {
+                favoriteButton.setChecked(true);
+            }
+            // else if track is not added to library, toggle favorite button off
+            else {
+                favoriteButton.setChecked(false);
+            }
+        });
     }
 
     // get redirect uri using redirect scheme and host

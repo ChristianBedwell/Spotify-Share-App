@@ -108,12 +108,12 @@
 
             <ToggleButton
                 android:id="@+id/play_button"
-                android:layout_width="70dp"
-                android:layout_height="100dp"
+                android:layout_width="100dp"
+                android:layout_height="95dp"
                 android:layout_toEndOf="@+id/skip_previous_button"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
-                android:background="@drawable/ic_play_circle_black"
+                android:background="@drawable/ic_playback_toggle"
                 android:layout_centerVertical="true"
                 android:layout_centerHorizontal="true"
                 android:textOff=""
