@@ -21,7 +21,6 @@
     </android.support.design.widget.AppBarLayout>
 
     <RelativeLayout
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
@@ -29,71 +28,19 @@
         tools:context="com.example.spotifyauthentication.Activities.TrackDetailActivity"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <ImageView
-            android:id="@+id/track_detail_image"
-            android:layout_width="175dp"
-            android:layout_height="175dp"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:adjustViewBounds="true"/>
-
-        <TextView
-            android:id="@+id/track_detail_item_number"
+        <FrameLayout
+            android:id="@+id/track_playback_fragment_placeholder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/track_detail_image"
-            android:layout_alignEnd="@+id/track_detail_image"
-            android:layout_alignTop="@+id/track_detail_image"
-            android:layout_alignBottom="@+id/track_detail_image"
-            android:gravity="center_vertical|center_horizontal"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="@android:color/white"
-            android:fontFamily="@font/lato"
-            android:textSize="60sp"
-            android:shadowColor="@android:color/black"
-            android:text="@string/track_item_number_placeholder"
-            android:background="@drawable/scrim"/>
-
-        <RelativeLayout
-            android:id="@+id/track_detail_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@+id/track_detail_image"
-            android:layout_marginTop="20dp">
-
-            <TextView
-                android:id="@+id/track_detail_name"
-                android:ellipsize="end"
-                android:maxLines="1"
-                style="@style/TextAppearance.AppCompat.Headline"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_marginBottom="5dp"
-                android:text="@string/track_name_placeholder"
-                android:textColor="@android:color/black"
-                android:alpha=".87"/>
-
-            <TextView
-                android:id="@+id/track_detail_artist"
-                style="@style/TextAppearance.AppCompat.Small"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_below="@+id/track_detail_name"
-                android:text="@string/track_artist_placeholder"
-                android:textColor="@android:color/black"
-                android:alpha=".60"/>
-
-        </RelativeLayout>
+            android:layout_centerHorizontal="true">
+        </FrameLayout>
 
         <RelativeLayout
             android:id="@+id/timeSeekBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
-            android:layout_below="@+id/track_detail_info"
+            android:layout_below="@+id/track_playback_fragment_placeholder"
             android:layout_centerHorizontal="true">
 
             <TextView
@@ -138,13 +85,15 @@
             android:layout_marginTop="21dp"
             android:layout_below="@+id/timeSeekBar">
 
-            <Button
+            <ToggleButton
                 android:id="@+id/favorite_button"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:background="@drawable/ic_favorite_black_disabled"
+                android:background="@drawable/ic_favorite_toggle"
                 android:layout_marginEnd="30dp"
-                android:layout_centerVertical="true"/>
+                android:layout_centerVertical="true"
+                android:textOff=""
+                android:textOn=""/>
 
             <Button
                 android:id="@+id/skip_previous_button"
@@ -154,14 +103,15 @@
                 android:background="@drawable/ic_skip_previous_black_selector"
                 android:layout_centerVertical="true"/>
 
-            <ToggleButton
-                android:id="@+id/play_button"
+            <android.support.v7.widget.AppCompatImageButton
+                android:id="@+id/play_pause_button"
                 android:layout_width="85dp"
                 android:layout_height="80dp"
+                android:background="@drawable/ic_pause_circle_black"
+                android:onClick="onPlayPauseButtonClicked"
                 android:layout_toEndOf="@+id/skip_previous_button"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
-                android:background="@drawable/ic_playback_toggle"
                 android:layout_centerVertical="true"
                 android:layout_centerHorizontal="true"
                 android:textOff=""
@@ -171,18 +121,20 @@
                 android:id="@+id/skip_next_button"
                 android:layout_width="55dp"
                 android:layout_height="55dp"
-                android:layout_toEndOf="@+id/play_button"
+                android:layout_toEndOf="@+id/play_pause_button"
                 android:layout_marginEnd="30dp"
                 android:background="@drawable/ic_skip_next_black_selector"
                 android:layout_centerVertical="true"/>
 
-            <Button
+            <ToggleButton
                 android:id="@+id/repeat_button"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:layout_toEndOf="@+id/skip_next_button"
-                android:background="@drawable/ic_repeat_black_disabled"
-                android:layout_centerVertical="true"/>
+                android:background="@drawable/ic_repeat_toggle"
+                android:layout_centerVertical="true"
+                android:textOff=""
+                android:textOn=""/>
 
         </RelativeLayout>
 

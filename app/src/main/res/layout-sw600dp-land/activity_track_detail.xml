@@ -21,7 +21,6 @@
     </android.support.design.widget.AppBarLayout>
 
     <RelativeLayout
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
@@ -106,14 +105,15 @@
                 android:background="@drawable/ic_skip_previous_black_selector"
                 android:layout_centerVertical="true"/>
 
-            <ToggleButton
-                android:id="@+id/play_button"
+            <android.support.v7.widget.AppCompatImageButton
+                android:id="@+id/play_pause_button"
                 android:layout_width="100dp"
                 android:layout_height="95dp"
+                android:background="@drawable/ic_pause_circle_black"
+                android:onClick="onPlayPauseButtonClicked"
                 android:layout_toEndOf="@+id/skip_previous_button"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
-                android:background="@drawable/ic_playback_toggle"
                 android:layout_centerVertical="true"
                 android:layout_centerHorizontal="true"
                 android:textOff=""
@@ -123,7 +123,7 @@
                 android:id="@+id/skip_next_button"
                 android:layout_width="70dp"
                 android:layout_height="70dp"
-                android:layout_toEndOf="@+id/play_button"
+                android:layout_toEndOf="@+id/play_pause_button"
                 android:layout_marginEnd="70dp"
                 android:background="@drawable/ic_skip_next_black_selector"
                 android:layout_centerVertical="true"/>

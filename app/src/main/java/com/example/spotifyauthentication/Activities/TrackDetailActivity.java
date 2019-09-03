@@ -1,5 +1,6 @@
 package com.example.spotifyauthentication.Activities;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.net.Uri;
@@ -8,6 +9,7 @@ import android.os.Handler;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -27,6 +29,8 @@ import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 
 import com.example.spotifyauthentication.R;
+import com.spotify.protocol.client.Subscription;
+import com.spotify.protocol.types.PlayerState;
 
 import java.util.Objects;
 
@@ -46,18 +50,67 @@ public class TrackDetailActivity extends AppCompatActivity {
     private TextView trackSeekBarMin, trackSeekBarMax;
     private SeekBar trackSeekBar;
     private Button skipPreviousButton, skipNextButton;
-    private ToggleButton playbackButton, favoriteButton, repeatButton;
+    private ToggleButton favoriteButton, repeatButton;
+    private AppCompatImageButton mPlayPauseButton;
     private Toolbar toolbar;
-    private int trackLimit, trackNumber, repeatMode;
-    private boolean isPlaying, trackIsAdded;
+    private int trackLimit, trackNumber, trackRepeatMode;
+    private boolean trackIsAdded, trackIsPaused;
 
     TrackProgressBar mTrackProgressBar;
+    Subscription<PlayerState> mPlayerStateSubscription;
 
     // duration of the track in milliseconds
     public long trackDuration;
 
     // position of the track
     public long trackPlaybackPosition;
+
+    @SuppressLint("SetTextI18n")
+    private final Subscription.EventCallback<PlayerState> mPlayerStateEventCallback = new Subscription.EventCallback<PlayerState>() {
+        @Override
+        public void onEvent(PlayerState playerState) {
+            trackPlaybackPosition = (playerState.playbackPosition) / 1000;
+            trackDuration = (playerState.track.duration) / 1000;
+            trackRepeatMode = playerState.playbackOptions.repeatMode;
+            trackIsPaused = playerState.isPaused;
+
+            // invalidate play / pause
+            if (trackIsPaused) {
+                mPlayPauseButton.setBackgroundResource(R.drawable.ic_play_circle_black);
+            }
+            else {
+                mPlayPauseButton.setBackgroundResource(R.drawable.ic_pause_circle_black);
+            }
+
+            // if track is set not to repeat, toggle repeat button off
+            if(trackRepeatMode == OFF) {
+                repeatButton.setChecked(false);
+
+                // if current track is close to ending, load next track
+                if(trackDuration - trackPlaybackPosition < 3
+                        && trackPlaybackPosition != 0) {
+                    loadNextTrack();
+                }
+                // if track is final track and is close to ending, load first track
+                else if(trackDuration - trackPlaybackPosition < 5
+                        && trackPlaybackPosition != 0
+                        && trackNumber == trackLimit) {
+                    loadFirstTrack();
+                }
+            }
+            // else if track is set to repeat, do nothing
+            else if(trackRepeatMode == ALL) {
+                repeatButton.setChecked(true);
+            }
+
+            mTrackProgressBar.setDuration(trackDuration);
+            mTrackProgressBar.update(trackPlaybackPosition);
+
+            // update seek bar values on UI thread
+            trackSeekBarMin.setText(convertSecondsToMSs(trackPlaybackPosition));
+            trackSeekBarMax.setText(convertSecondsToMSs(trackDuration - trackPlaybackPosition));
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +139,7 @@ public class TrackDetailActivity extends AppCompatActivity {
         skipPreviousButton = (Button) findViewById(R.id.skip_previous_button);
         skipNextButton = (Button) findViewById(R.id.skip_next_button);
         repeatButton = (ToggleButton) findViewById(R.id.repeat_button);
-        playbackButton = (ToggleButton) findViewById(R.id.play_button);
+        mPlayPauseButton = findViewById(R.id.play_pause_button);
 
         // get intent extras from adapter
         trackLimit = getIntent().getIntExtra("track_limit", 0);
@@ -169,7 +222,6 @@ public class TrackDetailActivity extends AppCompatActivity {
             Log.d(TAG, String.valueOf(trackPlaybackPosition));
             mTrackProgressBar.setDuration(trackDuration);
             mTrackProgressBar.update(trackPlaybackPosition);
-            isPlaying = true;
 
             // update seek bar values on UI thread
             trackSeekBarMin.setText(convertSecondsToMSs(trackPlaybackPosition));
@@ -177,7 +229,7 @@ public class TrackDetailActivity extends AppCompatActivity {
         }
         // if it is first time onCreate() method is called, open track
         else {
-            openTrack();
+            connectAppRemote();
         }
 
         // set initial state of buttons based on track number
@@ -197,63 +249,10 @@ public class TrackDetailActivity extends AppCompatActivity {
             @Override
             public void run() {
 
-                if(mSpotifyAppRemote != null && isPlaying){
-                    // get track playback position and track duration, convert from ms to s
-                    mSpotifyAppRemote.getPlayerApi().subscribeToPlayerState().setEventCallback(playerState -> {
-                        trackPlaybackPosition = (playerState.playbackPosition) / 1000;
-                        trackDuration = (playerState.track.duration) / 1000;
-                        repeatMode = playerState.playbackOptions.repeatMode;
-                    });
-
-                    mTrackProgressBar.setDuration(trackDuration);
-                    mTrackProgressBar.update(trackPlaybackPosition);
-
-                    // update seek bar values on UI thread
-                    trackSeekBarMin.setText(convertSecondsToMSs(trackPlaybackPosition));
-                    trackSeekBarMax.setText(convertSecondsToMSs(trackDuration - trackPlaybackPosition));
-
-                    // if track is set not to repeat, toggle repeat button off
-                    if(repeatMode == OFF) {
-                        repeatButton.setChecked(false);
-
-                        // if current track is close to ending, load next track
-                        if(trackDuration - trackPlaybackPosition < 3
-                                && trackPlaybackPosition != 0) {
-                            loadNextTrack();
-                        }
-                        // if track is final track and is close to ending, load first track
-                        else if(trackDuration - trackPlaybackPosition < 5
-                                && trackPlaybackPosition != 0
-                                && trackNumber == trackLimit) {
-                            loadFirstTrack();
-                        }
-                    }
-                    // else if track is set to repeat, do nothing
-                    else if(repeatMode == ALL) {
-                        repeatButton.setChecked(true);
-                    }
+                if(mSpotifyAppRemote != null){
+                    subscribeToPlayerState();
                 }
                 mHandler.postDelayed(this, 1000);
-            }
-        });
-
-        // set click listener for playback toggle button
-        playbackButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                // if toggle button is enabled, playback is paused
-                if (isChecked) {
-                    if(mSpotifyAppRemote != null) {
-                        mSpotifyAppRemote.getPlayerApi().pause();
-                        isPlaying = false;
-                    }
-                }
-                // if toggle button is not enabled, playback is started/resumed
-                else {
-                    if(mSpotifyAppRemote != null) {
-                        mSpotifyAppRemote.getPlayerApi().resume();
-                        isPlaying = true;
-                    }
-                }
             }
         });
 
@@ -310,12 +309,24 @@ public class TrackDetailActivity extends AppCompatActivity {
         });
     }
 
+    public void onPlayPauseButtonClicked(View view) {
+        mSpotifyAppRemote.getPlayerApi().getPlayerState().setResultCallback(playerState -> {
+            if (playerState.isPaused) {
+                mSpotifyAppRemote.getPlayerApi().resume();
+            }
+            else {
+                mSpotifyAppRemote.getPlayerApi().pause();
+            }
+        });
+    }
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(R.anim.detail_activity_in, R.anim.detail_activity_out);
     }
 
+    // save the track duration and position on orientation change
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
@@ -323,9 +334,9 @@ public class TrackDetailActivity extends AppCompatActivity {
         savedInstanceState.putLong("track_position", trackPlaybackPosition);
     }
 
+    // adds items to the action bar if they are present.
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_track_detail, menu);
         return true;
     }
@@ -346,7 +357,8 @@ public class TrackDetailActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void openTrack() {
+    private void connectAppRemote() {
+
         SpotifyAppRemote.disconnect(mSpotifyAppRemote);
 
         ConnectionParams connectionParams = new ConnectionParams.Builder(CLIENT_ID)
@@ -358,9 +370,7 @@ public class TrackDetailActivity extends AppCompatActivity {
 
             public void onConnected(SpotifyAppRemote spotifyAppRemote) {
                 mSpotifyAppRemote = spotifyAppRemote;
-
-                // app remote is connected and interactable
-                connected(trackUri);
+                playTrack(trackUri);
             }
 
             public void onFailure(Throwable throwable) {
@@ -370,11 +380,10 @@ public class TrackDetailActivity extends AppCompatActivity {
     }
 
     // app remote is connected
-    private void connected(String trackUri) {
+    private void playTrack(String trackUri) {
         // play a track
         mSpotifyAppRemote.getPlayerApi().play(trackUri);
         Log.d(TAG, trackUri);
-        isPlaying = true;
 
         mSpotifyAppRemote.getUserApi().getLibraryState(trackUri).setResultCallback(libraryState -> {
             trackIsAdded = libraryState.isAdded;
@@ -422,7 +431,7 @@ public class TrackDetailActivity extends AppCompatActivity {
         DatabaseHandler dbHandler = new DatabaseHandler(this);
 
         // since track is first track in list, prevent user from going to previous track
-        playbackButton.setChecked(false);
+        mPlayPauseButton.setBackgroundResource(R.drawable.ic_pause_circle_black);
         skipPreviousButton.setEnabled(false);
         skipNextButton.setEnabled(true);
 
@@ -442,7 +451,7 @@ public class TrackDetailActivity extends AppCompatActivity {
         fragmentTransaction.replace(R.id.track_playback_fragment_placeholder, trackPlaybackFragment);
         fragmentTransaction.commit();
 
-        connected(firstTrackUri);
+        playTrack(firstTrackUri);
     }
 
     // load next track in recycler view
@@ -454,7 +463,7 @@ public class TrackDetailActivity extends AppCompatActivity {
         if(trackNumber < trackLimit) {
             trackNumber++;
 
-            playbackButton.setChecked(false);
+            mPlayPauseButton.setBackgroundResource(R.drawable.ic_pause_circle_black);
             skipPreviousButton.setEnabled(true);
             skipNextButton.setEnabled(true);
 
@@ -487,7 +496,7 @@ public class TrackDetailActivity extends AppCompatActivity {
         fragmentTransaction.replace(R.id.track_playback_fragment_placeholder, trackPlaybackFragment);
         fragmentTransaction.commit();
 
-        connected(nextTrackUri);
+        playTrack(nextTrackUri);
     }
 
     // load previous track in recycler view
@@ -499,7 +508,7 @@ public class TrackDetailActivity extends AppCompatActivity {
         if(trackNumber > 1) {
             trackNumber--;
 
-            playbackButton.setChecked(false);
+            mPlayPauseButton.setBackgroundResource(R.drawable.ic_pause_circle_black);
             skipPreviousButton.setEnabled(true);
             skipNextButton.setEnabled(true);
 
@@ -532,7 +541,7 @@ public class TrackDetailActivity extends AppCompatActivity {
         fragmentTransaction.replace(R.id.track_playback_fragment_placeholder, trackPlaybackFragment);
         fragmentTransaction.commit();
 
-        connected(previousTrackUri);
+        playTrack(previousTrackUri);
     }
 
     // converts seconds to minutes-seconds format
@@ -554,6 +563,29 @@ public class TrackDetailActivity extends AppCompatActivity {
         trackPlaybackFragment.setArguments(args);
 
         return trackPlaybackFragment;
+    }
+
+    public void subscribeToPlayerState() {
+
+        if (mPlayerStateSubscription != null && !mPlayerStateSubscription.isCanceled()) {
+            mPlayerStateSubscription.cancel();
+            mPlayerStateSubscription = null;
+        }
+
+        mPlayerStateSubscription = (Subscription<PlayerState>) mSpotifyAppRemote.getPlayerApi()
+                .subscribeToPlayerState()
+                .setEventCallback(mPlayerStateEventCallback)
+                .setLifecycleCallback(new Subscription.LifecycleCallback() {
+                    @Override
+                    public void onStart() {
+                        Log.d(TAG, "Event: start");
+                    }
+
+                    @Override
+                    public void onStop() {
+                        Log.d(TAG, "Event: end");
+                    }
+                });
     }
 
     private class TrackProgressBar {
