@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- item is not checked, so track playback has not been set to shuffle -->
+    <item android:state_checked="false"
+        android:drawable="@drawable/ic_shuffle_disabled" />
+
+    <!-- item is checked, so track playback has been set to shuffle -->
+    <item android:state_checked="true"
+        android:drawable="@drawable/ic_shuffle_enabled" />
+</selector>

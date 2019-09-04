@@ -88,10 +88,10 @@
             android:layout_below="@+id/timeSeekBar">
 
             <ToggleButton
-                android:id="@+id/favorite_button"
+                android:id="@+id/shuffle_button"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:background="@drawable/ic_favorite_toggle"
+                android:background="@drawable/ic_shuffle_toggle"
                 android:layout_marginEnd="70dp"
                 android:layout_centerVertical="true"
                 android:textOff=""
@@ -101,7 +101,7 @@
                 android:id="@+id/skip_previous_button"
                 android:layout_width="70dp"
                 android:layout_height="70dp"
-                android:layout_toEndOf="@+id/favorite_button"
+                android:layout_toEndOf="@+id/shuffle_button"
                 android:background="@drawable/ic_skip_previous_black_selector"
                 android:layout_centerVertical="true"/>
 

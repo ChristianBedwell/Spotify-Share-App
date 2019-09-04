@@ -33,6 +33,7 @@ import com.spotify.protocol.client.Subscription;
 import com.spotify.protocol.types.PlayerState;
 
 import java.util.Objects;
+import java.util.Random;
 
 import static com.spotify.protocol.types.Repeat.ALL;
 import static com.spotify.protocol.types.Repeat.OFF;
@@ -50,11 +51,11 @@ public class TrackDetailActivity extends AppCompatActivity {
     private TextView trackSeekBarMin, trackSeekBarMax;
     private SeekBar trackSeekBar;
     private Button skipPreviousButton, skipNextButton;
-    private ToggleButton favoriteButton, repeatButton;
+    private ToggleButton shuffleButton, repeatButton;
     private AppCompatImageButton mPlayPauseButton;
     private Toolbar toolbar;
     private int trackLimit, trackNumber, trackRepeatMode;
-    private boolean trackIsAdded, trackIsPaused;
+    private boolean trackIsPaused, shuffleEnabled;
 
     TrackProgressBar mTrackProgressBar;
     Subscription<PlayerState> mPlayerStateSubscription;
@@ -74,10 +75,11 @@ public class TrackDetailActivity extends AppCompatActivity {
             trackRepeatMode = playerState.playbackOptions.repeatMode;
             trackIsPaused = playerState.isPaused;
 
-            // invalidate play / pause
+            // if track is paused, set background of button to play
             if (trackIsPaused) {
                 mPlayPauseButton.setBackgroundResource(R.drawable.ic_play_circle_black);
             }
+            // else if track is playing, set background of button to pause
             else {
                 mPlayPauseButton.setBackgroundResource(R.drawable.ic_pause_circle_black);
             }
@@ -89,13 +91,27 @@ public class TrackDetailActivity extends AppCompatActivity {
                 // if current track is close to ending, load next track
                 if(trackDuration - trackPlaybackPosition < 3
                         && trackPlaybackPosition != 0) {
-                    loadNextTrack();
+                    // if shuffle is toggled, play a random track
+                    if(shuffleEnabled) {
+                        playRandomTrack();
+                    }
+                    // else if shuffle is not toggled, play the next track
+                    else {
+                        playNextTrack();
+                    }
                 }
-                // if track is final track and is close to ending, load first track
+                // else if track is the final track and is close to ending, load first track
                 else if(trackDuration - trackPlaybackPosition < 5
                         && trackPlaybackPosition != 0
                         && trackNumber == trackLimit) {
-                    loadFirstTrack();
+                    // if shuffle is toggled, play a random track
+                    if(shuffleEnabled) {
+                        playRandomTrack();
+                    }
+                    // else if shuffle is not toggled, play the next track
+                    else {
+                        playFirstTrack();
+                    }
                 }
             }
             // else if track is set to repeat, do nothing
@@ -103,10 +119,11 @@ public class TrackDetailActivity extends AppCompatActivity {
                 repeatButton.setChecked(true);
             }
 
+            // update seek bar duration and position
             mTrackProgressBar.setDuration(trackDuration);
             mTrackProgressBar.update(trackPlaybackPosition);
 
-            // update seek bar values on UI thread
+            // update seek bar text view values
             trackSeekBarMin.setText(convertSecondsToMSs(trackPlaybackPosition));
             trackSeekBarMax.setText(convertSecondsToMSs(trackDuration - trackPlaybackPosition));
         }
@@ -135,7 +152,7 @@ public class TrackDetailActivity extends AppCompatActivity {
         mTrackProgressBar = new TrackProgressBar(trackSeekBar);
 
         // initialize the buttons
-        favoriteButton = (ToggleButton) findViewById(R.id.favorite_button);
+        shuffleButton = (ToggleButton) findViewById(R.id.shuffle_button);
         skipPreviousButton = (Button) findViewById(R.id.skip_previous_button);
         skipNextButton = (Button) findViewById(R.id.skip_next_button);
         repeatButton = (ToggleButton) findViewById(R.id.repeat_button);
@@ -260,7 +277,7 @@ public class TrackDetailActivity extends AppCompatActivity {
         skipPreviousButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadPreviousTrack();
+                playPreviousTrack();
             }
         });
 
@@ -268,7 +285,7 @@ public class TrackDetailActivity extends AppCompatActivity {
         skipNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadNextTrack();
+                playNextTrack();
             }
         });
 
@@ -291,18 +308,18 @@ public class TrackDetailActivity extends AppCompatActivity {
         });
 
         // set click listener for favorite toggle button
-        favoriteButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        shuffleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                // if favorite button is enabled, track is removed from library
+                // if shuffle button is enabled, track playback is shuffled
                 if (isChecked) {
                     if(mSpotifyAppRemote != null) {
-                        mSpotifyAppRemote.getUserApi().addToLibrary(trackUri);
+                        shuffleEnabled = true;
                     }
                 }
-                // if favorite button is not enabled, track is added to library
+                // if shuffle button is not enabled, track playback is not shuffled
                 else {
                     if(mSpotifyAppRemote != null) {
-                        mSpotifyAppRemote.getUserApi().removeFromLibrary(trackUri);
+                        shuffleEnabled = false;
                     }
                 }
             }
@@ -384,20 +401,6 @@ public class TrackDetailActivity extends AppCompatActivity {
         // play a track
         mSpotifyAppRemote.getPlayerApi().play(trackUri);
         Log.d(TAG, trackUri);
-
-        mSpotifyAppRemote.getUserApi().getLibraryState(trackUri).setResultCallback(libraryState -> {
-            trackIsAdded = libraryState.isAdded;
-            Log.d(TAG, "Track is added to library: " + trackIsAdded);
-
-            // if track is already added to library, toggle favorite button on
-            if(libraryState.isAdded) {
-                favoriteButton.setChecked(true);
-            }
-            // else if track is not added to library, toggle favorite button off
-            else {
-                favoriteButton.setChecked(false);
-            }
-        });
     }
 
     // get redirect uri using redirect scheme and host
@@ -424,7 +427,7 @@ public class TrackDetailActivity extends AppCompatActivity {
     }
 
     // load first track in recycler view
-    public void loadFirstTrack() {
+    public void playFirstTrack() {
         trackNumber = 1;
 
         // create new instance of the database handler
@@ -435,7 +438,7 @@ public class TrackDetailActivity extends AppCompatActivity {
         skipPreviousButton.setEnabled(false);
         skipNextButton.setEnabled(true);
 
-        // pull results for the next track
+        // pull results for the first track
         Track track = dbHandler.getTrack(trackNumber);
         String firstTrackImageUri = track.getTrackImageUri();
         int firstTrackItemNumber = track.getTrackItemNumber();
@@ -455,7 +458,7 @@ public class TrackDetailActivity extends AppCompatActivity {
     }
 
     // load next track in recycler view
-    public void loadNextTrack() {
+    public void playNextTrack() {
         // create new instance of the database handler
         DatabaseHandler dbHandler = new DatabaseHandler(this);
 
@@ -500,7 +503,7 @@ public class TrackDetailActivity extends AppCompatActivity {
     }
 
     // load previous track in recycler view
-    public void loadPreviousTrack() {
+    public void playPreviousTrack() {
         // create new instance of the database handler
         DatabaseHandler dbHandler = new DatabaseHandler(this);
 
@@ -525,7 +528,7 @@ public class TrackDetailActivity extends AppCompatActivity {
             }
         }
 
-        // pull results for the next track
+        // pull results for the previous track
         Track track = dbHandler.getTrack(trackNumber);
         String previousTrackImageUri = track.getTrackImageUri();
         int previousTrackItemNumber = track.getTrackItemNumber();
@@ -542,6 +545,50 @@ public class TrackDetailActivity extends AppCompatActivity {
         fragmentTransaction.commit();
 
         playTrack(previousTrackUri);
+    }
+
+    // load random track in recycler view
+    public void playRandomTrack() {
+        // create new instance of the database handler
+        DatabaseHandler dbHandler = new DatabaseHandler(this);
+
+        // create random integer between 1 and limit
+        Random random = new Random();
+        trackNumber = random.nextInt(trackLimit) + 1;
+
+        mPlayPauseButton.setBackgroundResource(R.drawable.ic_pause_circle_black);
+        skipPreviousButton.setEnabled(true);
+        skipNextButton.setEnabled(true);
+
+        // reset state of buttons based on track number
+        if(trackNumber == 1) {
+            // if track is first track in list, prevent user from going to previous track
+            skipPreviousButton.setEnabled(false);
+            skipNextButton.setEnabled(true);
+        }
+        else if(trackNumber == trackLimit) {
+            // if track is last track in list, prevent user from going to next track
+            skipPreviousButton.setEnabled(true);
+            skipNextButton.setEnabled(false);
+        }
+
+        // pull results for the next track
+        Track track = dbHandler.getTrack(trackNumber);
+        String randomTrackImageUri = track.getTrackImageUri();
+        int randomTrackItemNumber = track.getTrackItemNumber();
+        String randomTrackName = track.getTrackName();
+        String randomTrackArtist = track.getTrackArtist();
+        String randomTrackUri = track.getTrackUri();
+
+        // create new instance of trackPlaybackFragment and fill fragment placeholder
+        trackPlaybackFragment = newInstance(randomTrackImageUri, String.valueOf(randomTrackItemNumber),
+                randomTrackName, randomTrackArtist);
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.setCustomAnimations(R.anim.most_popular_activity_in, R.anim.most_popular_activity_out);
+        fragmentTransaction.replace(R.id.track_playback_fragment_placeholder, trackPlaybackFragment);
+        fragmentTransaction.commit();
+
+        playTrack(randomTrackUri);
     }
 
     // converts seconds to minutes-seconds format
