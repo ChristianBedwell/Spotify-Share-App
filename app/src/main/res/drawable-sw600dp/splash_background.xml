@@ -12,8 +12,8 @@
 
     <item
         android:gravity="center"
-        android:height="100dp"
-        android:width="100dp">
+        android:height="125dp"
+        android:width="125dp">
         <bitmap
             android:gravity="fill_horizontal|fill_vertical"
             android:src="@drawable/splash_logo"/>

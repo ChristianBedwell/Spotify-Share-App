@@ -343,6 +343,13 @@ public class TrackDetailActivity extends AppCompatActivity {
         overridePendingTransition(R.anim.detail_activity_in, R.anim.detail_activity_out);
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        mSpotifyAppRemote.getPlayerApi().pause();
+        SpotifyAppRemote.disconnect(mSpotifyAppRemote);
+    }
+
     // save the track duration and position on orientation change
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -398,9 +405,8 @@ public class TrackDetailActivity extends AppCompatActivity {
 
     // app remote is connected
     private void playTrack(String trackUri) {
-        // play a track
+        // play a track from the beginning
         mSpotifyAppRemote.getPlayerApi().play(trackUri);
-        Log.d(TAG, trackUri);
     }
 
     // get redirect uri using redirect scheme and host
