@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.example.spotifyauthentication.Database.DatabaseHandler;
@@ -30,6 +31,7 @@ import com.spotify.android.appremote.api.SpotifyAppRemote;
 
 import com.example.spotifyauthentication.R;
 import com.spotify.protocol.client.Subscription;
+import com.spotify.protocol.types.Capabilities;
 import com.spotify.protocol.types.PlayerState;
 
 import java.util.Objects;
@@ -41,7 +43,7 @@ import static com.spotify.protocol.types.Repeat.OFF;
 public class TrackDetailActivity extends AppCompatActivity {
 
     // declare constants
-    public static final String CLIENT_ID = "clientid";
+    public static final String CLIENT_ID = "cd58168e38d84c43b7433d471d1c5942";
     public static SpotifyAppRemote mSpotifyAppRemote;
     private static final String TAG = TrackDetailActivity.class.getSimpleName();
 
@@ -55,10 +57,11 @@ public class TrackDetailActivity extends AppCompatActivity {
     private AppCompatImageButton mPlayPauseButton;
     private Toolbar toolbar;
     private int trackLimit, trackNumber, trackRepeatMode;
-    private boolean trackIsPaused, shuffleEnabled;
+    private boolean trackIsPaused, shuffleEnabled, onDemandPlaybackAllowed;
 
     TrackProgressBar mTrackProgressBar;
     Subscription<PlayerState> mPlayerStateSubscription;
+    Subscription<Capabilities> mCapabilitiesSubscription;
 
     // duration of the track in milliseconds
     public long trackDuration;
@@ -129,6 +132,14 @@ public class TrackDetailActivity extends AppCompatActivity {
         }
     };
 
+    @SuppressLint("SetTextI18n")
+    private final Subscription.EventCallback<Capabilities> mCapabilitiesEventCallback = new Subscription.EventCallback<Capabilities>() {
+        @Override
+        public void onEvent(Capabilities capabilities) {
+            onDemandPlaybackAllowed = capabilities.canPlayOnDemand;
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -166,164 +177,152 @@ public class TrackDetailActivity extends AppCompatActivity {
         trackShareArtist = getIntent().getStringExtra("track_artist");
         trackNumber = Integer.parseInt(getIntent().getStringExtra("track_item_number"));
 
-        // create new instance of trackPlaybackFragment and fill fragment placeholder
-        trackPlaybackFragment = newInstance(getIntent().getStringExtra("track_image_resource"),
-                getIntent().getStringExtra("track_item_number"), getIntent().getStringExtra("track_name"),
-                getIntent().getStringExtra("track_artist"));
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.track_playback_fragment_placeholder, trackPlaybackFragment);
-        fragmentTransaction.commit();
-
-        /*// if Spotify app is installed on Android device
+        // if Spotify the application is installed on Android device
         if(SpotifyAppRemote.isSpotifyInstalled(getApplicationContext())) {
+            // connect the client to the Spotify app remote and subscribe to user capabilities
+            connectAppRemote();
 
-            // if Spotify app remote object is equal to null
-            if(mSpotifyAppRemote != null) {
+            // current user is able to play on demand
+            if (onDemandPlaybackAllowed) {
+                Log.d(TAG, "User can play on demand.");
+                // create new instance of trackPlaybackFragment and fill fragment placeholder
+                trackPlaybackFragment = newInstance(getIntent().getStringExtra("track_image_resource"),
+                        getIntent().getStringExtra("track_item_number"), getIntent().getStringExtra("track_name"),
+                        getIntent().getStringExtra("track_artist"));
+                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.track_playback_fragment_placeholder, trackPlaybackFragment);
+                fragmentTransaction.commit();
 
-                mSpotifyAppRemote.getUserApi().getCapabilities().setResultCallback(capabilities -> {
-                    // current user is able to play on demand
-                    if (capabilities.canPlayOnDemand) {
+                // if a configuration change has occurred, restore the position of track playback
+                if(savedInstanceState != null) {
+                    trackDuration = savedInstanceState.getLong("track_duration");
+                    Log.d(TAG, String.valueOf(trackDuration));
+                    trackPlaybackPosition = savedInstanceState.getLong("track_position");
+                    Log.d(TAG, String.valueOf(trackPlaybackPosition));
+                    mTrackProgressBar.setDuration(trackDuration);
+                    mTrackProgressBar.update(trackPlaybackPosition);
 
-                        // set initial state of buttons based on track number
-                        if(trackNumber == 1) {
-                            // if track is first track in list, prevent user from going to previous track
-                            skipPreviousButton.setEnabled(false);
+                    // update seek bar values on UI thread
+                    trackSeekBarMin.setText(convertSecondsToMSs(trackPlaybackPosition));
+                    trackSeekBarMax.setText(convertSecondsToMSs(trackDuration - trackPlaybackPosition));
+                }
+                // if it is first time onCreate() method is called, play track from beginning
+                else {
+                    playTrack(trackUri);
+                }
+
+                // set initial state of buttons based on track number
+                if(trackNumber == 1) {
+                    // if track is first track in list, prevent user from going to previous track
+                    skipPreviousButton.setEnabled(false);
+                }
+                else if(trackNumber == trackLimit) {
+                    // if track is last track in list, prevent user from going to next track
+                    skipNextButton.setEnabled(false);
+                }
+
+                // update seek bar progress value every second
+                Handler mHandler = new Handler();
+                TrackDetailActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(mSpotifyAppRemote != null){
+                            subscribeToPlayerState();
                         }
-                        else if(trackNumber == trackLimit) {
-                            // if track is last track in list, prevent user from going to next track
-                            skipNextButton.setEnabled(false);
-                        }
-
-                        // set click listener for playback toggle button
-                        playbackButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                                // if toggle button is enabled, playback is paused
-                                if (isChecked) {
-                                    mSpotifyAppRemote.getPlayerApi().pause();
-                                }
-                                // if toggle button is not enabled, playback is started/resumed
-                                else {
-                                    openTrack();
-                                }
-                            }
-                        });
-                        skipPreviousButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-
-                            }
-                        });
-                        skipNextButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-
-                            }
-                        });
+                        mHandler.postDelayed(this, 1000);
                     }
-                    // current user is not able to play on demand
-                    else {
+                });
 
+                // set click listener for skip previous button
+                skipPreviousButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        playPreviousTrack();
+                    }
+                });
+
+                // set click listener for skip next button
+                skipNextButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        playNextTrack();
+                    }
+                });
+
+                // set click listener for repeat toggle button
+                repeatButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        // if repeat button is enabled, track is set to repeat
+                        if (isChecked) {
+                            if (mSpotifyAppRemote != null) {
+                                mSpotifyAppRemote.getPlayerApi().setRepeat(ALL);
+                            }
+                        }
+                        // if favorite button is not enabled, track is set to not repeat
+                        else {
+                            if (mSpotifyAppRemote != null) {
+                                mSpotifyAppRemote.getPlayerApi().setRepeat(OFF);
+                            }
+                        }
+                    }
+                });
+
+                // set click listener for favorite toggle button
+                shuffleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        // if shuffle button is enabled, track playback is shuffled
+                        if (isChecked) {
+                            if(mSpotifyAppRemote != null) {
+                                shuffleEnabled = true;
+                            }
+                        }
+                        // if shuffle button is not enabled, track playback is not shuffled
+                        else {
+                            if(mSpotifyAppRemote != null) {
+                                shuffleEnabled = false;
+                            }
+                        }
                     }
                 });
             }
+            // current user is not able to play on demand
+            else {
+                Log.d(TAG, "User cannot play on demand.");
+                // hide UI from user
+                trackSeekBar.setVisibility(View.INVISIBLE);
+                trackSeekBarMin.setVisibility(View.INVISIBLE);
+                trackSeekBarMax.setVisibility(View.INVISIBLE);
+                shuffleButton.setVisibility(View.INVISIBLE);
+                repeatButton.setVisibility(View.INVISIBLE);
+                skipNextButton.setVisibility(View.INVISIBLE);
+                skipPreviousButton.setVisibility(View.INVISIBLE);
+                mPlayPauseButton.setVisibility(View.INVISIBLE);
+
+                // display toast message to user
+                Toast toast = Toast.makeText(getApplicationContext(),
+                        "Your device and/or membership does not support on demand playback.",
+                        Toast.LENGTH_LONG);
+                toast.show();
+            }
         }
-        // if Spotify app is not installed on Android device
+        // else if Spotify app is not installed on Android device
         else {
+            // hide UI from user
+            trackSeekBar.setVisibility(View.INVISIBLE);
+            trackSeekBarMin.setVisibility(View.INVISIBLE);
+            trackSeekBarMax.setVisibility(View.INVISIBLE);
+            shuffleButton.setVisibility(View.INVISIBLE);
+            repeatButton.setVisibility(View.INVISIBLE);
+            skipNextButton.setVisibility(View.INVISIBLE);
+            skipPreviousButton.setVisibility(View.INVISIBLE);
+            mPlayPauseButton.setVisibility(View.INVISIBLE);
 
-        }*/
-        // if a configuration change has occurred, restore the position of track playback
-        if(savedInstanceState != null) {
-            trackDuration = savedInstanceState.getLong("track_duration");
-            Log.d(TAG, String.valueOf(trackDuration));
-            trackPlaybackPosition = savedInstanceState.getLong("track_position");
-            Log.d(TAG, String.valueOf(trackPlaybackPosition));
-            mTrackProgressBar.setDuration(trackDuration);
-            mTrackProgressBar.update(trackPlaybackPosition);
-
-            // update seek bar values on UI thread
-            trackSeekBarMin.setText(convertSecondsToMSs(trackPlaybackPosition));
-            trackSeekBarMax.setText(convertSecondsToMSs(trackDuration - trackPlaybackPosition));
+            // display toast message to user
+            Toast toast = Toast.makeText(getApplicationContext(),
+                    "The Spotify application is not installed on your device.",
+                    Toast.LENGTH_LONG);
+            toast.show();
         }
-        // if it is first time onCreate() method is called, open track
-        else {
-            connectAppRemote();
-        }
-
-        // set initial state of buttons based on track number
-        if(trackNumber == 1) {
-            // if track is first track in list, prevent user from going to previous track
-            skipPreviousButton.setEnabled(false);
-        }
-        else if(trackNumber == trackLimit) {
-            // if track is last track in list, prevent user from going to next track
-            skipNextButton.setEnabled(false);
-        }
-
-        // update seek bar progress value every second
-        Handler mHandler = new Handler();
-        TrackDetailActivity.this.runOnUiThread(new Runnable() {
-
-            @Override
-            public void run() {
-
-                if(mSpotifyAppRemote != null){
-                    subscribeToPlayerState();
-                }
-                mHandler.postDelayed(this, 1000);
-            }
-        });
-
-        // set click listener for skip previous button
-        skipPreviousButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                playPreviousTrack();
-            }
-        });
-
-        // set click listener for skip next button
-        skipNextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                playNextTrack();
-            }
-        });
-
-        // set click listener for repeat toggle button
-        repeatButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                // if repeat button is enabled, track is set to repeat
-                if (isChecked) {
-                    if (mSpotifyAppRemote != null) {
-                        mSpotifyAppRemote.getPlayerApi().setRepeat(ALL);
-                    }
-                }
-                // if favorite button is not enabled, track is set to not repeat
-                else {
-                    if (mSpotifyAppRemote != null) {
-                        mSpotifyAppRemote.getPlayerApi().setRepeat(OFF);
-                    }
-                }
-            }
-        });
-
-        // set click listener for favorite toggle button
-        shuffleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                // if shuffle button is enabled, track playback is shuffled
-                if (isChecked) {
-                    if(mSpotifyAppRemote != null) {
-                        shuffleEnabled = true;
-                    }
-                }
-                // if shuffle button is not enabled, track playback is not shuffled
-                else {
-                    if(mSpotifyAppRemote != null) {
-                        shuffleEnabled = false;
-                    }
-                }
-            }
-        });
     }
 
     public void onPlayPauseButtonClicked(View view) {
@@ -394,7 +393,7 @@ public class TrackDetailActivity extends AppCompatActivity {
 
             public void onConnected(SpotifyAppRemote spotifyAppRemote) {
                 mSpotifyAppRemote = spotifyAppRemote;
-                playTrack(trackUri);
+                subscribeToCapabilities();
             }
 
             public void onFailure(Throwable throwable) {
@@ -618,6 +617,7 @@ public class TrackDetailActivity extends AppCompatActivity {
         return trackPlaybackFragment;
     }
 
+    // subscribe to Spotify player state
     public void subscribeToPlayerState() {
 
         if (mPlayerStateSubscription != null && !mPlayerStateSubscription.isCanceled()) {
@@ -628,6 +628,30 @@ public class TrackDetailActivity extends AppCompatActivity {
         mPlayerStateSubscription = (Subscription<PlayerState>) mSpotifyAppRemote.getPlayerApi()
                 .subscribeToPlayerState()
                 .setEventCallback(mPlayerStateEventCallback)
+                .setLifecycleCallback(new Subscription.LifecycleCallback() {
+                    @Override
+                    public void onStart() {
+                        Log.d(TAG, "Event: start");
+                    }
+
+                    @Override
+                    public void onStop() {
+                        Log.d(TAG, "Event: end");
+                    }
+                });
+    }
+
+    // subscribe to Spotify player capabilities
+    public void subscribeToCapabilities() {
+
+        if (mCapabilitiesSubscription != null && !mCapabilitiesSubscription.isCanceled()) {
+            mCapabilitiesSubscription.cancel();
+            mCapabilitiesSubscription = null;
+        }
+
+        mCapabilitiesSubscription = (Subscription<Capabilities>) mSpotifyAppRemote.getUserApi()
+                .subscribeToCapabilities()
+                .setEventCallback(mCapabilitiesEventCallback)
                 .setLifecycleCallback(new Subscription.LifecycleCallback() {
                     @Override
                     public void onStart() {

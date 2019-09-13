@@ -27,7 +27,7 @@ import java.util.Objects;
 public class AuthenticationActivity extends AppCompatActivity {
 
     // declare constants
-    public static final String CLIENT_ID = "clientid";
+    public static final String CLIENT_ID = "cd58168e38d84c43b7433d471d1c5942";
     public static final int AUTH_TOKEN_REQUEST_CODE = 0x10;
 
     private String mAccessToken;
