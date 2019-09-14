@@ -150,6 +150,16 @@ public class TrackDetailActivity extends AppCompatActivity {
                 fragmentTransaction.replace(R.id.track_playback_fragment_placeholder, trackPlaybackFragment);
                 fragmentTransaction.commit();
 
+                // hide UI from user
+                trackSeekBar.setVisibility(View.VISIBLE);
+                trackSeekBarMin.setVisibility(View.VISIBLE);
+                trackSeekBarMax.setVisibility(View.VISIBLE);
+                shuffleButton.setVisibility(View.VISIBLE);
+                repeatButton.setVisibility(View.VISIBLE);
+                skipNextButton.setVisibility(View.VISIBLE);
+                skipPreviousButton.setVisibility(View.VISIBLE);
+                mPlayPauseButton.setVisibility(View.VISIBLE);
+
                 if(savedInstanceStateTemp != null) {
                     resumeTrack();
                 }
@@ -233,16 +243,6 @@ public class TrackDetailActivity extends AppCompatActivity {
             }
             // current user is not able to play on demand
             else {
-                // hide UI from user
-                trackSeekBar.setVisibility(View.INVISIBLE);
-                trackSeekBarMin.setVisibility(View.INVISIBLE);
-                trackSeekBarMax.setVisibility(View.INVISIBLE);
-                shuffleButton.setVisibility(View.INVISIBLE);
-                repeatButton.setVisibility(View.INVISIBLE);
-                skipNextButton.setVisibility(View.INVISIBLE);
-                skipPreviousButton.setVisibility(View.INVISIBLE);
-                mPlayPauseButton.setVisibility(View.INVISIBLE);
-
                 // display toast message to user
                 Toast toast = Toast.makeText(getApplicationContext(),
                         "Your device and/or membership does not support on demand playback.",
@@ -280,6 +280,16 @@ public class TrackDetailActivity extends AppCompatActivity {
         skipNextButton = (Button) findViewById(R.id.skip_next_button);
         repeatButton = (ToggleButton) findViewById(R.id.repeat_button);
         mPlayPauseButton = findViewById(R.id.play_pause_button);
+
+        // hide UI from user
+        trackSeekBar.setVisibility(View.INVISIBLE);
+        trackSeekBarMin.setVisibility(View.INVISIBLE);
+        trackSeekBarMax.setVisibility(View.INVISIBLE);
+        shuffleButton.setVisibility(View.INVISIBLE);
+        repeatButton.setVisibility(View.INVISIBLE);
+        skipNextButton.setVisibility(View.INVISIBLE);
+        skipPreviousButton.setVisibility(View.INVISIBLE);
+        mPlayPauseButton.setVisibility(View.INVISIBLE);
 
         savedInstanceStateTemp = savedInstanceState;
 
@@ -321,16 +331,6 @@ public class TrackDetailActivity extends AppCompatActivity {
         }
         // else if Spotify app is not installed on Android device
         else {
-            // hide UI from user
-            trackSeekBar.setVisibility(View.INVISIBLE);
-            trackSeekBarMin.setVisibility(View.INVISIBLE);
-            trackSeekBarMax.setVisibility(View.INVISIBLE);
-            shuffleButton.setVisibility(View.INVISIBLE);
-            repeatButton.setVisibility(View.INVISIBLE);
-            skipNextButton.setVisibility(View.INVISIBLE);
-            skipPreviousButton.setVisibility(View.INVISIBLE);
-            mPlayPauseButton.setVisibility(View.INVISIBLE);
-
             // display toast message to user
             Toast toast = Toast.makeText(getApplicationContext(),
                     "The Spotify application is not installed on your device.",
@@ -359,8 +359,10 @@ public class TrackDetailActivity extends AppCompatActivity {
     @Override
     public void onStop() {
         super.onStop();
-        mSpotifyAppRemote.getPlayerApi().pause();
-        SpotifyAppRemote.disconnect(mSpotifyAppRemote);
+        if(SpotifyAppRemote.isSpotifyInstalled(getApplicationContext())) {
+            mSpotifyAppRemote.getPlayerApi().pause();
+            SpotifyAppRemote.disconnect(mSpotifyAppRemote);
+        }
     }
 
     // save the track duration and position on orientation change
