@@ -4,12 +4,12 @@ Having recently acquired the skill-set for Android development, I created the Sp
 ![Spotify Share App](app/src/main/res/drawable/spotifyshareappthumbnail.jpg?raw=true "Spotify Share App")
 
 ## Technologies Used
-* [x] **Spotify Authentication Library** - handles authentication flow and Spotify API calls
-* [x] **Spotify App Remote Library** - manages audio playback via the Spotify Music app
-* [x] **Gson** - deserializes JSON objects to Java objects
-* [x] **OAuth2** - authorization standard which provides secure delegated access to Spotify data
-* [x] **Picasso** - downloads and caches remote images
-* [x] **Retrofit** - retrieves JSON data from the Spotify API 
-* [x] **OkHttp** - handles HTTP network requests
-* [x] **Spotify RESTful API** - returns metadata about music artists, albums, and tracks from the Spotify Data Catalogue
+* **Spotify Authentication Library** - handles authentication flow and Spotify API calls
+* **Spotify App Remote Library** - manages audio playback via the Spotify Music app
+* **Gson** - deserializes JSON objects to Java objects
+* **OAuth2** - authorization standard which provides secure delegated access to Spotify data
+* **Picasso** - downloads and caches remote images
+* **Retrofit** - retrieves JSON data from the Spotify API 
+* **OkHttp** - handles HTTP network requests
+* **Spotify RESTful API** - returns metadata about music artists, albums, and tracks from the Spotify Data Catalogue
 
