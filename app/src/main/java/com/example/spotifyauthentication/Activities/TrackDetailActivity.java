@@ -43,13 +43,13 @@ import static com.spotify.protocol.types.Repeat.OFF;
 public class TrackDetailActivity extends AppCompatActivity {
 
     // declare constants
-    public static final String CLIENT_ID = "cd58168e38d84c43b7433d471d1c5942";
-    public static SpotifyAppRemote mSpotifyAppRemote;
+    private static final String CLIENT_ID = "cd58168e38d84c43b7433d471d1c5942";
+    private static SpotifyAppRemote mSpotifyAppRemote;
     private static final String TAG = TrackDetailActivity.class.getSimpleName();
 
     private TrackPlaybackFragment trackPlaybackFragment;
 
-    private String trackUri, shareLink, trackShareName, trackShareArtist;
+    private String trackUri, trackShareLink, trackShareName, trackShareArtist, trackImageResource;
     private TextView trackSeekBarMin, trackSeekBarMax;
     private SeekBar trackSeekBar;
     private Button skipPreviousButton, skipNextButton;
@@ -59,15 +59,17 @@ public class TrackDetailActivity extends AppCompatActivity {
     private int trackLimit, trackNumber, trackRepeatMode;
     private boolean trackIsPaused, shuffleEnabled, onDemandPlaybackAllowed;
 
-    TrackProgressBar mTrackProgressBar;
-    Subscription<PlayerState> mPlayerStateSubscription;
-    Subscription<Capabilities> mCapabilitiesSubscription;
+    private TrackProgressBar mTrackProgressBar;
+    private Subscription<PlayerState> mPlayerStateSubscription;
+    private Subscription<Capabilities> mCapabilitiesSubscription;
 
     // duration of the track in milliseconds
-    public long trackDuration;
+    private long trackDuration;
 
     // position of the track
-    public long trackPlaybackPosition;
+    private long trackPlaybackPosition;
+
+    private Bundle savedInstanceStateTemp;
 
     @SuppressLint("SetTextI18n")
     private final Subscription.EventCallback<PlayerState> mPlayerStateEventCallback = new Subscription.EventCallback<PlayerState>() {
@@ -137,76 +139,20 @@ public class TrackDetailActivity extends AppCompatActivity {
         @Override
         public void onEvent(Capabilities capabilities) {
             onDemandPlaybackAllowed = capabilities.canPlayOnDemand;
-        }
-    };
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_track_detail);
-
-        // add custom toolbar to the activity
-        toolbar = (Toolbar) findViewById(R.id.app_bar);
-        setSupportActionBar(toolbar);
-        ActionBar actionBar = getSupportActionBar();
-        Objects.requireNonNull(actionBar).setDisplayShowTitleEnabled(false);
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        Objects.requireNonNull(toolbar.getNavigationIcon()).setColorFilter(getResources().
-                getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
-
-        // initialize the text views
-        trackSeekBarMin = (TextView) findViewById(R.id.timeSeekBarMin);
-        trackSeekBarMax = (TextView) findViewById(R.id.timeSeekBarMax);
-
-        // initialize the seek bar and seek bar class
-        trackSeekBar = (SeekBar) findViewById(R.id.seekBar);
-        mTrackProgressBar = new TrackProgressBar(trackSeekBar);
-
-        // initialize the buttons
-        shuffleButton = (ToggleButton) findViewById(R.id.shuffle_button);
-        skipPreviousButton = (Button) findViewById(R.id.skip_previous_button);
-        skipNextButton = (Button) findViewById(R.id.skip_next_button);
-        repeatButton = (ToggleButton) findViewById(R.id.repeat_button);
-        mPlayPauseButton = findViewById(R.id.play_pause_button);
-
-        // get intent extras from adapter
-        trackLimit = getIntent().getIntExtra("track_limit", 0);
-        trackUri = getIntent().getStringExtra("track_uri");
-        shareLink = getIntent().getStringExtra("track_share_link");
-        trackShareName = getIntent().getStringExtra("track_name");
-        trackShareArtist = getIntent().getStringExtra("track_artist");
-        trackNumber = Integer.parseInt(getIntent().getStringExtra("track_item_number"));
-
-        // if Spotify the application is installed on Android device
-        if(SpotifyAppRemote.isSpotifyInstalled(getApplicationContext())) {
-            // connect the client to the Spotify app remote and subscribe to user capabilities
-            connectAppRemote();
 
             // current user is able to play on demand
             if (onDemandPlaybackAllowed) {
-                Log.d(TAG, "User can play on demand.");
                 // create new instance of trackPlaybackFragment and fill fragment placeholder
-                trackPlaybackFragment = newInstance(getIntent().getStringExtra("track_image_resource"),
-                        getIntent().getStringExtra("track_item_number"), getIntent().getStringExtra("track_name"),
-                        getIntent().getStringExtra("track_artist"));
+                trackPlaybackFragment = newInstance(trackImageResource,
+                        String.valueOf(trackNumber), trackShareName,
+                        trackShareArtist);
                 FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.track_playback_fragment_placeholder, trackPlaybackFragment);
                 fragmentTransaction.commit();
 
-                // if a configuration change has occurred, restore the position of track playback
-                if(savedInstanceState != null) {
-                    trackDuration = savedInstanceState.getLong("track_duration");
-                    Log.d(TAG, String.valueOf(trackDuration));
-                    trackPlaybackPosition = savedInstanceState.getLong("track_position");
-                    Log.d(TAG, String.valueOf(trackPlaybackPosition));
-                    mTrackProgressBar.setDuration(trackDuration);
-                    mTrackProgressBar.update(trackPlaybackPosition);
-
-                    // update seek bar values on UI thread
-                    trackSeekBarMin.setText(convertSecondsToMSs(trackPlaybackPosition));
-                    trackSeekBarMax.setText(convertSecondsToMSs(trackDuration - trackPlaybackPosition));
+                if(savedInstanceStateTemp != null) {
+                    resumeTrack();
                 }
-                // if it is first time onCreate() method is called, play track from beginning
                 else {
                     playTrack(trackUri);
                 }
@@ -287,7 +233,6 @@ public class TrackDetailActivity extends AppCompatActivity {
             }
             // current user is not able to play on demand
             else {
-                Log.d(TAG, "User cannot play on demand.");
                 // hide UI from user
                 trackSeekBar.setVisibility(View.INVISIBLE);
                 trackSeekBarMin.setVisibility(View.INVISIBLE);
@@ -304,6 +249,75 @@ public class TrackDetailActivity extends AppCompatActivity {
                         Toast.LENGTH_LONG);
                 toast.show();
             }
+        }
+    };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_track_detail);
+
+        // add custom toolbar to the activity
+        toolbar = (Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        Objects.requireNonNull(actionBar).setDisplayShowTitleEnabled(false);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(toolbar.getNavigationIcon()).setColorFilter(getResources().
+                getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
+
+        // initialize the text views
+        trackSeekBarMin = (TextView) findViewById(R.id.timeSeekBarMin);
+        trackSeekBarMax = (TextView) findViewById(R.id.timeSeekBarMax);
+
+        // initialize the seek bar and seek bar class
+        trackSeekBar = (SeekBar) findViewById(R.id.seekBar);
+        mTrackProgressBar = new TrackProgressBar(trackSeekBar);
+
+        // initialize the buttons
+        shuffleButton = (ToggleButton) findViewById(R.id.shuffle_button);
+        skipPreviousButton = (Button) findViewById(R.id.skip_previous_button);
+        skipNextButton = (Button) findViewById(R.id.skip_next_button);
+        repeatButton = (ToggleButton) findViewById(R.id.repeat_button);
+        mPlayPauseButton = findViewById(R.id.play_pause_button);
+
+        savedInstanceStateTemp = savedInstanceState;
+
+        // if the Spotify application is installed on Android device
+        if(SpotifyAppRemote.isSpotifyInstalled(getApplicationContext())) {
+            // if a configuration change has occurred
+            if(savedInstanceState != null) {
+                // restore track attributes from saved instance state
+                trackLimit = getIntent().getIntExtra("track_limit", 0);
+                trackUri = savedInstanceState.getString("track_uri");
+                trackShareLink = savedInstanceState.getString("track_share_link");
+                trackShareName = savedInstanceState.getString("track_name");
+                trackShareArtist = savedInstanceState.getString("track_artist");
+                trackNumber = Integer.parseInt(savedInstanceState.getString("track_item_number"));
+                trackImageResource = savedInstanceState.getString("track_image_resource");
+
+                // restore progress bar values from saved instance state
+                mTrackProgressBar.setDuration(savedInstanceState.getLong("track_duration"));
+                mTrackProgressBar.update(savedInstanceState.getLong("track_position"));
+
+                // update seek bar values on UI thread
+                trackSeekBarMin.setText(convertSecondsToMSs(trackPlaybackPosition));
+                trackSeekBarMax.setText(convertSecondsToMSs(trackDuration - trackPlaybackPosition));
+            }
+            // if it is first time onCreate() method is called
+            else {
+                // get intent extras from adapter
+                trackLimit = getIntent().getIntExtra("track_limit", 0);
+                trackUri = getIntent().getStringExtra("track_uri");
+                trackShareLink = getIntent().getStringExtra("track_share_link");
+                trackShareName = getIntent().getStringExtra("track_name");
+                trackShareArtist = getIntent().getStringExtra("track_artist");
+                trackNumber = Integer.parseInt(getIntent().getStringExtra("track_item_number"));
+                trackImageResource = getIntent().getStringExtra("track_image_resource");
+            }
+
+            // connect the client to the Spotify app remote and subscribe to user capabilities
+            connectAppRemote();
         }
         // else if Spotify app is not installed on Android device
         else {
@@ -328,10 +342,10 @@ public class TrackDetailActivity extends AppCompatActivity {
     public void onPlayPauseButtonClicked(View view) {
         mSpotifyAppRemote.getPlayerApi().getPlayerState().setResultCallback(playerState -> {
             if (playerState.isPaused) {
-                mSpotifyAppRemote.getPlayerApi().resume();
+                resumeTrack();
             }
             else {
-                mSpotifyAppRemote.getPlayerApi().pause();
+                pauseTrack();
             }
         });
     }
@@ -353,6 +367,12 @@ public class TrackDetailActivity extends AppCompatActivity {
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putString("track_uri", trackUri);
+        savedInstanceState.putString("track_share_link", trackShareLink);
+        savedInstanceState.putString("track_item_number", String.valueOf(trackNumber));
+        savedInstanceState.putString("track_image_resource", trackImageResource);
+        savedInstanceState.putString("track_name", trackShareName);
+        savedInstanceState.putString("track_artist", trackShareArtist);
         savedInstanceState.putLong("track_duration", trackDuration);
         savedInstanceState.putLong("track_position", trackPlaybackPosition);
     }
@@ -402,10 +422,19 @@ public class TrackDetailActivity extends AppCompatActivity {
         });
     }
 
-    // app remote is connected
+    // play a track from the beginning
     private void playTrack(String trackUri) {
-        // play a track from the beginning
         mSpotifyAppRemote.getPlayerApi().play(trackUri);
+    }
+
+    // pause track playback
+    private void pauseTrack() {
+        mSpotifyAppRemote.getPlayerApi().pause();
+    }
+
+    // resume track playback
+    private void resumeTrack() {
+        mSpotifyAppRemote.getPlayerApi().resume();
     }
 
     // get redirect uri using redirect scheme and host
@@ -426,7 +455,7 @@ public class TrackDetailActivity extends AppCompatActivity {
         // what to do with it.
         share.putExtra(Intent.EXTRA_SUBJECT, trackShareName
                 + " by " + trackShareArtist);
-        share.putExtra(Intent.EXTRA_TEXT, shareLink);
+        share.putExtra(Intent.EXTRA_TEXT, trackShareLink);
 
         startActivity(Intent.createChooser(share, "Share link!"));
     }
@@ -445,21 +474,21 @@ public class TrackDetailActivity extends AppCompatActivity {
 
         // pull results for the first track
         Track track = dbHandler.getTrack(trackNumber);
-        String firstTrackImageUri = track.getTrackImageUri();
-        int firstTrackItemNumber = track.getTrackItemNumber();
-        String firstTrackName = track.getTrackName();
-        String firstTrackArtist = track.getTrackArtist();
-        String firstTrackUri = track.getTrackUri();
+        trackImageResource = track.getTrackImageUri();
+        trackNumber = track.getTrackItemNumber();
+        trackShareName = track.getTrackName();
+        trackShareArtist = track.getTrackArtist();
+        trackUri = track.getTrackUri();
 
         // create new instance of trackPlaybackFragment and fill fragment placeholder
-        trackPlaybackFragment = newInstance(firstTrackImageUri, String.valueOf(firstTrackItemNumber),
-                firstTrackName, firstTrackArtist);
+        trackPlaybackFragment = newInstance(trackImageResource, String.valueOf(trackNumber),
+                trackShareName, trackShareArtist);
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.setCustomAnimations(R.anim.most_popular_activity_in, R.anim.most_popular_activity_out);
         fragmentTransaction.replace(R.id.track_playback_fragment_placeholder, trackPlaybackFragment);
         fragmentTransaction.commit();
 
-        playTrack(firstTrackUri);
+        playTrack(trackUri);
     }
 
     // load next track in recycler view
@@ -490,21 +519,21 @@ public class TrackDetailActivity extends AppCompatActivity {
 
         // pull results for the next track
         Track track = dbHandler.getTrack(trackNumber);
-        String nextTrackImageUri = track.getTrackImageUri();
-        int nextTrackItemNumber = track.getTrackItemNumber();
-        String nextTrackName = track.getTrackName();
-        String nextTrackArtist = track.getTrackArtist();
-        String nextTrackUri = track.getTrackUri();
+        trackImageResource = track.getTrackImageUri();
+        trackNumber = track.getTrackItemNumber();
+        trackShareName = track.getTrackName();
+        trackShareArtist = track.getTrackArtist();
+        trackUri = track.getTrackUri();
 
         // create new instance of trackPlaybackFragment and fill fragment placeholder
-        trackPlaybackFragment = newInstance(nextTrackImageUri, String.valueOf(nextTrackItemNumber),
-                nextTrackName, nextTrackArtist);
+        trackPlaybackFragment = newInstance(trackImageResource, String.valueOf(trackNumber),
+                trackShareName, trackShareArtist);
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.setCustomAnimations(R.anim.most_popular_activity_in, R.anim.most_popular_activity_out);
         fragmentTransaction.replace(R.id.track_playback_fragment_placeholder, trackPlaybackFragment);
         fragmentTransaction.commit();
 
-        playTrack(nextTrackUri);
+        playTrack(trackUri);
     }
 
     // load previous track in recycler view
@@ -535,21 +564,21 @@ public class TrackDetailActivity extends AppCompatActivity {
 
         // pull results for the previous track
         Track track = dbHandler.getTrack(trackNumber);
-        String previousTrackImageUri = track.getTrackImageUri();
-        int previousTrackItemNumber = track.getTrackItemNumber();
-        String previousTrackName = track.getTrackName();
-        String previousTrackArtist = track.getTrackArtist();
-        String previousTrackUri = track.getTrackUri();
+        trackImageResource = track.getTrackImageUri();
+        trackNumber = track.getTrackItemNumber();
+        trackShareName = track.getTrackName();
+        trackShareArtist = track.getTrackArtist();
+        trackUri = track.getTrackUri();
 
         // create new instance of trackPlaybackFragment and fill fragment placeholder
-        trackPlaybackFragment = newInstance(previousTrackImageUri, String.valueOf(previousTrackItemNumber),
-                previousTrackName, previousTrackArtist);
+        trackPlaybackFragment = newInstance(trackImageResource, String.valueOf(trackNumber),
+                trackShareName, trackShareArtist);
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.setCustomAnimations(R.anim.detail_activity_in, R.anim.detail_activity_out);
         fragmentTransaction.replace(R.id.track_playback_fragment_placeholder, trackPlaybackFragment);
         fragmentTransaction.commit();
 
-        playTrack(previousTrackUri);
+        playTrack(trackUri);
     }
 
     // load random track in recycler view
@@ -579,21 +608,21 @@ public class TrackDetailActivity extends AppCompatActivity {
 
         // pull results for the next track
         Track track = dbHandler.getTrack(trackNumber);
-        String randomTrackImageUri = track.getTrackImageUri();
-        int randomTrackItemNumber = track.getTrackItemNumber();
-        String randomTrackName = track.getTrackName();
-        String randomTrackArtist = track.getTrackArtist();
-        String randomTrackUri = track.getTrackUri();
+        trackImageResource = track.getTrackImageUri();
+        trackNumber = track.getTrackItemNumber();
+        trackShareName = track.getTrackName();
+        trackShareArtist = track.getTrackArtist();
+        trackUri = track.getTrackUri();
 
         // create new instance of trackPlaybackFragment and fill fragment placeholder
-        trackPlaybackFragment = newInstance(randomTrackImageUri, String.valueOf(randomTrackItemNumber),
-                randomTrackName, randomTrackArtist);
+        trackPlaybackFragment = newInstance(trackImageResource, String.valueOf(trackNumber),
+                trackShareName, trackShareArtist);
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.setCustomAnimations(R.anim.most_popular_activity_in, R.anim.most_popular_activity_out);
         fragmentTransaction.replace(R.id.track_playback_fragment_placeholder, trackPlaybackFragment);
         fragmentTransaction.commit();
 
-        playTrack(randomTrackUri);
+        playTrack(trackUri);
     }
 
     // converts seconds to minutes-seconds format
