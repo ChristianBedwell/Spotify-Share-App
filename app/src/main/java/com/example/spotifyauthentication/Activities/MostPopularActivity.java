@@ -1,5 +1,6 @@
 package com.example.spotifyauthentication.Activities;
 
+import android.app.Activity;
 import android.support.v4.app.FragmentTransaction;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -15,6 +16,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -126,6 +128,24 @@ public class MostPopularActivity extends AppCompatActivity
         offsetEditText = (EditText) findViewById(R.id.offsetEditText);
         offsetEditText.setFilters(new InputFilter[]{ new InputFilterMinMax(0, 42)});
 
+        limitEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+
+        offsetEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+
         // instantiate header text view
         header = (TextView) findViewById(R.id.most_popular_header);
 
@@ -161,6 +181,11 @@ public class MostPopularActivity extends AppCompatActivity
     public static String getDefaults(String key, Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         return preferences.getString(key, null);
+    }
+
+    public void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     // checks for spinner items selected for each spinner
