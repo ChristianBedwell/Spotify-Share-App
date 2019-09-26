@@ -6,12 +6,12 @@ Having recently acquired the skill-set for Android development, I created the Sp
 ![Playback Demo](app/src/main/res/drawable/playback_demo_optimized.gif?raw=true "Track Player")
 
 ## Technologies Used
-* **Spotify Authentication Library** - handles authentication flow and Spotify API calls
-* **Spotify App Remote Library** - manages audio playback via the Spotify Music app
 * **Gson** - deserializes JSON objects to Java objects
 * **OAuth2** - authorization standard which provides secure delegated access to Spotify data
+* **OkHttp** - handles HTTP network requests
 * **Picasso** - downloads and caches remote images
 * **Retrofit** - retrieves JSON data from the Spotify API 
-* **OkHttp** - handles HTTP network requests
+* **Spotify App Remote Library** - manages audio playback via the Spotify Music app
+* **Spotify Authentication Library** - handles authentication flow and Spotify API calls
 * **Spotify RESTful API** - returns metadata about music artists, albums, and tracks from the Spotify Data Catalogue
 
