@@ -7,8 +7,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activities.MostPopularActivity"
-    android:clickable="true"
-    android:focusableInTouchMode="true"
     android:theme="@style/LightTheme">
 
     <android.support.design.widget.AppBarLayout
