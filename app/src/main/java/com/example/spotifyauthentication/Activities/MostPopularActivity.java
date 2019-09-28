@@ -1,6 +1,7 @@
 package com.example.spotifyauthentication.Activities;
 
 import android.app.Activity;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.FragmentTransaction;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -13,8 +14,6 @@ import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.Toolbar;
 import android.text.InputFilter;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -39,6 +38,7 @@ public class MostPopularActivity extends AppCompatActivity
     private Toolbar toolbar;
     private TextView header;
     private ItemsFragment itemsFragment;
+    private CoordinatorLayout coordinatorLayout;
 
     // string and integer to hold query parameters
     public String type;
@@ -127,20 +127,12 @@ public class MostPopularActivity extends AppCompatActivity
         limitEditText.setFilters(new InputFilter[]{ new InputFilterMinMax(1, 50)});
         offsetEditText = (EditText) findViewById(R.id.offsetEditText);
         offsetEditText.setFilters(new InputFilter[]{ new InputFilterMinMax(0, 42)});
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.activity_most_popular);
 
-        limitEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        coordinatorLayout.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    hideKeyboard(v);
-                }
-            }
-        });
-
-        offsetEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
+                if (hasFocus) {
                     hideKeyboard(v);
                 }
             }
