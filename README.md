@@ -15,3 +15,10 @@ Having recently acquired the skill-set for Android development, I created the Sp
 * **Spotify Authentication Library** - handles authentication flow and Spotify API calls
 * **Spotify RESTful API** - returns metadata about music artists, albums, and tracks from the Spotify Data Catalogue
 
+## Prepare Your Environment
+
+###  Register Your App
+You will need to [register your application](https://beta.developer.spotify.com/documentation/general/guides/app-settings/#register-your-app) on [the Developer Dashboard](https://developer.spotify.com/dashboard/) and obtain a client ID. When you register your app you will also need to whitelist a redirect URI that the Spotify Accounts Service will use to callback to your app after authorization. You also should [add your package name and app fingerprint](https://beta.developer.spotify.com/documentation/android/quick-start/#register-application-fingerprints) as they’re used to verify the identity of your application.
+
+### Install Spotify App
+App Remote SDK requires the Spotify app to be installed on the device. Install the [latest version of Spotify](https://play.google.com/store/apps/details?id=com.spotify.music) from Google Play on the device you want to use for development. Run the Spotify app and login or sign up.
